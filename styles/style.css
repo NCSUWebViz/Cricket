@@ -1,0 +1,16 @@
+body {
+    color: #ffffff;
+    background-color: #000000;
+	margin: 0px;
+}
+
+.teamList {
+	//width: 270px;
+ 	position: absolute;
+	left: 20px;
+	top: 63px;
+	color: #CCC;
+	background-color: rgba(0,0,0,0.2);
+	border-top: 1px solid rgba(255,255,255,0.4);
+	padding: 10px;
+}

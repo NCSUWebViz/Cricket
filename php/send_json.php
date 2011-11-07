@@ -12,7 +12,7 @@ function send_json($result){
 			$json[] = $object;
 		}
 	}
-	  header('Content-type: application/json');
+	  //header('Content-type: application/json');
 	    echo json_encode($json);
 }	
 	
