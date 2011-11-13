@@ -1,0 +1,1 @@
+UPDATE `players` SET `name`=TRIM(name), `team_id`=TRIM(team_id)
