@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.5
+-- version 3.4.7
 -- http://www.phpmyadmin.net
 --
--- Host: localhost
--- Generation Time: Nov 13, 2011 at 11:31 PM
--- Server version: 5.1.58
--- PHP Version: 5.3.8
+-- Host: 127.0.0.1
+-- Generation Time: Nov 13, 2011 at 07:26 PM
+-- Server version: 5.5.17
+-- PHP Version: 5.3.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `test2`
+-- Database: `Cricket`
 --
 
 -- --------------------------------------------------------
@@ -10768,6 +10768,8 @@ CREATE TABLE IF NOT EXISTS `teams` (
   `num_of_odis` int(20) DEFAULT NULL,
   `num_of_t20s` int(20) DEFAULT NULL,
   `captain` varchar(255) NOT NULL,
+  `latitude` decimal(10,7) DEFAULT NULL,
+  `longitude` decimal(10,7) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=23 ;
 
@@ -10775,29 +10777,29 @@ CREATE TABLE IF NOT EXISTS `teams` (
 -- Dumping data for table `teams`
 --
 
-INSERT INTO `teams` (`id`, `name`, `code`, `num_of_tests`, `num_of_odis`, `num_of_t20s`, `captain`) VALUES
-(1, 'Afghanistan', 'AFG', 0, 18, 8, 'Mowroz Mangal'),
-(2, 'Australia', 'AUS', 733, 776, 46, 'Micheal Clarke'),
-(3, 'Bangladesh', 'BAN', 71, 255, 17, 'Mushfiqur Rahim'),
-(4, 'Bermuda', 'BER', 0, 35, 3, 'Ryan Steede'),
-(5, 'Canada', 'CAN', 0, 70, 11, 'Jimmy Hansra'),
-(6, 'East Africa', 'EAF', 0, 3, 0, 'Don Pringle'),
-(7, 'England', 'ENG', 915, 572, 43, 'Graeme Swann'),
-(8, 'Hong Kong', 'HOK', 0, 4, 0, 'Afzaal Ahmed'),
-(9, 'India', 'IND', 455, 788, 31, 'M.S Dhoni'),
-(10, 'Ireland', 'IRE', 0, 70, 17, 'William Potterfield'),
-(11, 'Kenya', 'KEN', 0, 144, 12, 'Collins Obuya'),
-(12, 'Namibia', 'NAM', 0, 6, 0, 'Melt Van Schoor'),
-(13, 'Netherlands', 'NED', 0, 67, 10, 'Peter Borren'),
-(14, 'New Zealand', 'NZL', 365, 613, 45, 'Ross Taylor'),
-(15, 'Pakistan', 'PAK', 361, 752, 48, 'Misbah-ul-Haq'),
-(16, 'Scotland', 'SCO', 0, 54, 12, 'Gordon Drummond'),
-(17, 'South Africa', 'SAF', 358, 462, 41, 'Graeme Smith'),
-(18, 'Sri Lanka', 'SRL', 206, 637, 37, 'Tillakaratne Dilshan'),
-(19, 'United Arab Emirates', 'UAE', 0, 11, 0, 'Abdul Rehman'),
-(20, 'United States', 'USA', 0, 2, 0, 'Clayton Lambert'),
-(21, 'West Indies', 'WIN', 475, 660, 33, 'Darren Sammy'),
-(22, 'Zimbabwe', 'ZIM', 86, 404, 18, 'Brendan Taylor');
+INSERT INTO `teams` (`id`, `name`, `code`, `num_of_tests`, `num_of_odis`, `num_of_t20s`, `captain`, `latitude`, `longitude`) VALUES
+(1, 'Afghanistan', 'AFG', 0, 18, 8, 'Mowroz Mangal', 34.5333330, 69.1333330),
+(2, 'Australia', 'AUS', 733, 776, 46, 'Micheal Clarke', -33.8599720, 151.2111110),
+(3, 'Bangladesh', 'BAN', 71, 255, 17, 'Mushfiqur Rahim', 23.7000000, 90.3500000),
+(4, 'Bermuda', 'BER', 0, 35, 3, 'Ryan Steede', 32.3000000, -64.7833330),
+(5, 'Canada', 'CAN', 0, 70, 11, 'Jimmy Hansra', 45.4000000, -75.6666670),
+(6, 'East Africa', 'EAF', 0, 3, 0, 'Don Pringle', NULL, NULL),
+(7, 'England', 'ENG', 915, 572, 43, 'Graeme Swann', 51.5000000, -0.1166670),
+(8, 'Hong Kong', 'HOK', 0, 4, 0, 'Afzaal Ahmed', 22.2783330, 114.1588890),
+(9, 'India', 'IND', 455, 788, 31, 'M.S Dhoni', 28.6133330, 77.2083330),
+(10, 'Ireland', 'IRE', 0, 70, 17, 'William Potterfield', 53.3333330, -8.0000000),
+(11, 'Kenya', 'KEN', 0, 144, 12, 'Collins Obuya', -1.2666670, 36.8000000),
+(12, 'Namibia', 'NAM', 0, 6, 0, 'Melt Van Schoor', -22.5700000, 17.0861170),
+(13, 'Netherlands', 'NED', 0, 67, 10, 'Peter Borren', 52.3166670, 5.5500000),
+(14, 'New Zealand', 'NZL', 365, 613, 45, 'Ross Taylor', -41.2833330, 174.4500000),
+(15, 'Pakistan', 'PAK', 361, 752, 48, 'Misbah-ul-Haq', 33.6666670, 73.1666670),
+(16, 'Scotland', 'SCO', 0, 54, 12, 'Gordon Drummond', 55.9500000, -3.2000000),
+(17, 'South Africa', 'SAF', 358, 462, 41, 'Graeme Smith', -30.0000000, 25.0000000),
+(18, 'Sri Lanka', 'SRL', 206, 637, 37, 'Tillakaratne Dilshan', 6.9000000, 79.9000000),
+(19, 'United Arab Emirates', 'UAE', 0, 11, 0, 'Abdul Rehman', 24.4666670, 54.3666670),
+(20, 'United States', 'USA', 0, 2, 0, 'Clayton Lambert', 38.8833330, -77.0166670),
+(21, 'West Indies', 'WIN', 475, 660, 33, 'Darren Sammy', 14.5255560, -75.8183330),
+(22, 'Zimbabwe', 'ZIM', 86, 404, 18, 'Brendan Taylor', 17.9833330, -76.8000000);
 
 -- --------------------------------------------------------
 
