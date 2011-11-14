@@ -25,7 +25,7 @@
 
 var DAT = DAT || {};
 
-DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown) {
+DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynamicTexture) {
 
   colorFn = colorFn || function(x) {
     var c = new THREE.Color();
@@ -94,7 +94,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown) {
 
   var mouse = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
   var rotation = { x: 0, y: 0 },
-      target = { x: Math.PI*3/2, y: Math.PI / 6.0 },
+      target = { x: Math.PI*3/2 + Math.PI, y: Math.PI / 6.0 },
       targetOnDown = { x: 0, y: 0 };
 
   var distance = 100000, distanceTarget = 100000;
@@ -127,8 +127,9 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown) {
     shader = Shaders['earth'];
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-    uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+'world' +
-        '.jpg');
+    uniforms['texture'].texture = dynamicTexture ||
+        THREE.ImageUtils.loadTexture(imgDir+'world'+'.jpg');
+    //uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+'world_upsidedown'+'.jpg');
 
     //material = new THREE.MeshShaderMaterial({
 	material = new THREE.ShaderMaterial({
@@ -280,18 +281,55 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown) {
 
   };
 
+  function addHighlight(lat, lng, material) {
+    var geometry = new THREE.CubeGeometry(0.75, 0.75, 1, 1, 1, 1, null, false, { px: true,
+          nx: true, py: true, ny: true, pz: false, nz: true});
+
+    for (var i = 0; i < geometry.vertices.length; i++) {
+
+      var vertex = geometry.vertices[i];
+      vertex.position.z += 0.5;
+
+    }
+
+
+    var phi = (90 - lat) * Math.PI / 180;
+    var theta = (180 - lng) * Math.PI / 180 + Math.PI;
+
+    var point = new THREE.Mesh(geometry,
+            material || new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              vertexColors: THREE.FaceColors,
+              morphTargets: false
+            }));
+    point.position.x = 200 * Math.sin(phi) * Math.cos(theta);
+    point.position.y = 200 * Math.cos(phi);
+    point.position.z = 200 * Math.sin(phi) * Math.sin(theta);
+
+    point.lookAt(mesh.position);
+    point.scale.z = 1;
+    point.scale.x = 8;
+    point.scale.y = 8;
+    point.updateMatrix();
+    scene.add(point);
+    return point
+  }
+
   function addModelFromLoader(lat, lng, size, color) {
     var phi = (90 - lat) * Math.PI / 180;
     var theta = (180 - lng) * Math.PI / 180;
     return function (geometry) {
         geometry.materials[0][0].shading = THREE.FlatShading;
-        var material = [ new THREE.MeshFaceMaterial(), new THREE.MeshLambertMaterial(
-            { color: 0xffffff,
-            opacity:0.9,
-            shading:THREE.FlatShading,
-            wireframe: true,
-            wireframeLinewidth: 2 } ) ];
-            
+        var material = [
+            new THREE.MeshFaceMaterial(),
+            new THREE.MeshLambertMaterial({
+                color: 0xffffff,
+                opacity:0.9,
+                shading:THREE.FlatShading,
+                wireframe: true,
+                wireframeLinewidth: 2
+        })];
+
         geometry.computeBoundingBox();
         var height = geometry.boundingBox.y[1] - geometry.boundingBox.y[0];
         var mesh2 = new THREE.Mesh( geometry, material );
@@ -303,15 +341,15 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown) {
         mesh2.rotation.z = -phi;
         mesh2.rotation.y = -theta;
         mesh2.updateMatrix();
-        //scene.addObject( mesh2 );
-		scene.add( mesh2 );
+        scene.add( mesh2 );
     }
   }
 
   function createPoints() {
     if (this._baseGeometry !== undefined) {
       if (this.is_animated === false) {
-        this.points = new THREE.Mesh(this._baseGeometry, new THREE.MeshBasicMaterial({
+        this.points = new THREE.Mesh(this._baseGeometry,
+            new THREE.MeshBasicMaterial({
               color: 0xffffff,
               vertexColors: THREE.FaceColors,
               morphTargets: false
@@ -382,10 +420,10 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown) {
     var zoomDamp = distance/1000;
 
     target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
-	if (swapUpDown)
-		target.y = targetOnDown.y - (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
-    else 
-		target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
+    if (swapUpDown)
+        target.y = targetOnDown.y - (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
+    else
+        target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
 
     target.y = target.y > PI_HALF ? PI_HALF : target.y;
     target.y = target.y < - PI_HALF ? - PI_HALF : target.y;
@@ -459,10 +497,10 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown) {
 
     camera.lookAt(scene.position);
     renderer.clear();
-    //renderer.render(scene, camera);
-    //renderer.render(sceneAtmosphere, camera);
-	renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
-    renderer.render(scene, camera, renderTargetTexture, true);
+    renderer.render(scene, camera);
+    renderer.render(sceneAtmosphere, camera);
+	//renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
+    //renderer.render(scene, camera, renderTargetTexture, true);
 	//renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
   }
 
@@ -492,7 +530,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown) {
 
   this.__defineSetter__('curLong', function(lng) {
     var theta = (180 - lng) * Math.PI / 180;
-    var newRot = (-theta - 3*Math.PI/2) % (TWO_PI);
+    var newRot = (-theta - 3*Math.PI/2 + Math.PI) % (TWO_PI);
     var numRots = Math.floor(target.x / (TWO_PI)) + 1;
     var newTargetX = numRots * TWO_PI + newRot;
     target.x = newTargetX;
@@ -531,6 +569,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown) {
   });
 
   this.addData = addData;
+  this.addHighlight = addHighlight;
   this.createPoints = createPoints;
   this.renderer = renderer;
   this.scene = scene;
