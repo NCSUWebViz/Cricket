@@ -1,5 +1,4 @@
 <?php
-
 //function getTeamPeformance($country, $match_type){
 function getTeamPerformance(){
 	include 'connect.php';
