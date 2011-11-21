@@ -92,9 +92,11 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
   var curZoomSpeed = 0;
   var zoomSpeed = 50;
 
+  var THREE_VERSION_OFFSET = Math.PI;
   var mouse = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
   var rotation = { x: 0, y: 0 },
-      target = { x: Math.PI*3/2 + Math.PI, y: Math.PI / 6.0 },
+      target = { x: Math.PI*3/2 + THREE_VERSION_OFFSET, y: Math.PI / 6.0 },
+      //target = { x: Math.PI*3/2, y: Math.PI / 6.0 },
       targetOnDown = { x: 0, y: 0 };
 
   var distance = 100000, distanceTarget = 100000;
@@ -294,7 +296,8 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
 
     var phi = (90 - lat) * Math.PI / 180;
-    var theta = (180 - lng) * Math.PI / 180 + Math.PI;
+    var theta = (180 - lng) * Math.PI / 180 + THREE_VERSION_OFFSET;
+    //var theta = (180 - lng) * Math.PI / 180 + Math.PI;
 
     var point = new THREE.Mesh(geometry,
             material || new THREE.MeshBasicMaterial({
@@ -497,10 +500,10 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
     camera.lookAt(scene.position);
     renderer.clear();
-    renderer.render(scene, camera);
+    //renderer.render(scene, camera);
     renderer.render(sceneAtmosphere, camera);
 	//renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
-    //renderer.render(scene, camera, renderTargetTexture, true);
+    renderer.render(scene, camera, renderTargetTexture, true);
 	//renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
   }
 
@@ -530,7 +533,8 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
   this.__defineSetter__('curLong', function(lng) {
     var theta = (180 - lng) * Math.PI / 180;
-    var newRot = (-theta - 3*Math.PI/2 + Math.PI) % (TWO_PI);
+    //var newRot = (-theta - 3*Math.PI/2) % (TWO_PI);
+    var newRot = (-theta - 3*Math.PI/2 + THREE_VERSION_OFFSET) % (TWO_PI);
     var numRots = Math.floor(target.x / (TWO_PI)) + 1;
     var newTargetX = numRots * TWO_PI + newRot;
     target.x = newTargetX;

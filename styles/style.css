@@ -28,3 +28,18 @@ body {
 #fakeImage {
     visibility:hidden;
 }
+
+#chart {
+  width: 960px;
+  height: 500px;
+  visibility:hidden;
+}
+
+circle {
+  stroke: #000;
+  stroke-width: .5px;
+}
+
+#canvasSvg {
+	//visibility:hidden;
+}

@@ -4,6 +4,9 @@ var renderer;
 var projector;
 var sceneScreen;
 var camera;
+var svgCanvas;
+var canvasTexture;
+var canvasTexture2;
 var rtTexture;
 var dynamicTexture;
 var teamHighlightMeshes = new Array();
@@ -15,12 +18,40 @@ $(document).ready(function() {
     var h = container.offsetHeight || window.innerHeight;
     $(container).click(teamGlobeClickTest);
     projector = new THREE.Projector();
-    /*renderer = new THREE.WebGLRenderer({antialias: true});
-    renderer.autoClear = false;
-    renderer.setClearColorHex(0x000000, 0.0);
-    renderer.setSize(w, h);
-    renderer.domElement.style.position = 'absolute';
-    container.appendChild(renderer.domElement);
+
+    //initScene();
+    loadGlobe();
+});
+
+function animate() {
+    requestAnimationFrame(animate);
+    render();
+}
+
+var slowdownCount = 0;
+function render() {
+    if (canvasTexture) {
+        svgCanvas = document.getElementById('canvasSvg');
+        var worldImage = document.getElementById('chart');
+        var svg = $.trim(worldImage.innerHTML);
+        canvg(svgCanvas, svg);
+        canvasTexture.needsUpdate = true;
+    }
+    //canvasTexture2.needsUpdate = true;
+    globe.render();
+    //canvasTexture.needsUpdate = true;
+    //camera.lookAt(sceneScreen.position);
+    //renderer.render(sceneScreen, camera);
+    //renderer.render(sceneScreen, globe.camera);
+}
+
+function initScene() {
+    //renderer = new THREE.WebGLRenderer({antialias: true});
+    //renderer.autoClear = false;
+    //renderer.setClearColorHex(0x000000, 0.0);
+    //renderer.setSize(w, h);
+    //renderer.domElement.style.position = 'absolute';
+    //container.appendChild(renderer.domElement);
 
     sceneScreen = new THREE.Scene();
     camera = new THREE.PerspectiveCamera( 30, w/h, 1, 10000);
@@ -39,29 +70,32 @@ $(document).ready(function() {
     var plane = new THREE.PlaneGeometry( w, h );
     var quad = new THREE.Mesh( plane, material2 );
     quad.position.z = -500;
-    sceneScreen.add( quad );*/
-
-    loadTeams();
-    loadGlobe();
-});
-
-function animate() {
-    requestAnimationFrame(animate);
-    render();
-}
-
-function render() {
-    globe.render();
-    //camera.lookAt(sceneScreen.position);
-    //renderer.render(sceneScreen, camera);
-    //renderer.render(sceneScreen, globe.camera);
+    sceneScreen.add( quad );
 }
 
 function loadGlobe() {
-    globe = new DAT.Globe(container, null, null, false, null);
-    renderer = globe.renderer;
-    animate();
+    //globe = new DAT.Globe(container, null, null, false, null);
+    //renderer = globe.renderer;
+    //animate();
+    //loadTeams();
     //loadOtherTexture();
+    //setTimeout(loadOtherTexture, 1000);
+    //loadSvgCanvasGlobe();
+    loadModels();
+}
+
+function loadModels() {
+    globe = new DAT.Globe(container, null, rtTexture, false);
+    $.getJSON('testdata/stats.json', function(data) {
+        //return;
+        for (i=0;i<data.length;i++) {
+            globe.addData(data[i][1], {format: 'magnitude', name: data[i][0], animated: true, models: data[i][2]});
+        }
+        //globe.animate();
+        console.log("loaded!");
+        loadTeams();
+        animate();
+    });
 }
 
 function loadTeams() {
@@ -128,21 +162,44 @@ function teamGlobeClickTest(event) {
     //sceneScreen.add(mesh);
 }*/
 
+function loadSvgCanvasGlobe() {
+    var chart = document.getElementById('chart');
+    var svg = chart.innerHTML;
+    svg = $.trim(svg);
+    svgCanvas = document.getElementById('canvasSvg');
+    canvg(svgCanvas, svg, { ignoreAnimations: false,
+            forceRedraw: function() { return false; }});
+
+    canvasTexture = new THREE.Texture(svgCanvas);
+    console.log("Canvas (svg?):", svgCanvas);
+    console.log("CanvasTexture:", canvasTexture);
+    canvasTexture.needsUpdate = true;
+
+    globe = new DAT.Globe(container, null, null, false,
+                canvasTexture);
+    renderer = globe.renderer;
+    animate();
+    loadTeams();
+}
+
 function loadOtherTexture() {
-    var worldImg = document.getElementById('worldImg');
-    var canvas;
-    var preload = html2canvas.Preload(worldImg, {
-        "images": [worldImg],
+    var worldImage = document.getElementById('worldImage');
+    //var fakeImage = document.getElementById('fakeImage');
+    //var preload = html2canvas.Preload(fakeImage, {
+    var preload = html2canvas.Preload(worldImage, {
+        "images": [worldImage],
         "complete": function(images){
             console.log("Preload complete:", images);
-            var queue = html2canvas.Parse(worldImg, images);
+            var queue = html2canvas.Parse(worldImage, images);
             canvas = html2canvas.Renderer(queue);
-            console.log("Canvas:", canvas);
+            console.log("Canvas:", canvas, canvas.width, canvas.height);
+            //canvas.width = 1024;
+            //canvas.height = 2048;
+            console.log("Canvas2:", canvas, canvas.width, canvas.height);
 
-            var texture = new THREE.Texture(canvas);
-            texture.needsUpdate = true;
-            dynamicTexture = texture;
-            //rtTexture = texture;
+
+            canvasTexture2 = new THREE.Texture(canvas);
+            canvasTexture2.needsUpdate = true;
 
             //var material = new THREE.MeshBasicMaterial({
                 //map : texture
@@ -152,11 +209,12 @@ function loadOtherTexture() {
             //sceneScreen.add(mesh);
 
             //globe = new DAT.Globe(container, null, rtTexture, true,
-            //globe = new DAT.Globe(container, null, null, true,
-                //dynamicTexture);
-            globe = new DAT.Globe(container, null, null, false, null);
+            globe = new DAT.Globe(container, null, null, false,
+                canvasTexture2);
+            //globe = new DAT.Globe(container, null, null, false, null);
             renderer = globe.renderer;
             animate();
+            loadTeams();
         }
     });
 }
