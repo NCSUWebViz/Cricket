@@ -132,7 +132,7 @@
 	<body>
 		
 		<!-- 3. Add the container -->
-		<div id="container" style="width: 1600px; height: 400px; margin: 0 auto"></div>
+		<div id="container" style="width: 1600px; height: 600px; margin: 0 auto"></div>
 		<div>Select Team : <?php 
 			include 'php/getTeamList.php';
 			?></div>
