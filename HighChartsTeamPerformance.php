@@ -22,9 +22,11 @@
 		<script type="text/javascript">
    			var options;	
 			function getData(code){
+						var e = document.getElementById("countrySelect");
+						var countryName = e.options[e.selectedIndex].text;
 						var args="";
 						if(code){
-							args = "?code="+code;
+							args = "?id="+code;
 						}
 						else{
 							args="";
@@ -37,7 +39,7 @@
 						        zoomType: 'x'
 						    },
 						    title: {
-						        text: code
+						        text: countryName
 						    },
 						    xAxis: {
 						        categories: []

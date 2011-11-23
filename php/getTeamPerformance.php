@@ -3,11 +3,11 @@
 function getTeamPerformance(){
 	include 'connect.php';
 	include 'send_json.php';	
-	mysql_selectdb('Cricket',$link) or die('Error connecting to DB');
-	$code = $_GET['code'];
-	$super_set = mysql_query("select year, count(*) as total from matches where team1 LIKE '".$code."' or team2 LIKE '".$code."' group by year") ;
+	//mysql_selectdb('Cricket',$link) or die('Error connecting to DB');
+	$team_id = intval($_GET['id']);
+	$super_set = mysql_query("select year, count(*) as total from matches where team1 = '".$team_id."' or team2 = '".$team_id."' group by year") ;
 	//$super_set = mysql_query("select year, count(*) as total from matches where team1 LIKE '".$country."' or team2 LIKE '".$country."' group by year") ;
-	$getCountryName = mysql_query("select name from teams where code LIKE '".$code."' ");
+	$getCountryName = mysql_query("select name from teams where id = '".$team_id."' ");
 	$countryName = mysql_fetch_assoc($getCountryName);
 	$result = mysql_query("select year, count(*) as wins from matches where winner_id LIKE '".$countryName['name']."' group by year") ;
 	//$result = mysql_query("select year, count(*) as wins from matches where winner_id LIKE 'India' group by year") ;
