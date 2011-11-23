@@ -4,10 +4,12 @@ function getTeamPerformance(){
 	include 'connect.php';
 	include 'send_json.php';	
 	mysql_selectdb('Cricket',$link) or die('Error connecting to DB');
-	
-	$super_set = mysql_query("select year, count(*) as total from matches where team1 LIKE 'IND' or team2 LIKE 'IND' group by year") ;
+	$code = $_GET['code'];
+	$super_set = mysql_query("select year, count(*) as total from matches where team1 LIKE '".$code."' or team2 LIKE '".$code."' group by year") ;
 	//$super_set = mysql_query("select year, count(*) as total from matches where team1 LIKE '".$country."' or team2 LIKE '".$country."' group by year") ;
-	$result = mysql_query("select year, count(*) as wins from matches where winner_id LIKE 'India' group by year") ;
+	$getCountryName = mysql_query("select name from teams where code LIKE '".$code."' ");
+	$countryName = mysql_fetch_assoc($getCountryName);
+	$result = mysql_query("select year, count(*) as wins from matches where winner_id LIKE '".$countryName['name']."' group by year") ;
 	//$result = mysql_query("select year, count(*) as wins from matches where winner_id LIKE 'India' group by year") ;
 	
 	if($super_set && $result){
@@ -23,7 +25,7 @@ function getTeamPerformance(){
 		}
 		$i = 0;
 		while($i < sizeof($super)){
-			if(array_key_exists($super[$i]['year'], $res)){
+			if((mysql_num_rows($result) > 0) && array_key_exists($super[$i]['year'], $res)){
 				$json[] = array('year' => intval($super[$i]['year']), 'total' => intval($super[$i]['total']), 'wins' => intval($res[$super[$i]['year']]));		
 			}
 			else{
