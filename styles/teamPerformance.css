@@ -1,0 +1,29 @@
+﻿    body
+    {
+        font-family: Tahoma,Verdana,Arial,sans-serif;
+        font-size: 12px;
+        height: auto;
+        margin: auto;
+        padding: 40px 0 0 20px;
+        width: 2000px;
+    }
+        
+    .countryList
+    {
+        border:1px;
+        border-style:outset;
+        color:gray;   
+        height:300px; 
+        width:75px;
+        margin:10px 20px 10px 20px;
+    }
+        
+    .matchType
+    {
+        border:1px;
+        border-style:outset;
+        color:gray;   
+        height:300px; 
+        width:75px; 
+        margin:10px 20px 10px 20px;   
+    }
