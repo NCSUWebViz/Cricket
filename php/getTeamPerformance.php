@@ -32,7 +32,7 @@ function getTeamPerformance(){
 			$i = $i + 1;
 		}
 		//return "{data:{".json_encode($json)."} }";
-		echo "{data:{".json_encode($json)."} }";
+		echo "{\"data\":[".json_encode($json)."]}";
 	}else{
 		die("Wrong query");
 	}
