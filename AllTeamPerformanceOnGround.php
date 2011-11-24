@@ -46,6 +46,9 @@
 								 labels: {
 									rotation: -45,
 									align: 'right',
+									style: {
+							                font: 'normal 12px Verdana, sans-serif'
+							            }
 								}
 						    },
 						    yAxis: {
@@ -55,13 +58,13 @@
 						    },
 						    tooltip: {
          						formatter: function() {
-										var groundSplit = options.title.text.split(", ");
+										var groundSplit = options.title.text.split(",");
 										if(groundSplit[2] == this.x)
 										{
 											return '<b>Country:</b>'+ this.x + '<br /><b>' + 
             								this.series.name +':</b> '+ this.y +'<br/>'+
             								"<b>Total Matches Played: </b>"+ this.point.stackTotal + '<br />' +
-											"<b>This is the Home Ground</b>";
+											"<b>This is the Home Ground for "+this.x+"</b>";
 										}
 										else
 										{
