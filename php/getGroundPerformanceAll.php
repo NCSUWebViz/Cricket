@@ -4,10 +4,15 @@ function getTeamPerformance()
 	include 'connect.php';
 	include 'send_json.php';
     	
-	$venueId = intval($_GET['id']);
-    //$venueId = 2;
+	  $venueId = intval($_GET['id']);
 	
+    $groundDetailsResult = mysql_query("Select city, country from venue where id = '".$venueId."'");
+    $groundDetails =  mysql_fetch_assoc($groundDetailsResult);
+    $groundCity = $groundDetails['city'];
+    $groundCountry = $groundDetails['country'];
+    
     $countryIdQueryRes = mysql_query("select id from teams");
+    
     while($countryId = mysql_fetch_assoc($countryIdQueryRes))
     {            
          $countryNameResult = mysql_query("select name from teams where id = '".$countryId['id']."'");
@@ -25,7 +30,8 @@ function getTeamPerformance()
          
          $json[] = array('countryName' => ($countryName['name']), 'total' => intval($totalPlayed['total']), 'wins' => intval($wins['wins']), 'draws' => intval($drawn['draw']));
     }
-    echo "{\"data\":[".json_encode($json)."]}";
+
+    echo "{\"country\":\"$groundCountry\", \"city\":\"$groundCity\", \"data\":[".json_encode($json)."]}";
 }
 getTeamPerformance();
 ?>

@@ -36,13 +36,17 @@
 						    chart: {
 						        renderTo: 'container',
 						        defaultSeriesType: 'column',
-						        zoomType: 'x'
+						        zoomType: 'y'
 						    },
 						    title: {
-						        text: groundName
+						        text: null
 						    },
 						    xAxis: {
-						        categories: []
+						        categories: [],
+								 labels: {
+									rotation: -45,
+									align: 'right',
+								}
 						    },
 						    yAxis: {
 						        title: {
@@ -51,9 +55,20 @@
 						    },
 						    tooltip: {
          						formatter: function() {
-            						return '<b>Country:</b>'+ this.x + '<br /><b>' + 
-            						this.series.name +':</b> '+ this.y +'<br/>'+
-            						"<b>Total Matches Played: </b>"+ this.point.stackTotal + '<br />';
+										var groundSplit = options.title.text.split(", ");
+										if(groundSplit[2] == this.x)
+										{
+											return '<b>Country:</b>'+ this.x + '<br /><b>' + 
+            								this.series.name +':</b> '+ this.y +'<br/>'+
+            								"<b>Total Matches Played: </b>"+ this.point.stackTotal + '<br />' +
+											"<b>This is the Home Ground</b>";
+										}
+										else
+										{
+            								return '<b>Country:</b>'+ this.x + '<br /><b>' + 
+            								this.series.name +':</b> '+ this.y +'<br/>'+
+            								"<b>Total Matches Played: </b>"+ this.point.stackTotal + '<br />';
+										}
          						}
       						},
 						    plotOptions: {
@@ -68,7 +83,9 @@
 						var series = {
 					  			data: []
 					  		};
+						
 						series.name = "Matches Won";
+						options.title.text = groundName + "," + data.city + "," + data.country;
 						var i = 0;
 						while( i < data.data[0].length){
 							series.data.push(data.data[0][i].wins);
