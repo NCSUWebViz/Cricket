@@ -90,33 +90,35 @@
 						//----------------------------------------------------
 						//alert("calling json function");
 						$.getJSON('php/getTeamPerformance.php'+args,function(data){
-						var series = {
-					  			data: []
-					  		};
-						series.name = "Matches Won";
+						var won_series = {data: []}; var total_series = {data: []}; var draw_series = {data: []};
+						won_series.name = "Matches Won"; total_series.name = "Matches Played";	draw_series.name = "Matches Drawn";	
 						var i = 0;
-						//alert("Empty Set?");
+						//alert(data.data[0][0].__count__);
 						if(data.data.length == 0){
 							options.title.text = "No Data Found for "+countryName + "-" + matchType;
 							var chart = new Highcharts.Chart(options);
 						}else{
 							while( i < data.data[0].length){
-								series.data.push(data.data[0][i].wins);
+								won_series.data.push(data.data[0][i].wins);
+								total_series.data.push(data.data[0][i].total);
+								draw_series.data.push(data.data[0][i].draws);
 								options.xAxis.categories.push(data.data[0][i].year);
 								i++;
 							}
-							options.series.push(series);
-							series = {
-						  			data: []
-						  		};
-						  	i=0;
-						  	series.name = "Matches Played";	
-							while( i < data.data[0].length){
-								series.data.push(data.data[0][i].total);
-								options.xAxis.categories.push(data.data[0][i].year);
-								i++;	
-							}
-							options.series.push(series);
+							options.series.push(won_series);
+							options.series.push(total_series);
+							options.series.push(draw_series);
+							//series = {
+						  	//		data: []
+						  	//	};
+						  	//i=0;
+						  	
+							//while( i < data.data[0].length){
+							//	series.data.push(data.data[0][i].total);
+							//	options.xAxis.categories.push(data.data[0][i].year);
+							//	i++;	
+							//}
+							//options.series.push(series);
 							var chart = new Highcharts.Chart(options);	
 						}
 				});
