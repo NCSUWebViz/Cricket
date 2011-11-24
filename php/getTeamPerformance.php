@@ -5,8 +5,9 @@ function getTeamPerformance(){
 	include 'send_json.php';	
 	
 	$team_id = intval($_GET['id']);
-	$getCountryName = mysql_query("select name from teams where id = '".$team_id."' ");
-	$countryName = mysql_fetch_assoc($getCountryName);
+	$draw_id = -1;
+	//$getCountryName = mysql_query("select name from teams where id = '".$team_id."' ");
+	//$countryName = mysql_fetch_assoc($getCountryName);
 	
 	if(isset($_GET['type'])){
 		$type = $_GET['type'];
@@ -15,8 +16,8 @@ function getTeamPerformance(){
 	}
 	if($type != ""){
 		$super_query = "select year, count(*) as total from matches where (team1 = '".$team_id."' or team2 = '".$team_id."') and type LIKE '".$type."' group by year";
-		$sub_query = "select year, count(*) as wins from matches where winner_id LIKE '".$countryName['name']."' and type LIKE '".$type."' group by year";
-		$draw_query = "select year, count(*) as drawn from matches where (team1 = '".$team_id."' or team2 = '".$team_id."') and winner_id LIKE 'Draw' and type LIKE '".$type."' group by year";
+		$sub_query = "select year, count(*) as wins from matches where winner_id LIKE '".$team_id."' and type LIKE '".$type."' group by year";
+		$draw_query = "select year, count(*) as drawn from matches where (team1 = '".$team_id."' or team2 = '".$team_id."') and winner_id LIKE '".$draw_id."' and type LIKE '".$type."' group by year";
 		/*
 		$sub_query = "select year, count(*) as wins from matches where (team1 = '".$team_id."' or team2 = '".$team_id."') and type LIKE '".$type."' ";
 		if($type=='Test'){
@@ -27,8 +28,8 @@ function getTeamPerformance(){
 		*/
 	}else{
 		$super_query = "select year, count(*) as total from matches where team1 = '".$team_id."' or team2 = '".$team_id."' group by year";
-		$sub_query = "select year, count(*) as wins from matches where winner_id LIKE '".$countryName['name']."' group by year";
-		$draw_query = "select year, count(*) as drawn from matches where (team1 = '".$team_id."' or team2 = '".$team_id."') and winner_id LIKE 'Draw' group by year";	
+		$sub_query = "select year, count(*) as wins from matches where winner_id LIKE '".$team_id."' group by year";
+		$draw_query = "select year, count(*) as drawn from matches where (team1 = '".$team_id."' or team2 = '".$team_id."') and winner_id = '".$draw_id."' group by year";	
 	}
 	
 	$super_set = mysql_query($super_query) ;
