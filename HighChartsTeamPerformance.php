@@ -51,7 +51,7 @@
 						options =  {
 						    chart: {
 						        renderTo: 'container',
-						        defaultSeriesType: 'line',
+						        defaultSeriesType: 'spline',
 						        zoomType: 'x'
 						    },
 						    title: {
@@ -91,7 +91,7 @@
 						//alert("calling json function");
 						$.getJSON('php/getTeamPerformance.php'+args,function(data){
 						var won_series = {data: []}; var total_series = {data: []}; var draw_series = {data: []};
-						won_series.name = "Matches Won"; total_series.name = "Matches Played";	draw_series.name = "Matches Drawn";	
+						won_series.name = "Matches Won"; total_series.name = "Matches Lost";	draw_series.name = "Matches Drawn";	
 						var i = 0;
 						//alert(data.data[0][0].__count__);
 						if(data.data.length == 0){
@@ -100,7 +100,7 @@
 						}else{
 							while( i < data.data[0].length){
 								won_series.data.push(data.data[0][i].wins);
-								total_series.data.push(data.data[0][i].total);
+								total_series.data.push(data.data[0][i].total-data.data[0][i].draws-data.data[0][i].wins);
 								draw_series.data.push(data.data[0][i].draws);
 								options.xAxis.categories.push(data.data[0][i].year);
 								i++;
