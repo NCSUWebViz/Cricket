@@ -3,7 +3,7 @@ function getPlayerList(){
 	include 'connect.php';
 	include 'send_json.php';
 	$team = $_GET['team'];
-	$sql = "select id, name from players where team_id like '%".$team."%'";
+	$sql = "select distinct p.id, p.name from players p, batting_stats b where p.team_id like '%".$team."%' and b.player_id = p.id";
 	//echo $sql;
 	$result = mysql_query($sql);
 	if($result){
