@@ -1,19 +1,47 @@
-var options;	
+var options;
+var CountryName;
+var CountryCode;
+	
 function getData(){
-			//alert("ikde!!!");
 		//alert('called');
 		/*
 		 * Get the Country Drop Down properties
 		 */
-		/*--remove comment later --var e = document.getElementById("countrySelect");
-		var countryCode = e.options[e.selectedIndex].value;
-		var countryName = e.options[e.selectedIndex].text;--remove comment later --*/
-		/*
+		var e = document.getElementById("countrySelect");
+		countryCode = e.options[e.selectedIndex].value;
+		countryName = e.options[e.selectedIndex].text;
+		e = document.getElementById("PlayerSelect");
+		e.options.length = 0;
+		//alert('php/getPlayerList.php?team='+countryName);
+		$.getJSON('php/getPlayerList.php?team='+countryName,function populateList(data){
+			var e = document.getElementById("PlayerSelect");
+			var o;
+			var i =0;
+			
+			
+			while( i < data.data.length){
+				o = document.createElement("option");
+				o.text = data.data[i].name;
+				o.value = data.data[i].id;
+				i++;
+				e.add(o, null);
+			}
+    		
+            
+    	});
+    	getPlayerData();
+}
+
+function getPlayerData()
+{
+			/*
 		 * Get the Match Type Drop Down properties
 		 */
-		/*--remove comment later --var e = document.getElementById("matchTypeSelect");
-		var matchType = e.options[e.selectedIndex].value;--remove comment later --*/
-
+		//alert('here');
+		var e = document.getElementById("PlayerSelect");
+		var playerName = e.options[e.selectedIndex].text;
+		var playerId = e.options[e.selectedIndex].value;
+		//alert('khali');
 		/*var args="";
 		if(countryCode){
 			args = "?id="+countryCode;
@@ -35,7 +63,7 @@ function getData(){
 		        type: 'column'
 		    },
 		    title: {
-		        text: 'Batting Stats of Sachin R Tendulkar'
+		        text: 'Batting Stats of ' + playerName 
 		    },
 		    xAxis: {
 		        categories: [],
@@ -70,14 +98,14 @@ function getData(){
 		//----------------------------------------------------
 		//alert("calling json function");
 		var args = '';
-		$.getJSON('php/getPlayerBattingStat.php?name=Sachin R Tendulkar&type=ODI&x=year&y=scored_runs'+args,function(data)
+		$.getJSON('php/getPlayerBattingStat.php?id='+playerId+'&type=ODI&x=year&y=scored_runs'+args,function(data)
 		{
 			//alert(data.data.length);
 			var total_runs = {data: []};
 			total_runs.name = "Runs scored"; 	
 			var i = 0;
 			//alert(data.data[0][0].__count__);
-			//alert(data.data[1].total);
+			//alert(data.data.length);
 			if(data.data.length == 0){
 				options.title.text = "No Data Found";
 				var chart = new Highcharts.Chart(options);
@@ -100,8 +128,5 @@ function getData(){
 	});
 }
 
-$(document).ready(function() {
-	getData();	
-});
 
 
