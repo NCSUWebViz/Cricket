@@ -20,12 +20,12 @@
 		
 		<!-- 2. Add the JavaScript to initialize the chart on document ready -->
 		<script type="text/javascript">
-   			var options;	
+   			var options;
+   			var teams = new Array();	
    			function loadTeams(){
-   				var e = document.getElementById('numOfTeams');
-   				var num = e.options[e.selectedIndex].value;
-   				//alert(num);
+   				var num = getNumberOfTeams();
    				var j = 0;
+   				teams = new Array();
 				e = document.getElementById("teams");
 				if ( e.hasChildNodes() )
 				{
@@ -40,7 +40,11 @@
 						var o;
 						var to_field=document.createElement('select');	
 					    to_field.setAttribute('id',id.toString());
-					    to_field.onchange = teamValidate;
+					    to_field.onchange = function(){teamValidate(this.id,this.value);};
+					    o = document.createElement("option");
+						o.text = "";
+						o.value = "";
+						to_field.add(o, null);
 					    var i = 0;
 					    while( i < data.data.length){
 							o = document.createElement("option");
@@ -66,55 +70,81 @@
    			
    			
 			function getData(){
-					if(document.getElementById('numOfTeams') != null){
-						var e = document.getElementById('numOfTeams');
-   						var num = e.options[e.selectedIndex].value;
-   						alert("Selected: "+num);
-   						var i = 0;
-   						if( document.getElementById(i.toString()) == null ){
-   							alert("null");
-   						}
-   						alert("Selected: "+num);
-   						while(i < num){
-   							var select = document.getElementById(i.toString());
-   							var teamName = select.options[select.selectedIndex].text;	
-   							alert("Team Name: "+teamName);
-   							i++;
-   						}
-   					}	
-						//----------------------------------------------------
-						//alert("calling json function");
-						$.getJSON('php/getCompareTeams.php'+'?teams=1,2',function(data){
-						var name = 'Australia';
-						//alert(data.data[0][1][name][0].total);
-						/*
-						if(data.data.length == 0){
-							options.title.text = "No Data Found for "+countryName + "-" + matchType;
-							var chart = new Highcharts.Chart(options);
-						}else{
-							while( i < data.data[0].length){
-								won_series.data.push(data.data[0][i].wins);
-								lost_series.data.push(data.data[0][i].total-data.data[0][i].draws-data.data[0][i].wins);
-								draw_series.data.push(data.data[0][i].draws);
-								options.xAxis.categories.push(data.data[0][i].year);
-								i++;
-							}
-							options.series.push(won_series);
-							options.series.push(lost_series);
-							options.series.push(draw_series);
-							var chart = new Highcharts.Chart(options);	
+				var teamId = new Array();
+				var args = "";
+				if(document.getElementById('numOfTeams') != null){
+					var num = getNumberOfTeams();
+					//alert("Selected: "+num);
+					var i = 0;
+					if( document.getElementById(i.toString()) == null ){
+						alert("null");
+					}
+					//alert("Selected: "+num);
+					while(i < num){
+						var select = document.getElementById(i.toString());
+						teamId[i] = select.options[select.selectedIndex].value;	
+						//alert("Team Name: "+teamName);
+						i++;
+					}
+				}	
+				
+				i=0;
+				while(i < num){
+					args += teamId[i];
+					if(i != (num-1)){
+						args += ',';
+					}
+					i++;
+				}
+				alert(args);
+					//----------------------------------------------------
+					//alert("calling json function");
+				$.getJSON('php/getCompareTeams.php'+'?teams=1,2',function(data){
+					var name = 'Australia';
+					//alert(data.data[0][1][name][0].total);
+					/*
+					if(data.data.length == 0){
+						options.title.text = "No Data Found for "+countryName + "-" + matchType;
+						var chart = new Highcharts.Chart(options);
+					}else{
+						while( i < data.data[0].length){
+							won_series.data.push(data.data[0][i].wins);
+							lost_series.data.push(data.data[0][i].total-data.data[0][i].draws-data.data[0][i].wins);
+							draw_series.data.push(data.data[0][i].draws);
+							options.xAxis.categories.push(data.data[0][i].year);
+							i++;
 						}
-						*/
+						options.series.push(won_series);
+						options.series.push(lost_series);
+						options.series.push(draw_series);
+						var chart = new Highcharts.Chart(options);	
+					}
+					*/
 				});
 			}
 			
-			function teamValidate(){
-				
+			function teamValidate(id,value){
+				var num = teams.length;
+				if(num != 0){
+					if(teams[value] == 1){
+						alert('This Country is already selected!');	
+						var e = document.getElementById(id);
+						e.selectedIndex = 0;
+					}else{
+						teams[value] = 1;
+					}
+				}else{
+					teams[value] = 1;
+				}
 			}
-			//$(document).ready(function() {
-				//getData();	
-			//});
-				
+	
+			function getNumberOfTeams(){
+				if(document.getElementById('numOfTeams') != null){
+						var e = document.getElementById('numOfTeams');
+   						var num = e.options[e.selectedIndex].value;
+   						return num;
+   				}		
+			}
 		</script>
 		
 	</head>
