@@ -32,7 +32,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     c.setHSV( ( 0.6 - ( x * 0.5 ) ), 1.0, 1.0 );
     return c;
   };
-  
+
   var swapUpDown = swapUpDown || false;
 
   var Shaders = {
@@ -113,8 +113,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     w = container.offsetWidth || window.innerWidth;
     h = container.offsetHeight || window.innerHeight;
 
-    //camera = new THREE.Camera(
-	camera = new THREE.PerspectiveCamera(
+    camera = new THREE.PerspectiveCamera(
         30, w / h, 1, 10000);
     camera.position.z = distance;
 
@@ -123,8 +122,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     scene = new THREE.Scene();
     sceneAtmosphere = new THREE.Scene();
 
-    //var geometry = new THREE.Sphere(200, 40, 30);
-	var geometry = new THREE.SphereGeometry(200, 40, 30);
+    var geometry = new THREE.SphereGeometry(200, 40, 30);
 
     shader = Shaders['earth'];
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
@@ -133,8 +131,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
         THREE.ImageUtils.loadTexture(imgDir+'world'+'.jpg');
     //uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+'world_upsidedown'+'.jpg');
 
-    //material = new THREE.MeshShaderMaterial({
-	material = new THREE.ShaderMaterial({
+    material = new THREE.ShaderMaterial({
 
           uniforms: uniforms,
           vertexShader: shader.vertexShader,
@@ -144,14 +141,12 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
     mesh = new THREE.Mesh(geometry, material);
     mesh.matrixAutoUpdate = false;
-    //scene.addObject(mesh);
-	scene.add(mesh);
+    scene.add(mesh);
 
     shader = Shaders['atmosphere'];
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-    //material = new THREE.MeshShaderMaterial({
-	material = new THREE.ShaderMaterial({
+    material = new THREE.ShaderMaterial({
           uniforms: uniforms,
           vertexShader: shader.vertexShader,
           fragmentShader: shader.fragmentShader
@@ -163,11 +158,9 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     mesh.flipSided = true;
     mesh.matrixAutoUpdate = false;
     mesh.updateMatrix();
-    //sceneAtmosphere.addObject(mesh);
-	sceneAtmosphere.add(mesh);
+    sceneAtmosphere.add(mesh);
 
-    //geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, { px: true,
-	geometry = new THREE.CubeGeometry(0.75, 0.75, 1, 1, 1, 1, null, false, { px: true,
+    geometry = new THREE.CubeGeometry(0.75, 0.75, 1, 1, 1, 1, null, false, { px: true,
           nx: true, py: true, ny: true, pz: false, nz: true});
 
     for (var i = 0; i < geometry.vertices.length; i++) {
@@ -222,28 +215,20 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     }
 
     if (opts.models) {
-        //models = Array(opts.models);
-        //console.log("Models:", models, typeof models);
-        //for (var item in opts.models) {
-            //console.log("Model:", opts.models[item]);
-        //}
         for (i = 0; i < opts.models.length; i++) {
             var _model = opts.models[i];
             var loader = new THREE.JSONLoader();
-            loader.load( { model: _model,
-                callback: addModelFromLoader(lat, lng, size, color) } );
+            loader.load(_model,
+                addModelFromLoader(lat, lng, size, color));
         }
         for (i = 0; i  < data.length; i += step) {
             var loader = new THREE.JSONLoader();
-            //loader.load( { model: "models/captain_blender.js",
-                //callback: createScene1 } );
             lat = data[i];
             lng = data[i + 1];
             color = colorFnWrapper(data,i);
             size = data[i + 2];
-            loader.load( { model: "models/first_try_smaller.js",
-            //loader.load( { model: "models/captain_blender.js",
-                callback: addModelFromLoader(lat, lng, size, color) } );
+            loader.load("models/first_try_smaller.js",
+               addModelFromLoader(lat, lng, size, color));
         }
     } else {
         if (opts.animated) {
@@ -502,9 +487,9 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     renderer.clear();
     //renderer.render(scene, camera);
     renderer.render(sceneAtmosphere, camera);
-	//renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
+    //renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
     renderer.render(scene, camera, renderTargetTexture, true);
-	//renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
+    //renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
   }
 
   init();
