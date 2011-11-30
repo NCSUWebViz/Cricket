@@ -15,6 +15,71 @@ body {
 	list-style:none;
 }
 
+/*#vizNav {
+	position: absolute;
+    //left: 50%;
+    bottom: 6px;
+	width:50%;
+	//margin:auto;
+	margin: 0 auto;
+	z-index: 1000;
+}*/
+
+nav {
+	z-index:1000;
+	position:absolute;
+	bottom:6px;
+    height: 44px;
+    width: 100%;
+    /*background-image: -webkit-gradient(
+            linear, 
+            0% 0%, 
+            0% 100%, 
+            from(#54b850),
+            to(#54b850),
+            color-stop(0.5,#6fce93)
+        );
+    background-image:-moz-linear-gradient(
+            top, 
+            #54b850, 
+            #6fce93,
+            #54b850);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#54b850', endColorstr='#6fce93');*/
+}
+
+nav ul {
+    height: 100%;
+    width: 960px;
+	margin-left: 0;
+	padding-left: 0;
+	//width:100%;
+	//margin: auto auto;
+    //margin-left: auto;
+    //margin-right: auto;
+}
+
+nav ul li {
+	padding: 3px 15px;
+    display: inline;
+    position: relative;
+    float: left;
+	text-align:center;
+    //width: 106px;
+    height: 100%;
+    border-left: 1px solid #999999;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+	cursor:pointer;
+    background-repeat: no-repeat;
+    background-position: center center;
+    
+}
+
+nav ul li.first {
+    border-left:none;    
+}
+
 .team {
     font: 16px;
 	cursor:pointer;
@@ -41,5 +106,5 @@ circle {
 }
 
 #canvasSvg {
-	//visibility:hidden;
+	visibility:hidden;
 }
