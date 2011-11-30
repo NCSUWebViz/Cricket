@@ -1,6 +1,7 @@
 var options;
 var CountryName;
 var CountryCode;
+var xval;
 	
 function getData(){
 		//alert('called');
@@ -29,7 +30,14 @@ function getData(){
     		
             
     	});
+		xval = 'year';
+		//alert(xval);
     	getPlayerData();
+}
+function getPlayerDatabyYear()
+{
+	xval = 'year';
+	getPlayerData();
 }
 
 function getPlayerData()
@@ -81,6 +89,9 @@ function getPlayerData()
 		            text: 'Number of Runs'
 		        }
 		    },
+		    point: {
+		    	
+		    },
 		    tooltip: {
 				formatter: function() {
 					/*var tooltip = '<b>Year:</b>'+ this.x + '<br /><b>' + 
@@ -91,6 +102,18 @@ function getPlayerData()
 		    plotOptions: {
 				column: {
 					stacking: 'normal'
+				},
+				series: {
+					cursor: 'pointer',
+					point: {
+						events: {
+							click: function() {
+					//			alert("value is " + this.y);
+								xval = 'vsTeam_id';
+								getPlayerData();
+							}
+						}	
+					}
 				}
 			},	
 		    series: []
@@ -98,7 +121,7 @@ function getPlayerData()
 		//----------------------------------------------------
 		//alert("calling json function");
 		var args = '';
-		$.getJSON('php/getPlayerBattingStat.php?id='+playerId+'&type=ODI&x=year&y=scored_runs'+args,function(data)
+		$.getJSON('php/getPlayerBattingStat.php?id='+playerId+'&type=ODI&x='+xval+'&y=scored_runs'+args,function(data)
 		{
 			//alert(data.data.length);
 			var total_runs = {data: []};
@@ -116,7 +139,7 @@ function getPlayerData()
 					//total_runs.data.push(0);
 					//alert(total_runs.data[i]);
 					//alert(data.data[i].year);
-					options.xAxis.categories.push(data.data[i].year);
+					options.xAxis.categories.push(data.data[i].x);
 					i++;
 				}
 				//alert(total_runs.data[4]);

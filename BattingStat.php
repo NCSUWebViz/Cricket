@@ -30,7 +30,7 @@
 		?>
 		<div>
 				Select Player : 
-				<select id='PlayerSelect' onchange='getPlayerData()'>
+				<select id='PlayerSelect' onchange='getPlayerDatabyYear()'>
 				<option value='' selected='true'></option>;
 		</div>
 		

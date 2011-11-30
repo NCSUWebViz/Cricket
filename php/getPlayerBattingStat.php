@@ -20,7 +20,7 @@ function getPlayerBattingStat(){
 		$i = 0;
 		while($row = mysql_fetch_assoc($result)){
 			//echo intval($row[$x])." , ".intval($row['total']).'<BR>';
-			$json[] = array($x => $row[$x], 'total' => intval($row['total']));
+			$json[] = array('x' => $row[$x], 'total' => intval($row['total']));
 			$i++;			
 		}
 
