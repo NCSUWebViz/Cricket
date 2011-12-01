@@ -8,6 +8,7 @@
 		<!-- 1. Add these JavaScript inclusions in the head of your page -->
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 		<script type="text/javascript" src="scripts/js/highcharts.js"></script>
+		<script type="text/javascript" src="scripts/js/themes/gray.js"></script>
 		<script type="text/javascript" src="scripts/jquery.js"></script>
 		<!-- 1a) Optional: add a theme file -->
 		<!--
@@ -144,10 +145,15 @@
 					    },
 					    tooltip: {
      						formatter: function() {
-        						var tooltip = '<b>Year:</b>'+ this.x + '<br /><b>' + 
-        						this.series.name +':</b> '+ this.y +'<br/>';
+        						var tooltip = "<b>Matches won by "+this.series.name +':</b> '+ this.y +'<br/>'+
+        						'<b>Playing Year:</b>'+ this.x + '<br /><b>' ;
         						return tooltip;
-     						}
+     						},
+     						style: {
+								color: 'white',
+								fontSize: '11pt',
+								padding: '5px'
+							}
   						},
 					    plotOptions: {
      						column: {
@@ -178,12 +184,14 @@
 							if(j == (num-1)){
 								options.title.text += ".";
 							}else{
-								options.title.text += ", ";
+								options.title.text += " vs ";
 							}
 							options.series.push(series[j]);
 						}
 						j++;
 					}	
+					
+					options.title.text = options.title.text + " - " + typeText;
 					var chart = new Highcharts.Chart(options);
 				});
 			}
