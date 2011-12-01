@@ -21,11 +21,19 @@
 		<!-- 2. Add the JavaScript to initialize the chart on document ready -->
 		<script type="text/javascript">
    			var options;
-   			var teams = new Array();	
+   			var teamsSelectSlots = new Array();
+
+			
    			function loadTeams(){
    				var num = getNumberOfTeams();
    				var j = 0;
-   				teams = new Array();
+   				teamsSelectSlots = new Array();
+				//-------------------------
+				var l = 0;
+				for(l=0; l<num; l++){
+   					teamsSelectSlots[l] = 0;
+				}
+				//-------------------------
 				e = document.getElementById("teams");
 				if ( e.hasChildNodes() )
 				{
@@ -43,7 +51,7 @@
 					    to_field.onchange = function(){teamValidate(this.id,this.value);};
 					    o = document.createElement("option");
 						o.text = "";
-						o.value = "";
+						o.value = 0;
 						to_field.add(o, null);
 					    var i = 0;
 					    while( i < data.data.length){
@@ -60,6 +68,7 @@
 			    	});
 			    	j++;
    				}
+   				e = document.getElementById("teams");
    				var submitButton = document.createElement('input');
    				submitButton.setAttribute('value','Compare!');
    				submitButton.setAttribute('type','button');
@@ -71,6 +80,7 @@
    			
 			function getData(){
 				var teamId = new Array();
+				var teamNames = new Array();
 				var args = "";
 				if(document.getElementById('numOfTeams') != null){
 					var num = getNumberOfTeams();
@@ -83,12 +93,14 @@
 					while(i < num){
 						var select = document.getElementById(i.toString());
 						teamId[i] = select.options[select.selectedIndex].value;	
+						teamNames[i] = select.options[select.selectedIndex].text;
 						//alert("Team Name: "+teamName);
 						i++;
 					}
 				}	
 				
 				i=0;
+				args += '?teams=';
 				while(i < num){
 					args += teamId[i];
 					if(i != (num-1)){
@@ -96,45 +108,106 @@
 					}
 					i++;
 				}
-				alert(args);
-					//----------------------------------------------------
+				
+				var type = document.getElementById('matchTypeSelect');
+				var typeText = type.options[type.selectedIndex].value;
+				if(typeText != 'All Match Types' ){
+					args += '&type=';
+					args += typeText;
+				}
+				//alert(args);
+				//--------------------Declare options-----------------
+					options =  {
+					    chart: {
+					        renderTo: 'container',
+					        defaultSeriesType: 'spline',
+					        zoomType: 'x'
+					    },
+					    title: {
+					        text: 'Performance Comparison of '
+					    },
+					    xAxis: {
+					        categories: [],
+					         labels: {
+						            rotation: -45,
+						            align: 'right',
+						            step: 2,
+						            style: {
+						                font: 'normal 12px Verdana, sans-serif'
+						            }
+						         }
+					    },
+					    yAxis: {
+					        title: {
+					            text: 'Number of Matches'
+					        }
+					    },
+					    tooltip: {
+     						formatter: function() {
+        						var tooltip = '<b>Year:</b>'+ this.x + '<br /><b>' + 
+        						this.series.name +':</b> '+ this.y +'<br/>';
+        						return tooltip;
+     						}
+  						},
+					    plotOptions: {
+     						column: {
+        						stacking: 'normal'
+        					}
+        				},	
+					    series: []
+					};	
+				//----------------------------------------------------
 					//alert("calling json function");
-				$.getJSON('php/getCompareTeams.php'+'?teams=1,2',function(data){
-					var name = 'Australia';
-					//alert(data.data[0][1][name][0].total);
-					/*
-					if(data.data.length == 0){
-						options.title.text = "No Data Found for "+countryName + "-" + matchType;
-						var chart = new Highcharts.Chart(options);
-					}else{
-						while( i < data.data[0].length){
-							won_series.data.push(data.data[0][i].wins);
-							lost_series.data.push(data.data[0][i].total-data.data[0][i].draws-data.data[0][i].wins);
-							draw_series.data.push(data.data[0][i].draws);
-							options.xAxis.categories.push(data.data[0][i].year);
-							i++;
+				$.getJSON('php/getCompareTeams.php'+args,function(data){
+					var series = new Array();
+					var num = getNumberOfTeams();
+					var j = 0;
+					while(j < num){
+						series[j] = {data: []}; 
+						series[j].name = teamNames[j];
+						if(data.data.length == 0){
+							alert('No Data found for '+teamNames[j]);
+						}else{
+							i = 0;
+							while( i < data.data[0][j][teamNames[j]].length){
+								series[j].data.push(data.data[0][j][teamNames[j]][i].wins);
+								options.xAxis.categories.push(data.data[0][j][teamNames[j]][i].year);
+								i++;
+							}
+							options.title.text += teamNames[j];
+							if(j == (num-1)){
+								options.title.text += ".";
+							}else{
+								options.title.text += ", ";
+							}
+							options.series.push(series[j]);
 						}
-						options.series.push(won_series);
-						options.series.push(lost_series);
-						options.series.push(draw_series);
-						var chart = new Highcharts.Chart(options);	
-					}
-					*/
+						j++;
+					}	
+					var chart = new Highcharts.Chart(options);
 				});
 			}
 			
 			function teamValidate(id,value){
-				var num = teams.length;
-				if(num != 0){
-					if(teams[value] == 1){
-						alert('This Country is already selected!');	
-						var e = document.getElementById(id);
-						e.selectedIndex = 0;
-					}else{
-						teams[value] = 1;
+				var num = teamsSelectSlots.length;
+				//alert(num+" "+id+" "+value);
+				var i = 0;
+				var duplicate = 0;
+				for(i = 0; i < num; i++){
+					//alert("Teamslot:"+i+" = "+teamsSelectSlots[i]);
+					if(teamsSelectSlots[i] == value){
+						if(value != 0){
+							alert('Country already selected!');
+						}
+						var e = document.getElementById(id.toString());
+						e.selectedIndex = 0;	
+						teamsSelectSlots[id] = 0;
+						duplicate = 1;			
 					}
-				}else{
-					teams[value] = 1;
+				}
+				if(duplicate != 1){
+					//alert('Set!');
+					teamsSelectSlots[id] = value;
 				}
 			}
 	
@@ -145,6 +218,8 @@
    						return num;
    				}		
 			}
+			
+
 		</script>
 		
 	</head>
@@ -157,7 +232,19 @@
 			<option value=1>1</option>
 			<option value=2>2</option>
 			<option value=3>3</option>
+			<option value=4>4</option>
+			<option value=5>5</option>
 		</select></div>		
 		<div id='teams'></div>
+		<div>Select Match Type: <select id='matchTypeSelect'><option value='All Match Types' selected='true'>All Types</option>
+
+			<option value='Test'>Test</option>
+
+			<option value='ODI'>ODI</option>
+
+			<option value='T20'>T20</option></select>
+
+		</div>
+		<div id='submit'></div>
 	</body>
 </html>
