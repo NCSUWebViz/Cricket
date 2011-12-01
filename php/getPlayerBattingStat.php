@@ -9,7 +9,17 @@ function getPlayerBattingStat(){
 	$type = $_GET['type'];
 	$x = $_GET['x'];
 	$y = $_GET['y'];
-	$sql = "select ".$x.", sum(".$y.") as total from batting_stats where type like '%".$type."%' and player_id =".$id." group by ".$x;
+	$sql = "select ".$x.", sum(".$y.") as total from batting_stats where type like '%".$type."%' and player_id =".$id;
+	if (isset($_GET['filtertype'])) {
+		$filtertype = $_GET['filtertype'];
+		$filterval =  $_GET['filterval'];
+		if($filtertype == 'year')
+			$sql = $sql." and ".$filtertype."=".$filterval;
+		else
+			$sql = $sql." and ".$filtertype." LIKE '%".$filterval."%'";
+	}
+	$sql = $sql." group by ".$x;
+	
 	//echo $sql;
 	//$super_set = mysql_query("select year, count(*) as total from matches where team1 LIKE 'IND' or team2 LIKE 'IND' group by year") ;
 	//$super_set = mysql_query("select year, count(*) as total from matches where team1 LIKE '".$country."' or team2 LIKE '".$country."' group by year") ;

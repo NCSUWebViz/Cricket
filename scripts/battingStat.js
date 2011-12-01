@@ -2,6 +2,9 @@ var options;
 var CountryName;
 var CountryCode;
 var xval;
+var filterflag;
+var filterval;
+var filtertype;
 	
 function getData(){
 		//alert('called');
@@ -30,10 +33,17 @@ function getData(){
     		
             
     	});
-		xval = 'year';
+		filterflag = 0;
 		//alert(xval);
     	getPlayerData();
 }
+
+function resetfilter()
+{
+	filterflag = 0;
+	getPlayerData();
+}
+
 function getPlayerDatabyYear()
 {
 	xval = 'year';
@@ -46,10 +56,13 @@ function getPlayerData()
 		 * Get the Match Type Drop Down properties
 		 */
 		//alert('here');
+		var args = '';
 		var e = document.getElementById("PlayerSelect");
 		var playerName = e.options[e.selectedIndex].text;
 		var playerId = e.options[e.selectedIndex].value;
-		//alert('khali');
+		e = document.getElementById("SelectX");
+		xval = e.options[e.selectedIndex].value;
+		//alert('ikde');
 		/*var args="";
 		if(countryCode){
 			args = "?id="+countryCode;
@@ -94,9 +107,9 @@ function getPlayerData()
 		    },
 		    tooltip: {
 				formatter: function() {
-					/*var tooltip = '<b>Year:</b>'+ this.x + '<br /><b>' + 
+					var tooltip = '<b>Year:</b>'+ this.x + '<br /><b>'; /*+ 
 					this.series.name +':</b> '+ this.y +'<br/>';*/
-					return 'tooltip';
+					return tooltip;
 				}
 			},
 		    plotOptions: {
@@ -108,8 +121,10 @@ function getPlayerData()
 					point: {
 						events: {
 							click: function() {
-					//			alert("value is " + this.y);
-								xval = 'vsTeam_id';
+								filterflag = 1;
+								filtertype = xval;
+								filterval = this.category;
+								//document.write("<BR>Filtered by " + filtertype + " and value " + filterval + "<BR>");
 								getPlayerData();
 							}
 						}	
@@ -120,8 +135,13 @@ function getPlayerData()
 		};	
 		//----------------------------------------------------
 		//alert("calling json function");
-		var args = '';
-		$.getJSON('php/getPlayerBattingStat.php?id='+playerId+'&type=ODI&x='+xval+'&y=scored_runs'+args,function(data)
+		var args = 'id='+playerId+'&type=ODI&x='+xval+'&y=scored_runs';
+		if(filterflag == 1) {
+			args = args + '&filtertype=' + filtertype + '&filterval=' + filterval;
+		}
+		
+		//alert(args);
+		$.getJSON('php/getPlayerBattingStat.php?'+args,function(data)
 		{
 			//alert(data.data.length);
 			var total_runs = {data: []};
@@ -134,18 +154,12 @@ function getPlayerData()
 				var chart = new Highcharts.Chart(options);
 			}else{
 				while( i < data.data.length){
-					//alert(data.data[i].total);
+				
 					total_runs.data.push(data.data[i].total);
-					//total_runs.data.push(0);
-					//alert(total_runs.data[i]);
-					//alert(data.data[i].year);
 					options.xAxis.categories.push(data.data[i].x);
 					i++;
 				}
-				//alert(total_runs.data[4]);
 				options.series.push(total_runs);
-				//alert(options.series[0].data[4]);
-				//options.chart.type = 'column'
 				var chart = new Highcharts.Chart(options);	
 			}
 	});

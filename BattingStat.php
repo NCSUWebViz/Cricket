@@ -30,8 +30,28 @@
 		?>
 		<div>
 				Select Player : 
-				<select id='PlayerSelect' onchange='getPlayerDatabyYear()'>
+				<select id='PlayerSelect' onchange='getPlayerData()'>
 				<option value='' selected='true'></option>;
+				</select>
+		</div>
+		<div>
+			X Axis : 
+			<select id='SelectX' onchange='getPlayerData()'>
+				<option value='year' selected='true'>Year</option>;
+				<option value='vsTeam_id'>Opponents</option>;
+				<option value='venue_id'>Venue</option>;
+			</select>
+		</div>
+		<!-- <div>
+			Y Axis : 
+				<select id='SelectY'>
+				<option value='scored_runs' selected='true'>Total Runs</option>;
+				<option value='scored_runs'>Strike Rate</option>;
+				<option value='scored_runs'>Venue</option>;
+				</select>
+		</div> -->
+ 		<div>
+ 			<p id="resetFilter" onclick='resetfilter()'>Reset Filter</p>
 		</div>
 		
 	</body>
