@@ -16,7 +16,7 @@ function getTeamPerformance(){
 	}
 	if($type != ""){
 		$super_query = "select year, count(*) as total from matches where (team1 = '".$team_id."' or team2 = '".$team_id."') and type LIKE '".$type."' group by year";
-		$sub_query = "select year, count(*) as wins from matches where winner_id LIKE '".$team_id."' and type LIKE '".$type."' group by year";
+		$sub_query = "select year, count(*) as wins from matches where winner_id = '".$team_id."' and type LIKE '".$type."' group by year";
 		$draw_query = "select year, count(*) as drawn from matches where (team1 = '".$team_id."' or team2 = '".$team_id."') and winner_id LIKE '".$draw_id."' and type LIKE '".$type."' group by year";
 		/*
 		$sub_query = "select year, count(*) as wins from matches where (team1 = '".$team_id."' or team2 = '".$team_id."') and type LIKE '".$type."' ";
@@ -28,7 +28,7 @@ function getTeamPerformance(){
 		*/
 	}else{
 		$super_query = "select year, count(*) as total from matches where team1 = '".$team_id."' or team2 = '".$team_id."' group by year";
-		$sub_query = "select year, count(*) as wins from matches where winner_id LIKE '".$team_id."' group by year";
+		$sub_query = "select year, count(*) as wins from matches where winner_id = '".$team_id."' group by year";
 		$draw_query = "select year, count(*) as drawn from matches where (team1 = '".$team_id."' or team2 = '".$team_id."') and winner_id = '".$draw_id."' group by year";	
 	}
 	

@@ -8,7 +8,7 @@
 		<!-- 1. Add these JavaScript inclusions in the head of your page -->
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
 		<script type="text/javascript" src="scripts/js/highcharts.js"></script>
-		<script type="text/javascript" src="scripts/js/themes/gray.js"></script>
+		<!-- <script type="text/javascript" src="scripts/js/themes/gray.js"></script> -->
 		<script type="text/javascript" src="scripts/jquery.js"></script>
 		<!-- 1a) Optional: add a theme file -->
 		<!--
@@ -121,11 +121,11 @@
 					options =  {
 					    chart: {
 					        renderTo: 'container',
-					        defaultSeriesType: 'spline',
+					        defaultSeriesType: 'line',
 					        zoomType: 'x'
 					    },
 					    title: {
-					        text: 'Performance Comparison of '
+					        text: 'Head to Head Performance Comparison of '
 					    },
 					    xAxis: {
 					        categories: [],
@@ -145,12 +145,17 @@
 					    },
 					    tooltip: {
      						formatter: function() {
-        						var tooltip = "<b>Matches won by "+this.series.name +':</b> '+ this.y +'<br/>'+
-        						'<b>Playing Year:</b>'+ this.x + '<br /><b>' ;
+     							var tooltip = "";
+     							if(this.point.name){
+     								tooltip = "<b>Win rate for "+this.point.name+":</b> "+Math.round(this.percentage)+"%";
+     							}else{
+        							tooltip = "<b>Matches won by "+this.series.name +':</b> '+ this.y +'<br/>'+
+        							'<b>Playing Year:</b>'+ this.x + '<br /><b>' ;
+        						}
         						return tooltip;
      						},
      						style: {
-								color: 'white',
+								color: 'black',
 								fontSize: '11pt',
 								padding: '5px'
 							}
@@ -164,39 +169,61 @@
 					};	
 				//----------------------------------------------------
 					//alert("calling json function");
-				$.getJSON('php/getCompareTeams.php'+args,function(data){
+				$.getJSON('php/getCompareTwoTeams.php'+args,function(data){
 					var series = new Array();
 					var num = getNumberOfTeams();
-					var j = 0;
-					while(j < num){
-						series[j] = {data: []}; 
-						series[j].name = teamNames[j];
-						if(data.data[0][j][teamNames[j]].length > 40){
+					var countryData = new Array();
+					var i = 0;
+					while(i < num){
+						series[i] = {data: []}; 
+						series[i].name = teamNames[i];
+						countryData[i] = {};
+						countryData[i].name = teamNames[i];
+						countryData[i].y = 0;
+						i++;
+					}
+					series[num] = { center: [100, 80],
+									size: 150,
+									showInLegend: false,
+									dataLabels: {
+											enabled: true
+									},
+									data:[]
+							}		
+					series[num].type = 'pie';
+					
+					if(data.data[0].length == 0){
+						options.title.text = "Oops! It seems that "+teamNames[0]+ " and "+teamNames[1]+" haven't played each other!";
+						var chart = new Highcharts.Chart(options);
+					}else{
+						if(data.data[0].length > 50){
 							options.xAxis.labels.step = 2;
 						}else{
 							options.xAxis.labels.step = 1;
 						}
-						if(data.data.length == 0){
-							alert('No Data found for '+teamNames[j]);
-						}else{
-							i = 0;
-							while( i < data.data[0][j][teamNames[j]].length){
-								series[j].data.push(data.data[0][j][teamNames[j]][i].wins);
-								options.xAxis.categories.push(data.data[0][j][teamNames[j]][i].year);
-								i++;
-							}
-							options.title.text += teamNames[j];
-							if(j == (num-1)){
-								options.title.text += ".";
-							}else{
-								options.title.text += " vs ";
-							}
-							options.series.push(series[j]);
+						i = 0;
+						while( i < data.data[0].length){
+							series[0].data.push(data.data[0][i].country1);
+							countryData[0].y += data.data[0][i].country1;
+							series[1].data.push(data.data[0][i].country2);
+							countryData[1].y += data.data[0][i].country2;
+							options.xAxis.categories.push(data.data[0][i].year);
+							i++;
 						}
-						j++;
-					}	
+						
+						i=0;
+						while(i<num){
+							series[num].data.push(countryData[i]);
+							//series[2].data.push(countryData[1]);
+							i++;
+						}
+						options.title.text = options.title.text + teamNames[0] + " and " + teamNames[1] + " in " + typeText;
+						options.series.push(series[0]);
+						options.series.push(series[1]);
+						options.series.push(series[2]);
+					}
 					
-					options.title.text = options.title.text + " - " + typeText;
+					
 					var chart = new Highcharts.Chart(options);
 				});
 			}
@@ -226,13 +253,14 @@
 	
 			function getNumberOfTeams(){
 				if(document.getElementById('numOfTeams') != null){
-						var e = document.getElementById('numOfTeams');
-   						var num = e.options[e.selectedIndex].value;
+   						var num = document.getElementById('numOfTeams').value;
    						return num;
    				}		
 			}
 			
-
+			 $(document).ready(function() {
+   				loadTeams();
+ 			});
 		</script>
 		
 	</head>
@@ -240,14 +268,7 @@
 		
 		<!-- 3. Add the container -->
 		<div id="container" style="width: 1600px; height: 600px; margin: 0 auto"></div>
-		<div>Select Number of Teams: <select id='numOfTeams' onchange='loadTeams()'>
-			<option></option>
-			<option value=1>1</option>
-			<option value=2>2</option>
-			<option value=3>3</option>
-			<option value=4>4</option>
-			<option value=5>5</option>
-		</select></div>		
+		<div><input type='hidden' id='numOfTeams' value=2></div>		
 		<div id='teams'></div>
 		<div>Select Match Type: <select id='matchTypeSelect'><option value='All Match Types' selected='true'>All Types</option>
 
