@@ -35,18 +35,18 @@
    					teamsSelectSlots[l] = 0;
 				}
 				//-------------------------
+				e = document.getElementById("submit");
+				deleteElements(e);
 				e = document.getElementById("teams");
-				if ( e.hasChildNodes() )
-				{
-				    while ( e.childNodes.length >= 1 )
-				    {
-				        e.removeChild( e.firstChild );       
-				    } 
-				}
+				deleteElements(e);
+				
 				id=0;
    				while(j < num){
 					$.getJSON('php/getTeamList2.php',function populateList(data){
 						var o;
+						var label = document.createElement('h7');
+						label.innerHTML = "Team "+(id+1)+": ";
+						e.appendChild(label);
 						var to_field=document.createElement('select');	
 					    to_field.setAttribute('id',id.toString());
 					    to_field.onchange = function(){teamValidate(this.id,this.value);};
@@ -69,12 +69,7 @@
 			    	});
 			    	j++;
    				}
-   				e = document.getElementById("teams");
-   				var submitButton = document.createElement('input');
-   				submitButton.setAttribute('value','Compare!');
-   				submitButton.setAttribute('type','button');
-   				submitButton.onclick = getData;
-   				e.appendChild(submitButton);
+   				addSubmitButton();
    			}
    			
    			
@@ -121,7 +116,7 @@
 					options =  {
 					    chart: {
 					        renderTo: 'container',
-					        defaultSeriesType: 'line',
+					        defaultSeriesType: 'column',
 					        zoomType: 'x'
 					    },
 					    title: {
@@ -258,7 +253,26 @@
    				}		
 			}
 			
-			 $(document).ready(function() {
+			function addSubmitButton(){
+				var e = document.getElementById("submit");
+   				var submitButton = document.createElement('input');
+   				submitButton.setAttribute('value','Compare!');
+   				submitButton.setAttribute('type','button');
+   				submitButton.onclick = getData;
+   				e.appendChild(submitButton);
+			}
+
+			function deleteElements(e){
+				if ( e.hasChildNodes() )
+				{
+				    while ( e.childNodes.length >= 1 )
+				    {
+				        e.removeChild( e.firstChild );       
+				    } 
+				}
+			}
+			
+			$(document).ready(function() {
    				loadTeams();
  			});
 		</script>
@@ -271,13 +285,9 @@
 		<div><input type='hidden' id='numOfTeams' value=2></div>		
 		<div id='teams'></div>
 		<div>Select Match Type: <select id='matchTypeSelect'><option value='All Match Types' selected='true'>All Types</option>
-
 			<option value='Test'>Test</option>
-
 			<option value='ODI'>ODI</option>
-
 			<option value='T20'>T20</option></select>
-
 		</div>
 		<div id='submit'></div>
 	</body>

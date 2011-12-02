@@ -35,19 +35,19 @@
    					teamsSelectSlots[l] = 0;
 				}
 				//-------------------------
+				e = document.getElementById("submit");
+				deleteElements(e);
 				e = document.getElementById("teams");
-				if ( e.hasChildNodes() )
-				{
-				    while ( e.childNodes.length >= 1 )
-				    {
-				        e.removeChild( e.firstChild );       
-				    } 
-				}
+				deleteElements(e);
+				
 				id=0;
    				while(j < num){
 					$.getJSON('php/getTeamList2.php',function populateList(data){
 						var o;
 						var to_field=document.createElement('select');	
+						var label = document.createElement('h7');
+						label.innerHTML = "Team "+(id+1)+": ";
+						e.appendChild(label);
 					    to_field.setAttribute('id',id.toString());
 					    to_field.onchange = function(){teamValidate(this.id,this.value);};
 					    o = document.createElement("option");
@@ -69,12 +69,7 @@
 			    	});
 			    	j++;
    				}
-   				e = document.getElementById("teams");
-   				var submitButton = document.createElement('input');
-   				submitButton.setAttribute('value','Compare!');
-   				submitButton.setAttribute('type','button');
-   				submitButton.onclick = getData;
-   				e.appendChild(submitButton);
+   				addSubmitButton();
    			}
    			
    			
@@ -171,6 +166,7 @@
 					while(j < num){
 						series[j] = {data: []}; 
 						series[j].name = teamNames[j];
+
 						if(data.data[0][j][teamNames[j]].length > 40){
 							options.xAxis.labels.step = 2;
 						}else{
@@ -232,7 +228,24 @@
    				}		
 			}
 			
-
+			function addSubmitButton(){
+				var e = document.getElementById("submit");
+   				var submitButton = document.createElement('input');
+   				submitButton.setAttribute('value','Compare!');
+   				submitButton.setAttribute('type','button');
+   				submitButton.onclick = getData;
+   				e.appendChild(submitButton);
+			}
+			
+			function deleteElements(e){
+				if ( e.hasChildNodes() )
+				{
+				    while ( e.childNodes.length >= 1 )
+				    {
+				        e.removeChild( e.firstChild );       
+				    } 
+				}
+			}
 		</script>
 		
 	</head>
@@ -250,13 +263,9 @@
 		</select></div>		
 		<div id='teams'></div>
 		<div>Select Match Type: <select id='matchTypeSelect'><option value='All Match Types' selected='true'>All Types</option>
-
 			<option value='Test'>Test</option>
-
 			<option value='ODI'>ODI</option>
-
 			<option value='T20'>T20</option></select>
-
 		</div>
 		<div id='submit'></div>
 	</body>
