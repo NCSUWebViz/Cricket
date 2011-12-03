@@ -141,8 +141,13 @@
 					    tooltip: {
      						formatter: function() {
      							var tooltip = "";
-     							if(this.point.name){
+     							if(this.point.name != 'Drawn' && this.point.name){
      								tooltip = "<b>Win rate for "+this.point.name+":</b> "+Math.round(this.percentage)+"%";
+     							}else if(this.point.name == 'Drawn'){
+     								tooltip = "<b>Matches with No Result or "+this.point.name+":</b> "+Math.round(this.percentage)+"%";
+     							}else if(this.series.name == 'Drawn'){
+     								tooltip = "<b>Matches with No Result or "+this.series.name +':</b> '+ this.y +'<br/>'+
+        							'<b>Playing Year:</b>'+ this.x + '<br /><b>' ;
      							}else{
         							tooltip = "<b>Matches won by "+this.series.name +':</b> '+ this.y +'<br/>'+
         							'<b>Playing Year:</b>'+ this.x + '<br /><b>' ;
@@ -169,15 +174,20 @@
 					var num = getNumberOfTeams();
 					var countryData = new Array();
 					var i = 0;
-					while(i < num){
+					while(i < (num+1)){
 						series[i] = {data: []}; 
 						series[i].name = teamNames[i];
 						countryData[i] = {};
-						countryData[i].name = teamNames[i];
+						if(i == num){
+							series[i].name = countryData[i].name = "Drawn";
+							//series[i].name = "Drawn";
+						}else{
+							countryData[i].name = teamNames[i];
+						}
 						countryData[i].y = 0;
 						i++;
 					}
-					series[num] = { center: [100, 80],
+					series[3] = { center: [100, 80],
 									size: 150,
 									showInLegend: false,
 									dataLabels: {
@@ -185,7 +195,7 @@
 									},
 									data:[]
 							}		
-					series[num].type = 'pie';
+					series[3].type = 'pie';
 					
 					if(data.data[0].length == 0){
 						options.title.text = "Oops! It seems that "+teamNames[0]+ " and "+teamNames[1]+" haven't played each other!";
@@ -202,20 +212,22 @@
 							countryData[0].y += data.data[0][i].country1;
 							series[1].data.push(data.data[0][i].country2);
 							countryData[1].y += data.data[0][i].country2;
+							series[2].data.push(data.data[0][i].draws);
+							countryData[2].y += data.data[0][i].draws;
 							options.xAxis.categories.push(data.data[0][i].year);
 							i++;
 						}
 						
 						i=0;
-						while(i<num){
-							series[num].data.push(countryData[i]);
-							//series[2].data.push(countryData[1]);
+						while(i<3){
+							series[3].data.push(countryData[i]);
 							i++;
 						}
 						options.title.text = options.title.text + teamNames[0] + " and " + teamNames[1] + " in " + typeText;
 						options.series.push(series[0]);
 						options.series.push(series[1]);
 						options.series.push(series[2]);
+						options.series.push(series[3]);
 					}
 					
 					

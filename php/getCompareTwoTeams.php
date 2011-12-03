@@ -41,23 +41,27 @@
 		if($type != ""){
 			$total_query = "select year, count(*) as total from matches where (team1 = '".$teams[0]."' or team2 = '".$teams[0]."') and (team1 = '".$teams[1]."' or team2 = '".$teams[1]."') and type LIKE '".$type."' group by year";
 			$sub_query = "select year, count(*) as country1 from matches where  (team1 = '".$teams[0]."' or team2 = '".$teams[0]."') and (team1 = '".$teams[1]."' or team2 = '".$teams[1]."') and winner_id = '".$teams[0]."' and type LIKE '".$type."' group by year";
-			$draw_query = "select year, count(*) as country2 from matches where   (team1 = '".$teams[0]."' or team2 = '".$teams[0]."') and (team1 = '".$teams[1]."' or team2 = '".$teams[1]."') and winner_id = '".$teams[1]."' and type LIKE '".$type."' group by year";
+			$sub2_query = "select year, count(*) as country2 from matches where   (team1 = '".$teams[0]."' or team2 = '".$teams[0]."') and (team1 = '".$teams[1]."' or team2 = '".$teams[1]."') and winner_id = '".$teams[1]."' and type LIKE '".$type."' group by year";
+			$draw_query = "select year, count(*) as draw from matches where   (team1 = '".$teams[0]."' or team2 = '".$teams[0]."') and (team1 = '".$teams[1]."' or team2 = '".$teams[1]."') and winner_id = '".$draw_id."' and type LIKE '".$type."' group by year";
 		}else{
 			$total_query = "select year, count(*) as total from matches where (team1 = '".$teams[0]."' or team2 = '".$teams[0]."') and (team1 = '".$teams[1]."' or team2 = '".$teams[1]."') group by year";
 			$sub_query = "select year, count(*) as country1 from matches where  (team1 = '".$teams[0]."' or team2 = '".$teams[0]."') and (team1 = '".$teams[1]."' or team2 = '".$teams[1]."') and winner_id = '".$teams[0]."' group by year";
-			$draw_query = "select year, count(*) as country2 from matches where  (team1 = '".$teams[0]."' or team2 = '".$teams[0]."') and (team1 = '".$teams[1]."' or team2 = '".$teams[1]."') and winner_id = '".$teams[1]."' group by year";	
+			$sub2_query = "select year, count(*) as country2 from matches where  (team1 = '".$teams[0]."' or team2 = '".$teams[0]."') and (team1 = '".$teams[1]."' or team2 = '".$teams[1]."') and winner_id = '".$teams[1]."' group by year";	
+			$draw_query = "select year, count(*) as draw from matches where   (team1 = '".$teams[0]."' or team2 = '".$teams[0]."') and (team1 = '".$teams[1]."' or team2 = '".$teams[1]."') and winner_id = '".$draw_id."' group by year";
 		}
 		
 		$total_set = mysql_query($total_query) ;
 		$result = mysql_query($sub_query) ;
+		$sub2_result = mysql_query($sub2_query);
 		$draw_result = mysql_query($draw_query);
 		$total = array();
 		
 		if($total_set && $result && (mysql_num_rows($total_set) > 0)){
 			$i = 0;
-			$draw = array();
+			$sub2 = array();
 			$res = array();
-
+			$draw = array();
+			
 			while($i < sizeof($super)){
 				while($row = mysql_fetch_assoc($total_set)){
 					if(intval($row['year']) == intval($super[$i])){
@@ -78,20 +82,37 @@
 				$res[$row['year']] =  $row['country1'];			
 			}
 
-			while($row = mysql_fetch_assoc($draw_result)){
-				$draw[$row['year']] =  $row['country2'];			
+			while($row = mysql_fetch_assoc($sub2_result)){
+				$sub2[$row['year']] =  $row['country2'];			
 			}
+			
+			while($row = mysql_fetch_assoc($draw_result)){
+				$draw[$row['year']] =  $row['draw'];			
+			}
+			
 			$i = 0;
 			while($i < sizeof($total)){
-				if((mysql_num_rows($result) > 0) && array_key_exists($total[$i]['year'], $res) && array_key_exists($total[$i]['year'], $draw) ){
-					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => intval($res[$total[$i]['year']]), 'country2' => intval($draw[$total[$i]['year']]));		
-				}else if(!array_key_exists($total[$i]['year'], $res) && array_key_exists($total[$i]['year'], $draw) ){
-					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => 0, 'country2' => intval($draw[$total[$i]['year']]));
-				}else if(array_key_exists($total[$i]['year'], $res) && !array_key_exists($total[$i]['year'], $draw) ){
-					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => intval($res[$total[$i]['year']]), 'country2' => 0);
+				if((mysql_num_rows($result) > 0) && array_key_exists($total[$i]['year'], $res) && array_key_exists($total[$i]['year'], $sub2) && array_key_exists($total[$i]['year'], $draw)){
+					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => intval($res[$total[$i]['year']]), 'country2' => intval($sub2[$total[$i]['year']]), 'draws' => intval($draw[$total[$i]['year']]));		
+				}else if(!array_key_exists($total[$i]['year'], $res) && array_key_exists($total[$i]['year'], $sub2) && array_key_exists($total[$i]['year'], $draw)){
+					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => 0, 'country2' => intval($sub2[$total[$i]['year']]), 'draws' => intval($draw[$total[$i]['year']]));
+				}else if(array_key_exists($total[$i]['year'], $res) && !array_key_exists($total[$i]['year'], $sub2) && array_key_exists($total[$i]['year'], $draw)){
+					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => intval($res[$total[$i]['year']]), 'country2' => 0, 'draws' => intval($draw[$total[$i]['year']]));
+				}
+				else if(array_key_exists($total[$i]['year'], $res) && array_key_exists($total[$i]['year'], $sub2) && !array_key_exists($total[$i]['year'], $draw)){
+					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => intval($res[$total[$i]['year']]), 'country2' => intval($sub2[$total[$i]['year']]), 'draws' => 0);
+				}
+				else if(array_key_exists($total[$i]['year'], $res) && !array_key_exists($total[$i]['year'], $sub2) && !array_key_exists($total[$i]['year'], $draw)){
+					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => intval($res[$total[$i]['year']]), 'country2' => 0, 'draws' => 0);
+				}
+				else if(!array_key_exists($total[$i]['year'], $res) && array_key_exists($total[$i]['year'], $sub2) && !array_key_exists($total[$i]['year'], $draw)){
+					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => 0, 'country2' => intval($sub2[$total[$i]['year']]), 'draws' => 0);
+				}
+				else if(!array_key_exists($total[$i]['year'], $res) && !array_key_exists($total[$i]['year'], $sub2) && array_key_exists($total[$i]['year'], $draw)){
+					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => 0, 'country2' => 0, 'draws' => intval($draw[$total[$i]['year']]));
 				}
 				else{
-					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => 0, 'country2' => 0);			
+					$json[] = array('year' => intval($total[$i]['year']), 'total' => intval($total[$i]['total']), 'country1' => 0, 'country2' => 0, 'draws' => 0);			
 				}
 				$i = $i + 1;
 			}
