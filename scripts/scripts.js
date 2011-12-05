@@ -2,6 +2,7 @@
 var VIS = VIS || {};
 VIS.Data = {};
 
+VIS.optsMenu = null;
 VIS.teamDataList = null;
 VIS.vizEnum = {
     vizBasicGlobe: 1,
@@ -27,8 +28,9 @@ VIS.currentVizId = null;
 
 $(document).ready(function() {
     setupVizMenu();
-    loadBasicGlobe();
     setupOptionsMenu();
+    loadBasicGlobe();
+    //setupOptionsMenu();
     //loadTeams();
 });
 
@@ -57,8 +59,8 @@ function setupVizMenu() {
 }
 
 function setupOptionsMenu() {
-    optsMenu = new VIS.Menu('#optionsMenu');
-    optsMenu.setupMenus(VIS.currentViz.requiredMenus);
+    VIS.optsMenu = new VIS.Menu('#optionsMenu');
+    //VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
 }
 
 /*function loadTeamHoverMenu() {
@@ -100,18 +102,21 @@ function hideCurrentViz() {
 
 function loadBasicGlobe() {
     VIS.currentViz = new VIS.BasicGlobe();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
     VIS.currentViz.load();
     VIS.currentVizId = VIS.vizEnum.vizBasicGlobe;
 }
 
 function loadCartogramGlobe() {
     VIS.currentViz = new VIS.CartogramGlobe();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
     VIS.currentViz.load();
     VIS.currentVizId = VIS.vizEnum.vizCartGlobe;
 }
 
 function loadTeamPerfGraph() {
     VIS.currentViz = new VIS.TeamPerfGraph();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
     VIS.currentViz.load();
     VIS.currentVizId = VIS.vizEnum.vizTeamPerf;
 }

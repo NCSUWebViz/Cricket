@@ -2,19 +2,30 @@ var options;
 var VIS = VIS || {};
 
 VIS.TeamPerfGraph = function($container, teamClickCallback) {
+    var countryCode = null;
+    var countryName = null;
+    var matchType = "All Match Types";
+
+    function load() {
+    }
+
+    function unload() {
+        $('#container').html('');
+    }
+
     function getData() {
         //alert('called');
         /*
         * Get the Country Drop Down properties
         */
-        var e = document.getElementById("countrySelect");
-        var countryCode = e.options[e.selectedIndex].value;
-        var countryName = e.options[e.selectedIndex].text;
+        //var e = document.getElementById("countrySelect");
+        //var countryCode = e.options[e.selectedIndex].value;
+        //var countryName = e.options[e.selectedIndex].text;
         /*
         * Get the Match Type Drop Down properties
         */
-        var e = document.getElementById("matchTypeSelect");
-        var matchType = e.options[e.selectedIndex].value;
+        //var e = document.getElementById("matchTypeSelect");
+        //var matchType = e.options[e.selectedIndex].value;
 
         var args="";
         if(countryCode){
@@ -70,7 +81,9 @@ VIS.TeamPerfGraph = function($container, teamClickCallback) {
         };
         //----------------------------------------------------
         //alert("calling json function");
+        console.log("Calling service: php/getTeamPerformance.php"+args);
         $.getJSON('php/getTeamPerformance.php'+args,function(data){
+            console.log("Team Performance data:", data);
             var won_series = {data: []};
             var lost_series = {data: []};
             var draw_series = {data: []};
@@ -108,6 +121,43 @@ VIS.TeamPerfGraph = function($container, teamClickCallback) {
             }
         });
     }
+
+    function teamSelected($teamElement) {
+        /*var lat, lng;
+        if (!$teamElement.data('lat') || !$teamElement.data('lng')) {
+            var code = $teamElement.attr('id');
+            if (teamCache[code] == undefined) {
+                console.log('Error: Invalid team selected', $teamElement, code);
+                return;
+            }
+            lat = teamCache[code].lat;
+            lng = teamCache[code].lng;
+        } else {
+            lat = $teamElement.data('lat');
+            lng = $teamElement.data('lng');
+        }
+        console.log("Changing selected team", $teamElement, lat, lng);
+        globe.curLat = lat;
+        globe.curLong = lng;*/
+        countryCode = $teamElement.attr('id');
+        countryName = $teamElement.text();
+        console.log("Changing selected team", $teamElement, countryCode,
+                countryName);
+        getData();
+    }
+
+    function matchTypeSelected($mtElement) {
+        matchType = $mtElement.attr('id');
+        console.log("Changing selected match type", $mtElement, matchType);
+        getData();
+    }
+
     this.load = getData;
     this.unload = function() {};
+    this.teamSelected = teamSelected;
+    this.matchTypeSelected = matchTypeSelected;
+    this.requiredMenus = [
+        VIS.vizMenuEnum.teamClick,
+        VIS.vizMenuEnum.matchTypeClick
+    ];
 };

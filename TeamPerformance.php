@@ -89,6 +89,7 @@
 					};	
 					//----------------------------------------------------
 					//alert("calling json function");
+                    console.log("Calling service: php/getTeamPerformance.php"+args);
 					$.getJSON('php/getTeamPerformance.php'+args,function(data){
 					var won_series = {data: []}; var lost_series = {data: []}; var draw_series = {data: []};
 					won_series.name = "Matches Won"; lost_series.name = "Matches Lost";	draw_series.name = "Matches Drawn";	

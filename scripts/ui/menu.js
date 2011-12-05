@@ -94,12 +94,29 @@ VIS.Menu = function(outsideContainer) {
 
     }
 
+    function highlightItem($listItem) {
+        $listItem.siblings().removeClass('selected');
+        $listItem.addClass('selected');
+    }
+
+    function findSelected($list) {
+        var $selectedItems = [];
+        $.each($list.children(), function(idx, li) {
+            var $li = $(li);
+            if ($li.hasClass('selected'))
+                $selectedItems.push($li);
+        });
+        console.log("Found selected:", $selectedItems);
+        return $selectedItems;
+    }
+
     function cacheTeams(teamData) {
         VIS.Data.teamHash = {};
 
         $.each(teamData, function (key, val) {
             // Note, could just assign val here instead of obj hash
             VIS.Data.teamHash[val.code] = {
+                id: val.id,
                 lng: val.longitude,
                 lat: val.latitude,
                 name: val.name,
@@ -111,6 +128,10 @@ VIS.Menu = function(outsideContainer) {
     function loadTeamHoverMenu(pos) {
         if (menuCache.teamHoverMenu != null) {
             fillMenuPosition(pos, menuCache.teamHoverMenu, "Select Team");
+            var $selectedItems = findSelected(menuCache.teamHoverMenu);
+            if ($selectedItems.length > 0) {
+                VIS.currentViz.teamSelected($selectedItems[0]);
+            }
             return;
         }
 
@@ -120,15 +141,14 @@ VIS.Menu = function(outsideContainer) {
                 'class': 'teamList',
             });
             $.each(teamData, function(key, val) {
-                var $team = $('<li id="' + val.code + '">' + val.name + '</li>')
+                var $team = $('<li id="' + val.id + '" code="' + val.code + '">' + val.name + '</li>')
                     .appendTo($ul);
                 $team.addClass('team');
                 $team.data('lat', val.lat);
                 $team.data('lng', val.lng);
                 $team.hover(function() {
                     var $this = $(this);
-                    $this.siblings().removeClass('selected');
-                    $this.addClass('selected');
+                    highlightItem($this);
                     VIS.currentViz.teamSelected($this);
                 });
             });
@@ -152,6 +172,10 @@ VIS.Menu = function(outsideContainer) {
     function loadTeamClickMenu(pos) {
         if (menuCache.teamClickMenu != null) {
             fillMenuPosition(pos, menuCache.teamClickMenu, "Select Team");
+            var $selectedItems = findSelected(menuCache.teamClickMenu);
+            if ($selectedItems.length > 0) {
+                VIS.currentViz.teamSelected($selectedItems[0]);
+            }
             return;
         }
 
@@ -161,19 +185,20 @@ VIS.Menu = function(outsideContainer) {
                 'class': 'teamList',
             });
             $.each(teamData, function(key, val) {
-                var $team = $('<li id="' + val.code + '">' + val.name + '</li>')
+                var $team = $('<li id="' + val.id + '" code="' + val.code + '">' + val.name + '</li>')
                     .appendTo($ul);
                 $team.addClass('team');
                 $team.data('lat', val.lat);
                 $team.data('lng', val.lng);
+                console.log("Team list item:", $team, val);
                 $team.click(function() {
                     var $this = $(this);
-                    $this.siblings().removeClass('selected');
-                    $this.addClass('selected');
+                    highlightItem($this);
                     VIS.currentViz.teamSelected($this);
                 });
             });
             menuCache.teamClickMenu = $ul;
+            console.log("menu list:", $ul);
             fillMenuPosition(pos, $ul, "Select Team");
             /*if (VIS.currentViz != null) {
                 VIS.currentViz.menuLoaded(VIS.vizMenuEnum.teamHover);
@@ -201,7 +226,8 @@ VIS.Menu = function(outsideContainer) {
                     .appendTo($ul);
                 $matchType.click(function() {
                     var $this = $(this);
-                    VIS.currentViz.teamSelected($this);
+                    highlightItem($this);
+                    VIS.currentViz.matchTypeSelected($this);
                 });
             });
             fillMenuPosition(pos, $ul, "Match Type");

@@ -102,7 +102,11 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
                 onSelect: function($selected){
                     $selected.siblings().removeClass('active');
                     $selected.addClass('active');
-                    teamSelected($($selected.children()[0]));
+                    var $teamElement = $($selected.children()[0]);
+                    var code = $teamElement.attr('id');
+                    $teamElement.data('lat', teamCache[code].lat);
+                    $teamElement.data('lng', teamCache[code].lng);
+                    teamSelected($teamElement);
                 },
                 angleOffset: 0
             });
