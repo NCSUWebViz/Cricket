@@ -193,6 +193,6 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     this.teamSelected = teamSelected;
     this.requiredMenus = [
         VIS.vizMenuEnum.teamClick,
-        VIS.vizMenuEnum.matchTypeClick
+        //VIS.vizMenuEnum.matchTypeClick
     ];
 };
