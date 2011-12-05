@@ -1,13 +1,14 @@
 
 var VIS = VIS || {};
+VIS.Data = {};
 
 VIS.teamDataList = null;
 VIS.vizEnum = {
     vizBasicGlobe: 1,
     vizCartGlobe: 2,
     vizTeamPerf: 3,
-    vizBatStats:4,
-    vizTeamGroundPerf:4
+    vizBatStats: 4,
+    vizTeamGroundPerf: 5
 }
 
 VIS.vizMenuEnum = {
@@ -18,21 +19,23 @@ VIS.vizMenuEnum = {
     groundsClick: 5,
     playersClick: 6,
     playersMulti: 7,
+    yearVenueOpponent: 8
 }
 
-var currentViz = null;
-var currentVizId = null;
+VIS.currentViz = null;
+VIS.currentVizId = null;
 
 $(document).ready(function() {
     setupVizMenu();
     loadBasicGlobe();
+    setupOptionsMenu();
     //loadTeams();
 });
 
 function setupVizMenu() {
     $('#vizList li').on('click', function(event) {
         var vizId = VIS.vizEnum[$(this).attr('id')];
-        if (vizId == currentVizId)
+        if (vizId == VIS.currentVizId)
             return;
 
         hideCurrentViz();
@@ -53,7 +56,12 @@ function setupVizMenu() {
     });
 }
 
-function loadTeamHoverMenu() {
+function setupOptionsMenu() {
+    optsMenu = new VIS.Menu('#optionsMenu');
+    optsMenu.setupMenus(VIS.currentViz.requiredMenus);
+}
+
+/*function loadTeamHoverMenu() {
     console.log("Load teams called");
     $.getJSON('php/getTeams.php', function(data) {
         VIS.teamDataList = data;
@@ -79,32 +87,32 @@ function loadTeamHoverMenu() {
         }
         //finishSceneLoad();
     });
-}
+}*/
 
 /*function finishSceneLoad() {
     loadBasicGlobe();
 }*/
 
 function hideCurrentViz() {
-    if (currentViz)
-        currentViz.unload();
+    if (VIS.currentViz)
+        VIS.currentViz.unload();
 }
 
 function loadBasicGlobe() {
-    currentViz = new VIS.BasicGlobe();
-    currentViz.load();
-    currentVizId = VIS.vizEnum.vizBasicGlobe;
+    VIS.currentViz = new VIS.BasicGlobe();
+    VIS.currentViz.load();
+    VIS.currentVizId = VIS.vizEnum.vizBasicGlobe;
 }
 
 function loadCartogramGlobe() {
-    currentViz = new VIS.CartogramGlobe();
-    currentViz.load();
-    currentVizId = VIS.vizEnum.vizCartGlobe;
+    VIS.currentViz = new VIS.CartogramGlobe();
+    VIS.currentViz.load();
+    VIS.currentVizId = VIS.vizEnum.vizCartGlobe;
 }
 
 function loadTeamPerfGraph() {
-    currentViz = new VIS.TeamPerfGraph();
-    currentViz.load();
-    currentVizId = VIS.vizEnum.vizTeamPerf;
+    VIS.currentViz = new VIS.TeamPerfGraph();
+    VIS.currentViz.load();
+    VIS.currentVizId = VIS.vizEnum.vizTeamPerf;
 }
 

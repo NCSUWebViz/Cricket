@@ -1,33 +1,27 @@
 <!doctype html>
 <html lang="en">
     <head>
-    <title>CSC 591 - Cricket Stats</title>
-    <link rel="stylesheet" href="styles/style.css" type="text/css" />
+        <title>CSC 591 - Cricket Statistics Visualizations</title>
+        <link rel="stylesheet" href="styles/style.css" type="text/css" />
     </head>
     <body>
-    <div id="teamList"></div>
-    <!--<div id="vizListDiv">-->
     <nav id="vizNav">
         <ul id="vizList">
-            <!--<ul id="globeVizList">-->
                 <li id="vizBasicGlobe" class="first">Basic Globe</li>
                 <li id="vizCartGlobe">Cartogram Globe</li>
-                <!--</ul>-->
-            <!--<ul id="Charts & Graphs">-->
                 <li id="vizTeamPerf">Team Performance</li>
                 <li id="vizBatStats">Batting Stats</li>
                 <li id="vizTeamGroundPerf">Team Ground Performance</li>
-                <!--</ul>-->
         </ul>
-        <!--</div>-->
     </nav>
+    <div id="background"></div>
     <div id="container"></div>
-    <div id="fakeImage">
-        <img id="worldImage" src="images/world.jpg" width="100%" height="100%" />
-    </div>
-    <div id="chart">
-    </div>
+    <div id="chart"></div>
+    <div id="optionsMenu"></div>
     <canvas id="canvasSvg" width="2048px" height="1024px"></canvas>
+
+
+
     <script id="fragment_shader_screen" type="x-shader/x-fragment">
         varying vec2 vUv;
         uniform sampler2D tDiffuse;
@@ -78,11 +72,13 @@
     <script src="scripts/three/Three.js"></script>
     <script type="text/javascript" src="scripts/canvg/rgbcolor.js"></script>
     <script type="text/javascript" src="scripts/canvg/canvg.js"></script>
+    <script type="text/javascript" src="scripts/globe/jQuery.radmenu.js"></script>
     <script type="text/javascript" src="scripts/globe/globe_mod.js"></script>
     <script type="text/javascript" src="scripts/globe/basic_globe.js"></script>
     <script type="text/javascript" src="scripts/globe/cartogramGlobe.js"></script>
     <script type="text/javascript" src="scripts/charts/teamPerformance.js"></script>
     <script type="text/javascript" src="scripts/cartogram/dorling.js"></script>
+    <script src="scripts/ui/menu.js"></script>
     <script src="scripts/scripts.js"></script>
     </body>
 </html>

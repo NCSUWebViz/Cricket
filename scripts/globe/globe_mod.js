@@ -128,7 +128,8 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
     uniforms['texture'].texture = dynamicTexture ||
-        THREE.ImageUtils.loadTexture(imgDir+'world'+'.jpg');
+        THREE.ImageUtils.loadTexture(imgDir+'globeTexture'+'.jpg');
+        //THREE.ImageUtils.loadTexture(imgDir+'world'+'.jpg');
     //uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+'world_upsidedown'+'.jpg');
 
     material = new THREE.ShaderMaterial({

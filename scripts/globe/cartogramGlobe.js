@@ -113,12 +113,12 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         }
     }
 
-    function selectedTeamChanged($teamElement) {
+    function teamSelected($teamElement) {
         globe.curLat = $teamElement.data('lat');
         globe.curLong = $teamElement.data('lng');
     }
 
     this.load = load;
     this.unload = unload;
-    this.selectedTeamChanged = selectedTeamChanged;
+    this.teamSelected = teamSelected;
 }
