@@ -190,7 +190,7 @@ VIS.Menu = function(outsideContainer) {
                 $team.addClass('team');
                 $team.data('lat', val.lat);
                 $team.data('lng', val.lng);
-                console.log("Team list item:", $team, val);
+                //console.log("Team list item:", $team, val);
                 $team.click(function() {
                     var $this = $(this);
                     highlightItem($this);

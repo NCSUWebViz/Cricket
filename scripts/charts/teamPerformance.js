@@ -153,7 +153,7 @@ VIS.TeamPerfGraph = function($container, teamClickCallback) {
     }
 
     this.load = getData;
-    this.unload = function() {};
+    this.unload = unload;
     this.teamSelected = teamSelected;
     this.matchTypeSelected = matchTypeSelected;
     this.requiredMenus = [

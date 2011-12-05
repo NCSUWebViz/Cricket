@@ -14,8 +14,8 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     }
 
     function render() {
-        svgCanvas = document.getElementById('canvasSvg');
-        var worldImage = document.getElementById('chart');
+        svgCanvas = document.getElementById('svgCanvas');
+        var worldImage = document.getElementById('cartogramSvgChart');
         var svg = $.trim(worldImage.innerHTML);
         canvg(svgCanvas, svg);
         svgTexture.needsUpdate = true;
@@ -23,25 +23,26 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     }
 
     function load() {
-        var container = $container || $('#container');
-        container.click(globeClicked);
+        $container = $container || $('#container');
+        $container.click(globeClicked);
         projector = new THREE.Projector();
         loadSvgCanvasGlobe();
     }
 
     function unload() {
+        $container.unbind('click', globeClicked);
         $container.html('');
-        $(svgCanvas).html('');
-        delete projector;
         delete teamHighLightMeshes;
         delete globe;
+        delete projector;
+        $(svgCanvas).html('');
     }
 
     function loadSvgCanvasGlobe() {
-        var chart = document.getElementById('chart');
+        var chart = document.getElementById('cartogramSvgChart');
         var svg = chart.innerHTML;
         svg = $.trim(svg);
-        svgCanvas = document.getElementById('canvasSvg');
+        svgCanvas = document.getElementById('svgCanvas');
         canvg(svgCanvas, svg, { ignoreAnimations: false,
                 forceRedraw: function() { return false; }});
 

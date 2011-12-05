@@ -18,6 +18,7 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     }
 
     function load() {
+        console.log("Starting to load globe...");
         $container = $container || $('#container');
         $container.height($(window).height());
         $container.width($(window).width());
@@ -27,6 +28,7 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     }
 
     function unload() {
+        $container.unbind('click', globeClicked);
         $container.html('');
         //$('.teamList').html('');
         delete projector;
@@ -46,6 +48,7 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
                 });
             }
             loadTeams();
+            console.log("Starting to animate...");
             animate();
         });
     }

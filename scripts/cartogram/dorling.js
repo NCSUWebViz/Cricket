@@ -15,7 +15,7 @@ var force = d3.layout.force()
     .gravity(0)
     .size([960, 500]);
 
-var svg = d3.select("#chart").append("svg:svg")
+var svg = d3.select("#cartogramSvgChart").append("svg:svg")
     .attr("width", 960 + 100)
     .attr("height", 500 + 100)
     .append("svg:g")

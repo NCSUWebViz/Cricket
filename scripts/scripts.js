@@ -36,6 +36,7 @@ $(document).ready(function() {
 
 function setupVizMenu() {
     $('#vizList li').on('click', function(event) {
+        console.log("Viz change attempted:", $(document));
         var vizId = VIS.vizEnum[$(this).attr('id')];
         if (vizId == VIS.currentVizId)
             return;
@@ -43,6 +44,7 @@ function setupVizMenu() {
         hideCurrentViz();
         switch(vizId) {
             case VIS.vizEnum.vizBasicGlobe:
+                loadBasicGlobe();
                 break;
             case VIS.vizEnum.vizCartGlobe:
                 loadCartogramGlobe();
@@ -60,64 +62,34 @@ function setupVizMenu() {
 
 function setupOptionsMenu() {
     VIS.optsMenu = new VIS.Menu('#optionsMenu');
-    //VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
 }
 
-/*function loadTeamHoverMenu() {
-    console.log("Load teams called");
-    $.getJSON('php/getTeams.php', function(data) {
-        VIS.teamDataList = data;
-        var $ul = $('<ul/>', {
-            'class': 'teamList',
-        });
-        $.each(data, function(key, val) {
-            var $team = $('<li id="' + val.code + '">' + val.name + '</li>')
-                .appendTo($ul);
-            $team.addClass('team');
-            $team.data('lat', val.latitude);
-            $team.data('lng', val.longitude);
-            //addTeam(val.latitude, val.longitude);
-            $team.hover(function() {
-                var $this = $(this);
-                currentViz.selectedTeamChanged($this);
-            });
-        });
-        $ul.appendTo('body');
-        console.log("load Teams attempted");
-        if (currentViz != null) {
-            currentViz.menuLoaded(VIS.vizMenuEnum.teamHover);
-        }
-        //finishSceneLoad();
-    });
-}*/
-
-/*function finishSceneLoad() {
-    loadBasicGlobe();
-}*/
-
 function hideCurrentViz() {
-    if (VIS.currentViz)
+    if (VIS.currentViz) {
         VIS.currentViz.unload();
+        delete VIS.currentViz;
+    }
 }
 
 function loadBasicGlobe() {
+    console.log("loading basic globe");
     VIS.currentViz = new VIS.BasicGlobe();
-    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
     VIS.currentViz.load();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
     VIS.currentVizId = VIS.vizEnum.vizBasicGlobe;
 }
 
 function loadCartogramGlobe() {
     VIS.currentViz = new VIS.CartogramGlobe();
-    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
     VIS.currentViz.load();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
     VIS.currentVizId = VIS.vizEnum.vizCartGlobe;
 }
 
 function loadTeamPerfGraph() {
     VIS.currentViz = new VIS.TeamPerfGraph();
-    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
     VIS.currentViz.load();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
     VIS.currentVizId = VIS.vizEnum.vizTeamPerf;
 }
 
