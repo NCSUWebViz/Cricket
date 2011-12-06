@@ -22,6 +22,18 @@ body {
 	opacity:0.80;
 }*/
 
+#container {
+	//background:url(../images/cricketball.jpg);
+	//background-repeat:no-repeat;
+	//background-position: top center;
+	//background-size:contain;
+	background-color:transparent;
+	width:100%;
+	height:100%;
+	margin: 0px;
+	padding:0px;
+}
+
 #vizList {
 	z-index:1000;
     position: absolute;

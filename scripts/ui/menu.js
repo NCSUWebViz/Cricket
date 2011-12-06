@@ -170,14 +170,17 @@ VIS.Menu = function(outsideContainer) {
     }
 
     function loadTeamClickMenu(pos) {
-        if (menuCache.teamClickMenu != null) {
+        /*if (menuCache.teamClickMenu != null) {
             fillMenuPosition(pos, menuCache.teamClickMenu, "Select Team");
             var $selectedItems = findSelected(menuCache.teamClickMenu);
             if ($selectedItems.length > 0) {
                 VIS.currentViz.teamSelected($selectedItems[0]);
             }
             return;
-        }
+        }*/
+        if (alreadyLoaded(pos, menuCache.teamClickMenu,
+                    "Selected Team", VIS.currentViz.teamSelected))
+            return;
 
         function teamsLoaded(teamData) {
             cacheTeams(teamData);
@@ -220,20 +223,43 @@ VIS.Menu = function(outsideContainer) {
     // TODO: Consider adding caching to try to preserve current selected
     // match type to propogate to different vis that needs this menu.
     function loadMatchTypeMenu(pos) {
-            var $ul = $('<ul/>', {
-                'class': 'teamList',
+        if (alreadyLoaded(pos, menuCache.matchTypeMenu,
+                    "Match Type", VIS.currentViz.matchTypeSelected))
+            return;
+
+        var $selectedItem = null;
+        var $ul = $('<ul/>', {
+            'class': 'teamList',
+        });
+        $.each(["All Types", "Test", "ODI", "T20"], function(index, val) {
+            var $matchType = $('<li id="' + val + '">' + val + '</li>')
+                .appendTo($ul);
+            if (index == 0) {
+                $matchType.addClass('selected');
+                $selectedItem = $matchType;
+            }
+            $matchType.click(function() {
+                var $this = $(this);
+                highlightItem($this);
+                VIS.currentViz.matchTypeSelected($this);
             });
-            $.each(["All Types", "Test", "ODI", "T20"], function(index, val) {
-                var $matchType = $('<li id="' + val + '">' + val + '</li>')
-                    .appendTo($ul);
-                if (index == 0)
-                    $matchType.addClass('selected');
-                $matchType.click(function() {
-                    var $this = $(this);
-                    highlightItem($this);
-                    VIS.currentViz.matchTypeSelected($this);
-                });
-            });
-            fillMenuPosition(pos, $ul, "Match Type");
+        });
+        fillMenuPosition(pos, $ul, "Match Type");
+        menuCache.matchTypeMenu = $ul;
+        if (VIS.currentViz)
+            VIS.currentViz.matchTypeSelected($selectedItem);
+    }
+
+    function alreadyLoaded(pos, $menu, label, updateMethod) {
+        if ($menu != null) {
+            fillMenuPosition(pos, $menu, label);
+            var $selectedItems = findSelected($menu);
+            if ($selectedItems.length > 0 && updateMethod) {
+                console.log("Calling update method for", label);
+                updateMethod($selectedItems[0]);
+            }
+            return true;
+        }
+        return false;
     }
 }

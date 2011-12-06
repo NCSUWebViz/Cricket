@@ -4,7 +4,7 @@ var VIS = VIS || {};
 VIS.TeamPerfGraph = function($container, teamClickCallback) {
     var countryCode = null;
     var countryName = null;
-    var matchType = "All Match Types";
+    var matchType = null;
 
     function load() {
     }
@@ -14,6 +14,10 @@ VIS.TeamPerfGraph = function($container, teamClickCallback) {
     }
 
     function getData() {
+        console.log("getData()", countryCode, matchType);
+        if (countryCode == null || matchType == null)
+            return;
+
         //alert('called');
         /*
         * Get the Country Drop Down properties
@@ -44,7 +48,11 @@ VIS.TeamPerfGraph = function($container, teamClickCallback) {
             chart: {
                 renderTo: 'container',
                 defaultSeriesType: 'spline',
-                zoomType: 'x'
+                zoomType: 'x',
+                //plotBackgroundColor: '#000000'
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                plotBackgroundColor: 'rgba(0,0,0,0.8)'
+                //plotBackgroundImage: '../images/cricketball.jpg'
             },
             title: {
                 text: countryName + "-" + matchType
@@ -119,6 +127,8 @@ VIS.TeamPerfGraph = function($container, teamClickCallback) {
                 //options.series.push(series);
                 var chart = new Highcharts.Chart(options);
             }
+            $('#container').css('background-color', 'transparent');
+            $('#container').css('color', 'transparent');
         });
     }
 
