@@ -30,7 +30,7 @@ VIS.TeamPerfGraph = function($container, teamClickCallback) {
         var args="";
         if(countryCode){
             args = "?id="+countryCode;
-            if(matchType != "All Match Types"){
+            if(matchType != "All Match Types" && matchType != "All Types"){
                 args = args + "&type=" + matchType;
             }
             //alert(args);

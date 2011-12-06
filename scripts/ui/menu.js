@@ -187,6 +187,8 @@ VIS.Menu = function(outsideContainer) {
             $.each(teamData, function(key, val) {
                 var $team = $('<li id="' + val.id + '" code="' + val.code + '">' + val.name + '</li>')
                     .appendTo($ul);
+                if (key == 'ENG')
+                    $team.addClass('selected');
                 $team.addClass('team');
                 $team.data('lat', val.lat);
                 $team.data('lng', val.lng);
@@ -221,9 +223,11 @@ VIS.Menu = function(outsideContainer) {
             var $ul = $('<ul/>', {
                 'class': 'teamList',
             });
-            $.each(["Test", "ODI", "T20"], function(index, val) {
+            $.each(["All Types", "Test", "ODI", "T20"], function(index, val) {
                 var $matchType = $('<li id="' + val + '">' + val + '</li>')
                     .appendTo($ul);
+                if (index == 0)
+                    $matchType.addClass('selected');
                 $matchType.click(function() {
                     var $this = $(this);
                     highlightItem($this);
