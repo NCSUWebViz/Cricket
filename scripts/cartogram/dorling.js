@@ -6,31 +6,69 @@ var data = [
   .169, , .132, .167, .139, .184, .159, .14, .146, .157, , .139, .183, .16, .143
 ];
 
+var countryCoords = {
+    'AFG': [1320, 290],
+    'AUS': [1738, 684],
+    'BAN': [1420, 351],
+    'BER': [674, 296],
+    'CAN': [544, 238],
+    'EAF': [0, 0],
+    'ENG': [942, 200],
+    'HOK': [1541, 352],
+    'IND': [1352, 330],
+    'IRE': [906, 194],
+    'KEN': [1138, 482],
+    'NAM': [1034, 594],
+    'NED': [973, 196],
+    'NZL': [1859, 691],
+    'PAK': [1328, 298],
+    'SCO': [928, 172],
+    'SAF': [1079, 631],
+    'SRL': [1366, 436],
+    'UAE': [1230, 346],
+    'USA': [538, 270],
+    'WIN': [540, 378],
+    'ZIM': [0, 0]
+};
+
 var color = d3.scale.linear()
     .domain([d3.min(data), d3.max(data)])
     .range(["#aad", "#556"]); 
 
+var svgWidth = 1890;
+var svgHeight = 945;
+
 var force = d3.layout.force()
     .charge(0)
     .gravity(0)
-    .size([960, 500]);
+    .size([svgWidth, svgHeight]);
 
 var svg = d3.select("#cartogramSvgChart").append("svg:svg")
-    .attr("width", 960 + 100)
-    .attr("height", 500 + 100)
-    .append("svg:g")
-    .attr("transform", "translate(50,50)");
+    .attr("width", svgWidth)
+    .attr("height", svgHeight);
 
-d3.json("testdata/us-state-centroids.json", function(states) {
-  var project = d3.geo.albersUsa(),
+svg.append("svg:image")
+    .attr("id", "image")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", svgWidth)
+    .attr("height", svgHeight)
+    .attr("xlink:href","images/globeTexture.jpg");
+
+svg.append("svg:g")
+        .attr("transform", "translate(50,50)");
+
+d3.json("php/getTeams.php", function(states) {
+  var project = d3.geo.mercator(),
       idToNode = {},
       links = [],
-      nodes = states.features.map(function(d) {
-        var xy = project(d.geometry.coordinates);
+      nodes = states.map(function(d) {
+        var xy = project([d.latitude, d.longitude]);
+        console.log("Projection:", d.name, d.latitude, d.longitude, xy);
         return idToNode[d.id] = {
-            x: xy[0],
-            y: xy[1],
-            gravity: {x: xy[0], y: xy[1]},
+            x: countryCoords[d.code][0],
+            y: countryCoords[d.code][1],
+            gravity: {x:countryCoords[d.code][0], y:countryCoords[d.code][1]},
             r: Math.sqrt(data[+d.id] * 5000),
             value: data[+d.id]
         };

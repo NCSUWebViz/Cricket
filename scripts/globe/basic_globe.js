@@ -5,7 +5,9 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
 
     var globe;
     var projector;
-    var teamHighlightMeshes = new Array();
+    //var teamHighlightMeshes = new Array();
+    var teamHighlightMeshes = {};
+    var yearPointers = new Array();
     var teamCache = {};
 
     function animate() {
@@ -18,7 +20,6 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     }
 
     function load() {
-        console.log("Starting to load globe...");
         $container = $container || $('#container');
         $container.height($(window).height());
         $container.width($(window).width());
@@ -37,7 +38,7 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     }
 
     function loadModels() {
-        globe = new DAT.Globe(container, null, null, false);
+        globe = new DAT.Globe($container[0], null, null, false);
         $.getJSON('testdata/stats.json', function(data) {
             for (i=0;i<data.length;i++) {
                 globe.addData(data[i][1], {
@@ -48,7 +49,6 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
                 });
             }
             loadTeams();
-            console.log("Starting to animate...");
             animate();
         });
     }
@@ -60,7 +60,7 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
                 'class': 'teamList',
             });
             $.each(data, function(key, val) {
-                addTeam(val.latitude, val.longitude);
+                addTeam(val.latitude, val.longitude, val.code);
                 teamCache[val.code] = {
                     'lat': val.latitude,
                     'lng': val.longitude,
@@ -74,48 +74,77 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     function loadWorldCupData() {
         function dataLoaded(data) {
             var $radialContainer = $("<div id='radial_container'>")
-                .css('z-index','1000')
+                .css('z-index','100')
                 .appendTo($container);
             var $ul = $('<ul/>', {
                 'class': 'yearList',
             }).appendTo($radialContainer);
 
+            var elements = [];
             $.each(data, function(key, val) {
                 var $year = $('<li class="yearItem" id="' + val.code + '">')
                     .appendTo($ul)
                     .append('<div class="yearItemText" id="'+
                         val.code + '">' + key + '</div>');
+                $year.data('lat', val.latitude);
+                $year.data('lng', val.longitude);
+                $year.data('mesh', teamHighlightMeshes[val.code]);
+                elements.push($year);
             });
             console.log('Height, width', $container.css('height'),
                 $container.css('width'), $(window).height(), $(window).width());
 
             var radius = $(window).height()/2 - 50;
 
-            var width = $(window).width()/4;
-            var height = $(window).height()/2;
+            var width = $(window).width()/2 - 20;
+            var height = $(window).height()/2 - 10;
 
             $radialContainer.radmenu({
                 listClass: 'yearList',
                 itemClass: 'yearItem',
                 radius: radius,
                 animSpeed: 100,
-                centerX: width - width/20,
-                centerY: height - height/6,
+                centerX: width,
+                centerY: height,
+                //centerX: width - width/20,
+                //centerY: height - height/6,
                 selectEvent: "click",
-                onSelect: function($selected){
+                onSelect: function($selected, event){
                     $selected.siblings().removeClass('active');
                     $selected.addClass('active');
-                    var $teamElement = $($selected.children()[0]);
-                    var code = $teamElement.attr('id');
-                    $teamElement.data('lat', teamCache[code].lat);
-                    $teamElement.data('lng', teamCache[code].lng);
-                    teamSelected($teamElement);
+                    var $yearElement = $($selected.children()[0]);
+                    var code = $yearElement.attr('id');
+                    $yearElement.data('lat', teamCache[code].lat);
+                    $yearElement.data('lng', teamCache[code].lng);
+                    $yearElement.data('code', code);
+                    //$yearElement.data('mesh', teamHighlightMeshes[code]);
+                    //teamSelected($teamElement);
+                    yearSelected($yearElement, event);
                 },
                 angleOffset: 0
             });
             $radialContainer.radmenu("show");
+            //$container.attr('style', '');
+            /*var geometry = new THREE.CylinderGeometry( 0, 10, 100, 3 );
+            geometry.applyMatrix( new THREE.Matrix4()
+                .setRotationFromEuler(new THREE.Vector3(Math.PI/2,Math.PI,0)));
+            var material = new THREE.MeshNormalMaterial();
+            $.each(elements, function(idx, $el) {
+                var mesh = new THREE.Mesh( geometry, material );
+                mesh.position.x = Math.random() * 4000 - 2000;
+                mesh.position.y = Math.random() * 4000 - 2000;
+                mesh.position.z = Math.random() * 4000 - 2000;
+                mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 4 + 2;
+                console.log("Adding pointer for el", $el,
+                    $el.position().left, $el.position().top);
+                //mesh.position.x = $el.position().left;
+                //mesh.position.y = $el.position().top;
+                mesh.lookAt(teamHighlightMeshes[0].position);
+                yearPointers.push(mesh);
+                globe.scene.add( mesh );
+            });*/
         }
-        dataLoaded({
+        /*dataLoaded({
             '1924': {'name': 'India', 'code': 'IND',
                 'latitude': 28.6, 'longitude': 77.2},
             '1925': {'name': 'England', 'code': 'ENG',
@@ -148,14 +177,19 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
                 'latitude': 28.6, 'longitude': 77.2},
             '1939': {'name': 'India', 'code': 'IND',
                 'latitude': 28.6, 'longitude': 77.2},
+        });*/
+        $.getJSON('php/getWorldCupGlobeData.php', function(data) {
+            dataLoaded(data);
         });
-        //$.getJSON('php/getWorldCupData.php', function(data) {
-        //});
     }
 
     function addTeam(lat, lng, code) {
         var mesh = globe.addHighlight(lat, lng, null);
-        teamHighlightMeshes.push(mesh);
+        //mesh.code = code;
+        //mesh.lat = lat;
+        //mesh.lng = lng;
+        //teamHighlightMeshes.push(mesh);
+        teamHighlightMeshes[code] = mesh;
     }
 
     function globeClicked(event) {
@@ -165,15 +199,68 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
         projector.unprojectVector( vector, globe.camera );
         var ray = new THREE.Ray( globe.camera.position,
                 vector.subSelf( globe.camera.position ).normalize() );
+        //console.log("Hit test", teamHighlightMeshes);
         var hits = ray.intersectObjects(teamHighlightMeshes);
         if (hits.length) {
             console.log("Team Location clicked!", hits);
+            var hit = hits[0];
+            //globe.curLat = hit.lat;
+            //globe.curLong = hit.lng;
             if (teamClickCallback) {
                 teamClickCallback(null);
             }
         } else {
-            console.log("Click detected, but no target was hit.");
+            console.log("Click detected, but no target was hit.", hits);
         }
+    }
+
+    function yearSelected($yearElement, event) {
+        teamSelected($yearElement);
+        console.log("Year selected", $yearElement);
+        var geometry = new THREE.CylinderGeometry( 0, 10, 100, 3 );
+        geometry.applyMatrix( new THREE.Matrix4()
+            .setRotationFromEuler(new THREE.Vector3(Math.PI/2,Math.PI,0)));
+        var material = new THREE.MeshNormalMaterial();
+        //$.each(elements, function(idx, $el) {
+        var mesh = new THREE.Mesh( geometry, material );
+        //mesh.position.x = Math.random() * 4000 - 2000;
+        //mesh.position.y = Math.random() * 4000 - 2000;
+        //mesh.position.z = Math.random() * 4000 - 2000;
+        //mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 4 + 2;
+
+        var code = $yearElement.data('code');
+        var teamMesh = teamHighlightMeshes[code];
+        var x = ( event.pageX / window.innerWidth ) * 2 - 1;
+        var y = - ( event.pageY / window.innerHeight ) * 2 + 1;
+        var vector = new THREE.Vector3( x, y, 0.5 );
+        vector.subSelf( globe.camera.position ).normalize();
+        projector.unprojectVector( vector, globe.camera );
+
+        console.log("Adding pointer for el", $yearElement.parent(),
+            $yearElement.parent().position().left,
+            $yearElement.parent().position().top,
+            $yearElement.parent().offset().left,
+            $yearElement.parent().offset().top,
+            x,y, vector, DAT.mesh.position,
+            teamMesh);
+        //mesh.position.x = $yearElement.parent().position().left;
+        //mesh.position.y = $yearElement.parent().position().top;
+        mesh.lookAt(teamMesh.position);
+        mesh.position.x = teamMesh.position.x;
+        mesh.position.y = teamMesh.position.y;
+        mesh.position.z = teamMesh.position.z + 100;
+        mesh.lookAt(teamMesh.position);
+        //mesh.position.x = 200;
+        //mesh.position.y = 0;
+        //mesh.position.z = 0;
+        //mesh.lookAt(teamMesh.position);
+        yearPointers.push(mesh);
+        globe.scene.add( mesh );
+        console.log("pointer added...");
+        //});
+        /*var canvas = $container.find('canvas')[0];
+        var ctx = canvas.getContext('experimental-webgl');
+        console.log('Canvas', canvas, ctx);*/
     }
 
     function teamSelected($teamElement) {

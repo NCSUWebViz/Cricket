@@ -35,7 +35,7 @@ body {
 }
 
 #vizList {
-	z-index:1000;
+	z-index:10000;
     position: absolute;
     left: 20px;
     top: 63px;
@@ -201,10 +201,11 @@ nav ul li.first {
     visibility:hidden;
 }
 
-#chart {
+#cartogramSvgChart {
   width: 960px;
   height: 500px;
   visibility:hidden;
+  //background:url(../images/globeTexture.jpg);
 }
 
 circle {
@@ -217,34 +218,38 @@ circle {
 }
 
 #radial_container { 
-	position:relative; 
-	left:425px; 
-	top: 75px; 
-	width:100px; 
-	height:100px; 
+	position:relative;
+	padding: 0px;
+	margin: 0px;
+	height: 100%;
+	width: 100%;
+	//left:425px; 
+	//top: 75px; 
+	//width:100px; 
+	//height:100px; 
 	text-align:center;
 }
 .radial_div_yearItem {
 	background-color:none;
 	height:30px;
-	padding:10px;
+	//padding:10px;
 	color:#234;
-	-moz-border-radius:10px;
-	-webkit-border-radius:10px;
+	//-moz-border-radius:40px;
+	//-webkit-border-radius:40px;
 	cursor:pointer;
 }
 .radial_div_yearItem.active { 
 	background-color:#511; color:white;
 	padding: 10px; 
-	-moz-border-radius:40px;
+	//-moz-border-radius:40px;
 	z-index:100;
 }
 .yearItemText { 
 	font-size:1.5em;
 	color:#00F;
 	background-color:#def;
-	-moz-border-radius:50px;
+	//-moz-border-radius:50px;
 	width:30px;
 	height:30px;
-	-webkit-border-radius:50px;
+	-webkit-border-radius:80px;
 }

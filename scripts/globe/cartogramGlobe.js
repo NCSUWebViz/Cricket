@@ -7,6 +7,10 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     var svgCanvas;
     var svgTexture;
     var teamHighlightMeshes = new Array();
+    var cartogramSvgChart = document.getElementById('cartogramSvgChart');
+    var svgCanvas = document.getElementById('svgCanvas');
+    var ctx = svgCanvas.getContext('2d');
+    var renderNow = true;
 
     function animate() {
         requestAnimationFrame(animate);
@@ -14,12 +18,38 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     }
 
     function render() {
-        svgCanvas = document.getElementById('svgCanvas');
-        var worldImage = document.getElementById('cartogramSvgChart');
-        var svg = $.trim(worldImage.innerHTML);
-        canvg(svgCanvas, svg);
-        svgTexture.needsUpdate = true;
+        // Serialize the SVG DOM as XML
+        //var svg_xml = (new XMLSerializer())
+            //.serializeToString(svg);
+
+        //var img = new Image();
+        // Base64-encode the XML as data URL
+        //img.src = "data:image/svg+xml;base64," + btoa(svg);
+        // Draw the SVG-in-img into Canvas
+        //img.onload = function() {
+            //ctx.drawImage(img,0,0);
+        //}
+
+        //ctx.drawSvg(svg); // NOTE: this also works pretty well.
+        //svgTexture.needsUpdate = true;
+        //updateSvgCanvas();
         globe.render();
+    }
+
+    function updateSvgCanvas() {
+        if (!renderNow)
+            return;
+
+        renderNow = false;
+        var svg = cartogramSvgChart.innerHTML;
+        //console.log("SVG:", svg);
+        canvg(svgCanvas, svg, {
+            renderCallback: function() {
+                //console.log("Update svg canvas called");
+                svgTexture.needsUpdate = true;
+                renderNow = true;
+            }
+        });
     }
 
     function load() {
@@ -27,6 +57,9 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         $container.click(globeClicked);
         projector = new THREE.Projector();
         loadSvgCanvasGlobe();
+
+        // NOTE: Either use this, or call updateSvgCanvas from render()
+        setInterval(updateSvgCanvas, 100);
     }
 
     function unload() {
@@ -42,11 +75,13 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         var chart = document.getElementById('cartogramSvgChart');
         var svg = chart.innerHTML;
         svg = $.trim(svg);
-        svgCanvas = document.getElementById('svgCanvas');
-        canvg(svgCanvas, svg, { ignoreAnimations: false,
-                forceRedraw: function() { return false; }});
+        //svgCanvas = document.getElementById('svgCanvas');
+        //canvg(svgCanvas, svg, { ignoreAnimations: false,
+                //forceRedraw: function() { return false; }});
 
         svgTexture = new THREE.Texture(svgCanvas);
+        svgTexture.minFilter = THREE.LinearFilter;
+        svgTexture.magFilter = THREE.LinearFilter;
         console.log("Canvas (svg?):", svgCanvas);
         console.log("CanvasTexture:", svgTexture);
         svgTexture.needsUpdate = true;

@@ -5,8 +5,8 @@ echo mysql_error();
 $parentJson = array();
 
 while($row = mysql_fetch_assoc($result)){
-	$json = array('name' => $row['name'], 'code' => $row['code'], 'latitude' => floatval($row['lat']), 'longitude' => floatval($row['longt']));
-	$parentJson[] = array($row['year'] => $json );	
+    $json = array('name' => $row['name'], 'code' => $row['code'], 'latitude' => floatval($row['lat']), 'longitude' => floatval($row['longt']));
+    $parentJson[$row['year']] = $json;
 }
-echo "{\"data\":[".json_encode($parentJson)."]}";
+echo json_encode($parentJson);
 ?>

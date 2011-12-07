@@ -10,6 +10,10 @@
  * Dual licensed under the MIT and GPL licenses:
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html 
+ *
+ *   NOTE: This version is slightly changed from its original version: the
+ *   onSelect function now sends the event as the second argument to
+ *   the callback, not just the selected item.
  * 
  */
 
@@ -302,7 +306,7 @@
 			$selected.addClass($m.opts.activeItemClass);
 			
 			// pass the selected item to a customizable function
-			$m.opts.onSelect($selected);
+			$m.opts.onSelect($selected, evt);
 			
 			cancelBubble(evt);
 			

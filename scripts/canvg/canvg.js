@@ -2033,7 +2033,8 @@ if(!Array.indexOf){
 			this.loaded = false;
 			var that = this;
 			this.img.onload = function() { that.loaded = true; }
-			this.img.src = this.attribute('xlink:href').value;
+			//this.img.src = this.attribute('xlink:href').value;
+			this.img.src = this.attribute('href').value;
 			
 			this.renderChildren = function(ctx) {
 				var x = this.attribute('x').Length.toPixels('x');

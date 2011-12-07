@@ -140,9 +140,9 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
         });
 
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.matrixAutoUpdate = false;
-    scene.add(mesh);
+    DAT.mesh = new THREE.Mesh(geometry, material);
+    DAT.mesh.matrixAutoUpdate = false;
+    scene.add(DAT.mesh);
 
     shader = Shaders['atmosphere'];
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
@@ -283,8 +283,6 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
     var phi = (90 - lat) * Math.PI / 180;
     var theta = (180 - lng) * Math.PI / 180 + THREE_VERSION_OFFSET;
-    //var theta = (180 - lng) * Math.PI / 180 + Math.PI;
-
     var point = new THREE.Mesh(geometry,
             material || new THREE.MeshBasicMaterial({
               color: 0xffffff,
