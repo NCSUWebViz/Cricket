@@ -12,7 +12,7 @@ var countryCoords = {
     'BAN': [1420, 351],
     'BER': [674, 296],
     'CAN': [544, 238],
-    'EAF': [0, 0],
+    'EAF': [1132, 511],
     'ENG': [942, 200],
     'HOK': [1541, 352],
     'IND': [1352, 330],
@@ -28,7 +28,7 @@ var countryCoords = {
     'UAE': [1230, 346],
     'USA': [538, 270],
     'WIN': [540, 378],
-    'ZIM': [0, 0]
+    'ZIM': [1108, 568]
 };
 
 var color = d3.scale.linear()
