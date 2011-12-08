@@ -3,6 +3,7 @@ var VIS = VIS || {};
 VIS.CartogramGlobe = function($container, teamClickCallback) {
 
     var globe;
+    var teamCache = {};
     var projector;
     var svgCanvas;
     var svgTexture;
@@ -93,36 +94,20 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         loadTeams();
     }
 
-    /*function loadTeams() {
-        console.log("Load teams called");
+    function loadTeams() {
         $.getJSON('php/getTeams.php', function(data) {
             var teamItems = [];
             var $ul = $('<ul/>', {
                 'class': 'teamList',
             });
             $.each(data, function(key, val) {
-                var $team = $('<li id="' + val.code + '">' + val.name + '</li>')
-                    .appendTo($ul);
-                $team.addClass('team');
-                $team.data('lat', val.latitude);
-                $team.data('lng', val.longitude);
-                addTeam(val.latitude, val.longitude);
-                $team.hover(function() {
-                    var $this = $(this);
-                    globe.curLat = $this.data('lat');
-                    globe.curLong = $this.data('lng');
-                });
+                addTeam(val.latitude, val.longitude, val.code);
+                teamCache[val.code] = {
+                    'lat': val.latitude,
+                    'lng': val.longitude,
+                    'name': val.name,
+                };
             });
-            $ul.appendTo('body');
-            console.log("load Teams attempted");
-        });
-    }*/
-    function loadTeams() {
-        if (VIS.teamDataList == null)
-            return;
-
-        $.each(VIS.teamDataList, function(key, val) {
-            addTeam(val.latitude, val.longitude, val.code);
         });
     }
 
