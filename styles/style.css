@@ -4,7 +4,7 @@ body {
     margin: 0px;
 	overflow: hidden;
 	font-family: 'Garamond';
-	background:url(../images/cricketball.jpg);
+	background-image:url(../images/cricketball2.jpg);
 	background-repeat:no-repeat;
 	background-position: top center;
 	background-size:contain;
