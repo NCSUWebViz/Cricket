@@ -5,6 +5,10 @@
  * http://code.google.com/p/canvg/
  *
  * Requires: rgbcolor.js - http://www.phpied.com/rgb-color-parser-in-javascript/
+ *
+ * NOTE: This version is slightly modified from its original version.  It
+ * has a slight change to the "image" tag to accomodate some bug in my
+ * process that is causing "xlink:href" to turn into just "href"
  */
 if(!window.console) {
 	window.console = {};
