@@ -58,13 +58,16 @@ svg.append("svg:image")
 svg.append("svg:g")
         .attr("transform", "translate(50,50)");
 
+// NOTE: This service call isn't needed, but since all this code should
+// be moved to the cartogram globe file anyway, I'm leaving it for the
+// moment.
 d3.json("php/getTeams.php", function(states) {
   var project = d3.geo.mercator(),
       idToNode = {},
       links = [],
       nodes = states.map(function(d) {
         var xy = project([d.latitude, d.longitude]);
-        console.log("Projection:", d.name, d.latitude, d.longitude, xy);
+        //console.log("Projection:", d.name, d.latitude, d.longitude, xy);
         return idToNode[d.id] = {
             x: countryCoords[d.code][0],
             y: countryCoords[d.code][1],

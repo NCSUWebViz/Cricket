@@ -6,6 +6,7 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     var globe;
     var projector;
     //var teamHighlightMeshes = new Array();
+    var clickableMeshes = new Array();
     var teamHighlightMeshes = {};
     var yearPointers = new Array();
     var teamCache = {};
@@ -25,7 +26,10 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
         $container.width($(window).width());
         $container.click(globeClicked);
         projector = new THREE.Projector();
-        loadModels();
+        globe = new DAT.Globe($container[0], null, null, false);
+        //loadModels();
+        loadTeams();
+        animate();
     }
 
     function unload() {
@@ -38,7 +42,7 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     }
 
     function loadModels() {
-        globe = new DAT.Globe($container[0], null, null, false);
+        //globe = new DAT.Globe($container[0], null, null, false);
         $.getJSON('testdata/stats.json', function(data) {
             for (i=0;i<data.length;i++) {
                 globe.addData(data[i][1], {
@@ -184,12 +188,15 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     }
 
     function addTeam(lat, lng, code) {
-        var mesh = globe.addHighlight(lat, lng, null);
+        //var mesh = globe.addHighlight(lat, lng, null);
+        var flagMesh = globe.addFlag(lat, lng, 'images/flags/'+code+'.gif');
         //mesh.code = code;
         //mesh.lat = lat;
         //mesh.lng = lng;
         //teamHighlightMeshes.push(mesh);
-        teamHighlightMeshes[code] = mesh;
+        //teamHighlightMeshes[code] = mesh;
+        teamHighlightMeshes[code] = flagMesh;
+        clickableMeshes.push(flagMesh);
     }
 
     function globeClicked(event) {
@@ -200,7 +207,8 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
         var ray = new THREE.Ray( globe.camera.position,
                 vector.subSelf( globe.camera.position ).normalize() );
         //console.log("Hit test", teamHighlightMeshes);
-        var hits = ray.intersectObjects(teamHighlightMeshes);
+        //var hits = ray.intersectObjects(teamHighlightMeshes);
+        var hits = ray.intersectObjects(clickableMeshes);
         if (hits.length) {
             console.log("Team Location clicked!", hits);
             var hit = hits[0];

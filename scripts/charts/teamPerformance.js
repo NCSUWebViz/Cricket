@@ -133,22 +133,6 @@ VIS.TeamPerfGraph = function($container, teamClickCallback) {
     }
 
     function teamSelected($teamElement) {
-        /*var lat, lng;
-        if (!$teamElement.data('lat') || !$teamElement.data('lng')) {
-            var code = $teamElement.attr('id');
-            if (teamCache[code] == undefined) {
-                console.log('Error: Invalid team selected', $teamElement, code);
-                return;
-            }
-            lat = teamCache[code].lat;
-            lng = teamCache[code].lng;
-        } else {
-            lat = $teamElement.data('lat');
-            lng = $teamElement.data('lng');
-        }
-        console.log("Changing selected team", $teamElement, lat, lng);
-        globe.curLat = lat;
-        globe.curLong = lng;*/
         countryCode = $teamElement.attr('id');
         countryName = $teamElement.text();
         console.log("Changing selected team", $teamElement, countryCode,
