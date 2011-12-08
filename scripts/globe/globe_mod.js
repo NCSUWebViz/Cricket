@@ -57,7 +57,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
           'vec3 diffuse = texture2D( texture, vUv ).xyz;',
           'float intensity = 1.05 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );',
           'vec3 atmosphere = vec3( 1.0, 1.0, 1.0 ) * pow( intensity, 3.0 );',
-          'gl_FragColor = vec4( diffuse + atmosphere, 1.0 );',
+          'gl_FragColor = vec4( diffuse + atmosphere, 0.6 );',
         '}'
       ].join('\n')
     },
@@ -136,11 +136,13 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
           uniforms: uniforms,
           vertexShader: shader.vertexShader,
-          fragmentShader: shader.fragmentShader
+          fragmentShader: shader.fragmentShader,
+          //opacity: 0.50
 
         });
 
     DAT.mesh = new THREE.Mesh(geometry, material);
+    //DAT.mesh.opacity = 0.50;
     DAT.mesh.matrixAutoUpdate = false;
     scene.add(DAT.mesh);
 
@@ -299,7 +301,45 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     point.scale.y = 8;
     point.updateMatrix();
     scene.add(point);
-    return point
+    return point;
+  }
+
+  function addFlag(lat, lng, imagePath) {
+    var imageTexture = new THREE.ImageUtils.loadTexture(imagePath);
+    var imageMaterial = new THREE.MeshBasicMaterial({
+        map: imageTexture,
+        depthTest: true
+    });
+    var geometry = new THREE.PlaneGeometry( 10, 10 );
+    //geometry.doubleSided = true;
+    for (var i = 0; i < geometry.vertices.length; i++) {
+
+      var vertex = geometry.vertices[i];
+      vertex.position.z -= 0.75;
+
+    }
+
+
+    var flagMesh = new THREE.Mesh( geometry, imageMaterial);
+    flagMesh.doubleSided = true;
+
+    var phi = (90 - lat) * Math.PI / 180;
+    var theta = (180 - lng) * Math.PI / 180 + THREE_VERSION_OFFSET;
+    flagMesh.position.x = 200 * Math.sin(phi) * Math.cos(theta);
+    flagMesh.position.y = 200 * Math.cos(phi);
+    flagMesh.position.z = 200 * Math.sin(phi) * Math.sin(theta);
+
+    //flagMesh.lookAt(flagMesh.position);
+    flagMesh.lookAt(mesh.position);
+    //flagMesh.matrix.setRotationY(360);
+    //flagMesh.rotation.x = 180;
+    //THREE.Matrix4.makeInvert3x3(flagMesh.matrix, flagMesh.matrix);
+    //flagMesh.scale.z = 1;
+    //flagMesh.scale.x = 8;
+    //flagMesh.scale.y = 8;
+    flagMesh.updateMatrix();
+    scene.add(flagMesh);
+    return flagMesh;
   }
 
   function addModelFromLoader(lat, lng, size, color) {
@@ -463,7 +503,6 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
   }
 
   function animate() {
-    //console.log("Animating!");
     requestAnimationFrame(animate);
     render();
   }
@@ -558,6 +597,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
   this.addData = addData;
   this.addHighlight = addHighlight;
+  this.addFlag = addFlag;
   this.createPoints = createPoints;
   this.renderer = renderer;
   this.scene = scene;
