@@ -56,7 +56,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
         'void main() {',
           'vec3 diffuse = texture2D( texture, vUv ).xyz;',
           'float intensity = 1.05 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );',
-          'vec3 atmosphere = vec3( 1.0, 1.0, 1.0 ) * pow( intensity, 3.0 );',
+          'vec3 atmosphere = vec3( 1.0, 1.0, 0.6 ) * pow( intensity, 3.0 );',
           'gl_FragColor = vec4( diffuse + atmosphere, 0.6 );',
         '}'
       ].join('\n')
@@ -74,7 +74,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
         'varying vec3 vNormal;',
         'void main() {',
           'float intensity = pow( 0.8 - dot( vNormal, vec3( 0, 0, 1.0 ) ), 12.0 );',
-          'gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 ) * intensity;',
+          'gl_FragColor = vec4( 1.0, 1.0, 1.0, 0.6 ) * intensity;',
         '}'
       ].join('\n')
     }
@@ -120,6 +120,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     vector = new THREE.Vector3();
 
     scene = new THREE.Scene();
+    scene.add(camera);
     sceneAtmosphere = new THREE.Scene();
 
     var geometry = new THREE.SphereGeometry(200, 40, 30);
@@ -128,22 +129,27 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
     uniforms['texture'].texture = dynamicTexture ||
-        THREE.ImageUtils.loadTexture(imgDir+'globeTexture'+'.jpg');
+        THREE.ImageUtils.loadTexture(imgDir+'globeTexture'+'.png');
         //THREE.ImageUtils.loadTexture(imgDir+'world'+'.jpg');
     //uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+'world_upsidedown'+'.jpg');
 
+    //material = new THREE.MeshBasicMaterial({
     material = new THREE.ShaderMaterial({
 
           uniforms: uniforms,
+          map: uniforms['texture'].texture,
           vertexShader: shader.vertexShader,
           fragmentShader: shader.fragmentShader,
-          //opacity: 0.50
+          transparent: true,
+          opacity: 1.0,
+          doubleSided: true
 
         });
 
     DAT.mesh = new THREE.Mesh(geometry, material);
     //DAT.mesh.opacity = 0.50;
     DAT.mesh.matrixAutoUpdate = false;
+    DAT.mesh.doubleSided = true;
     scene.add(DAT.mesh);
 
     shader = Shaders['atmosphere'];
@@ -308,10 +314,12 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     var imageTexture = new THREE.ImageUtils.loadTexture(imagePath);
     var imageMaterial = new THREE.MeshBasicMaterial({
         map: imageTexture,
-        depthTest: true
+        depthTest: true,
+        doubleSided: true
     });
-    var geometry = new THREE.PlaneGeometry( 10, 10 );
-    //geometry.doubleSided = true;
+    imageMaterial.doubleSided = true;
+    var geometry = new THREE.PlaneGeometry( 13, 13 );
+    geometry.doubleSided = true;
     for (var i = 0; i < geometry.vertices.length; i++) {
 
       var vertex = geometry.vertices[i];
@@ -325,14 +333,22 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
     var phi = (90 - lat) * Math.PI / 180;
     var theta = (180 - lng) * Math.PI / 180 + THREE_VERSION_OFFSET;
+    //flagMesh.updateMatrix();
+    //flagMesh.rotation.y = 180;
+    //flagMesh.rotation.x = 90;
+    //flagMesh.rotation.z = 270;
     flagMesh.position.x = 200 * Math.sin(phi) * Math.cos(theta);
     flagMesh.position.y = 200 * Math.cos(phi);
     flagMesh.position.z = 200 * Math.sin(phi) * Math.sin(theta);
 
     //flagMesh.lookAt(flagMesh.position);
     flagMesh.lookAt(mesh.position);
+    //flagMesh.updateMatrix();
+    //var matrix = new THREE.Matrix4();
+    //matrix.getInverse(flagMesh.matrix);
+    //flagMesh.matrix = matrix;
+    //flagMesh.rotation.y = 180;
     //flagMesh.matrix.setRotationY(360);
-    //flagMesh.rotation.x = 180;
     //THREE.Matrix4.makeInvert3x3(flagMesh.matrix, flagMesh.matrix);
     //flagMesh.scale.z = 1;
     //flagMesh.scale.x = 8;
