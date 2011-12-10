@@ -18,7 +18,7 @@ function getAccumulatedWins(){
 	while($year <= $max_year)
 	{
 		$sql = "select count(*) as total, m.year as year, t.code as team from matches m, teams t";
-		$sql = $sql." where t.id = m.winner_id and m.type like '%". $type ."%' and m.winner_id <> -1 and m.year =".$year;
+		$sql = $sql." where t.id = m.winner_id and m.type like '%". $type ."%' and m.winner_id <> -1 and m.year <=".$year;
 		$sql = $sql." group by m.winner_id"; 
 		//$sql = "select ".$x.", sum(".$y.") as total from batting_stats where type like '%".$type."%' and player_id =".$id;
 		//echo $sql;
@@ -43,7 +43,7 @@ function getAccumulatedWins(){
 	if($flag)
 		echo json_encode($json);
 	else
-		echo "[]";
+		echo "{}";
 
 }
 getAccumulatedWins();
