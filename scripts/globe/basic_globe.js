@@ -226,15 +226,15 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
         teamSelected($yearElement);
         console.log("Year selected", $yearElement);
         var geometry = new THREE.CylinderGeometry( 0, 10, 100, 3 );
+        for (var i = 0; i < geometry.vertices.length; i++) {
+            var vertex = geometry.vertices[i];
+            vertex.position.z += 0.5;
+        }
         geometry.applyMatrix( new THREE.Matrix4()
             .setRotationFromEuler(new THREE.Vector3(Math.PI/2,Math.PI,0)));
         var material = new THREE.MeshNormalMaterial();
         //$.each(elements, function(idx, $el) {
         var mesh = new THREE.Mesh( geometry, material );
-        //mesh.position.x = Math.random() * 4000 - 2000;
-        //mesh.position.y = Math.random() * 4000 - 2000;
-        //mesh.position.z = Math.random() * 4000 - 2000;
-        //mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 4 + 2;
 
         var code = $yearElement.data('code');
         var teamMesh = teamHighlightMeshes[code];
@@ -253,10 +253,10 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
             teamMesh);
         //mesh.position.x = $yearElement.parent().position().left;
         //mesh.position.y = $yearElement.parent().position().top;
-        mesh.lookAt(teamMesh.position);
+        //mesh.lookAt(teamMesh.position);
         mesh.position.x = teamMesh.position.x;
         mesh.position.y = teamMesh.position.y;
-        mesh.position.z = teamMesh.position.z + 100;
+        mesh.position.z = teamMesh.position.z;
         mesh.lookAt(teamMesh.position);
         //mesh.position.x = 200;
         //mesh.position.y = 0;

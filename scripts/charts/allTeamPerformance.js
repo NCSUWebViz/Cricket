@@ -37,6 +37,8 @@ VIS.AllTeamPerfGround = function ($container, teamClickCallback)
             chart: {
                 renderTo: 'container',
                 defaultSeriesType: 'column',
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                plotBackgroundColor: 'rgba(0,0,0,0.8)',
                 zoomType: 'y'
             },
             title: {

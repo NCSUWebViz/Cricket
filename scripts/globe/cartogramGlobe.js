@@ -8,10 +8,13 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     var svgCanvas;
     var svgTexture;
     var teamHighlightMeshes = new Array();
+    var $yearSlider = $("<div id='yearSlider'>");
     var cartogramSvgChart = document.getElementById('cartogramSvgChart');
     var svgCanvas = document.getElementById('svgCanvas');
     var ctx = svgCanvas.getContext('2d');
     var renderNow = true;
+
+    var matchType = null;
 
     function animate() {
         requestAnimationFrame(animate);
@@ -57,6 +60,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         $container = $container || $('#container');
         $container.click(globeClicked);
         projector = new THREE.Projector();
+        loadUI();
         loadSvgCanvasGlobe();
 
         // NOTE: Either use this, or call updateSvgCanvas from render()
@@ -70,6 +74,44 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         delete globe;
         delete projector;
         $(svgCanvas).html('');
+    }
+
+    function loadUI() {
+        $container.append($yearSlider);
+    }
+
+    function getData() {
+        console.log("getData()", matchType);
+        //if (matchType == null)
+            //return;
+
+        var args="";
+        if(matchType != "All Match Types" && matchType != "All Types"){
+                args = args + "&type=" + matchType;
+        }
+
+        $.getJSON('php/AccumulatedWins.php'+args, function(data) {
+            console.log("AccumulateWins returned", data);
+            var years = [];
+            for(var key in data) {
+                if(data.hasOwnProperty(key)) {
+                    years.push(key);
+                }
+            }
+            years.sort();
+
+            $yearSlider.slider({
+                min: years[0],
+                max: years[1],
+                value: years[0],
+                slide: function(e, ui) {
+                    year = ui.value;
+                    updateYear();
+                    //vis.render();
+                    vis.render();
+                }
+            });
+        });
     }
 
     function loadSvgCanvasGlobe() {
@@ -139,7 +181,17 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         globe.curLong = $teamElement.data('lng');
     }
 
+    function matchTypeSelected($mtElement) {
+        matchType = $mtElement.attr('id');
+        console.log("Changing selected match type");
+        getData();
+    }
+
     this.load = load;
     this.unload = unload;
     this.teamSelected = teamSelected;
+    this.matchTypeSelected = matchTypeSelected;
+    this.requiredMenus = [
+        VIS.vizMenuEnum.matchTypeClick
+    ];
 }
