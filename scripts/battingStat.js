@@ -7,16 +7,11 @@ var filterval;
 var filtertype;
 	
 function getData(){
-		//alert('called');
-		/*
-		 * Get the Country Drop Down properties
-		 */
 		var e = document.getElementById("countrySelect");
 		countryCode = e.options[e.selectedIndex].value;
 		countryName = e.options[e.selectedIndex].text;
 		e = document.getElementById("PlayerSelect");
 		e.options.length = 0;
-		//alert('php/getPlayerList.php?team='+countryName);
 		$.getJSON('php/getPlayerList.php?team='+countryName,function populateList(data){
 			var e = document.getElementById("PlayerSelect");
 			var o;
@@ -35,27 +30,27 @@ function getData(){
     	});
 		filterflag = 0;
 		//alert(xval);
-    	getPlayerData();
+ //   	getPlayerData();
 }
 
 function resetfilter()
 {
 	filterflag = 0;
+	var div = document.getElementById("filter");
+	div.innerHTML = '';
+	var temp = document.getElementById("resetFilter");
+	temp.style.visibility = "hidden";
 	getPlayerData();
 }
 
-function getPlayerDatabyYear()
+function getSelectedPlayerData()
 {
-	xval = 'year';
-	getPlayerData();
+	resetfilter();
+	//getPlayerData();
 }
 
 function getPlayerData()
 {
-			/*
-		 * Get the Match Type Drop Down properties
-		 */
-		//alert('here');
 		var args = '';
 		var e = document.getElementById("PlayerSelect");
 		var playerName = e.options[e.selectedIndex].text;
@@ -64,18 +59,11 @@ function getPlayerData()
 		xobj = e.options[e.selectedIndex];
 		xval = xobj.value;
 		xid = xobj.text;
-		//alert('ikde');
-		/*var args="";
-		if(countryCode){
-			args = "?id="+countryCode;
-			if(matchType != "All Match Types"){
-				args = args + "&type=" + matchType;
-			}*/
-			//alert(args);
-		/*--remove comment later --}
-		else{
-			document.getElementById('container').innerHTML = "Select A Country!";
-		}--remove comment later --*/
+		e = document.getElementById("SelectY");
+		yobj = e.options[e.selectedIndex];
+		yval = yobj.value;
+		yid = yobj.text;
+		
 
 		//--------------------Declare options-----------------
 		options =  {
@@ -109,7 +97,8 @@ function getPlayerData()
 		    },
 		    tooltip: {
 				formatter: function() {
-					var tooltip = '<b>'+xid+':</b>'+ this.x + '<br /><b>'; /*+ 
+					var tooltip = '<b>'+xid+':</b>'+ this.x + '<br />' +
+					'<b>'+yid+':</b>'+ this.y + '<br />' ; /*+ 
 					this.series.name +':</b> '+ this.y +'<br/>';*/
 					return tooltip;
 				}
@@ -125,6 +114,7 @@ function getPlayerData()
 							click: function() {
 								filterflag = 1;
 								filtertype = xval;
+								filtername = xid;
 								//alert(xval);
 								filterval = this.category;
 								e = document.getElementById("SelectX");
@@ -132,8 +122,11 @@ function getPlayerData()
 									e.value = 'vsTeam_id';
 								else
 									e.value = 'year';
-								//document.write("<BR>Filtered by " + filtertype + " and value " + filterval + "<BR>");
 								getPlayerData();
+								var div = document.getElementById("filter");
+								div.innerHTML = 'Filtered by <b>'+filtername+'</b> with value <b>'+filterval+'</b>';
+								var temp = document.getElementById("resetFilter");
+								temp.style.visibility = "visible";
 							}
 						}	
 					}
@@ -143,7 +136,7 @@ function getPlayerData()
 		};	
 		//----------------------------------------------------
 		//alert("calling json function");
-		var args = 'id='+playerId+'&type=ODI&x='+xval+'&y=scored_runs';
+		var args = 'id='+playerId+'&type=ODI&x='+xval+'&y='+yval;
 		if(filterflag == 1) {
 			args = args + '&filtertype=' + filtertype + '&filterval=' + filterval;
 		}
@@ -171,6 +164,7 @@ function getPlayerData()
 				var chart = new Highcharts.Chart(options);	
 			}
 	});
+	//document.write("<BR>Filtered by " + filtertype + " and value " + filterval + "<BR>");
 }
 
 

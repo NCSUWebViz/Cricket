@@ -25,12 +25,14 @@
 	<body>
 		<!-- 3. Add the container -->
 		<div id="container" style="width: 1600px; height: 600px; margin: 0 auto"></div>
+		<div id='filter'></div>
+		<label id="resetFilter" onclick='resetfilter()' style='color:blue;visibility:hidden'>Reset Filter</label>
 		<div>Select Team : <?php 
 			include 'php/getTeamList.php';
 		?>
 		<div>
 				Select Player : 
-				<select id='PlayerSelect' onchange='getPlayerData()'>
+				<select id='PlayerSelect' onchange='getSelectedPlayerData()'>
 				<option value='' selected='true'></option>;
 				</select>
 		</div>
@@ -40,19 +42,21 @@
 				<option value='year' selected='true'>Year</option>;
 				<option value='vsTeam_id'>Opponent</option>;
 				<option value='venue_id'>Venue</option>;
-			</select>
+				<!-- <option value='id'>Innings</option>; -->
+ 			</select>
 		</div>
 		<div>
 			Y Axis : 
 				<select id='SelectY' onchange='getPlayerData()'>
 				<option value='scored_runs' selected='true'>Total Runs</option>;
-				<option value='scored_runs'>Strike Rate</option>;
-				<option value='scored_runs'>Venue</option>;
+				<option value='average'>Average</option>;
+				<option value='id'>Matches Played</option>;
+				<option value='strike_rate'>Strike Rate</option>;
+				<option value='centuries'>Number of Centuries</option>;
 				</select>
 		</div>
- 		<div>
- 			<p id="resetFilter" onclick='resetfilter()'>Reset Filter</p>
-		</div>
+ 
+		
 		
 	</body>
 </html>
