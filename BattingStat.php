@@ -32,7 +32,7 @@
 		?>
 		<div>
 				Select Player : 
-				<select id='PlayerSelect' onchange='getPlayerData()'>
+				<select id='PlayerSelect' onchange='getSelectedPlayerData()'>
 				<option value='' selected='true'></option>;
 				</select>
 		</div>

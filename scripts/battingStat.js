@@ -30,7 +30,7 @@ function getData(){
     	});
 		filterflag = 0;
 		//alert(xval);
-    	getPlayerData();
+ //   	getPlayerData();
 }
 
 function resetfilter()
@@ -43,10 +43,10 @@ function resetfilter()
 	getPlayerData();
 }
 
-function getPlayerDatabyYear()
+function getSelectedPlayerData()
 {
-	xval = 'year';
-	getPlayerData();
+	resetfilter();
+	//getPlayerData();
 }
 
 function getPlayerData()
@@ -63,17 +63,7 @@ function getPlayerData()
 		yobj = e.options[e.selectedIndex];
 		yval = yobj.value;
 		yid = yobj.text;
-		/*var args="";
-		if(countryCode){
-		args = "?id="+countryCode;
-			if(matchType != "All Match Types"){
-				args = args + "&type=" + matchType;
-			}*/
-			//alert(args);
-		/*--remove comment later --}
-		else{
-			document.getElementById('container').innerHTML = "Select A Country!";
-		}--remove comment later --*/
+		
 
 		//--------------------Declare options-----------------
 		options =  {
