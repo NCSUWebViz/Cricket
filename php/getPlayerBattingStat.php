@@ -9,7 +9,22 @@ function getPlayerBattingStat(){
 	$type = $_GET['type'];
 	$x = $_GET['x'];
 	$y = $_GET['y'];
-	$sql = "select ".$x.", sum(".$y.") as total from batting_stats where type like '%".$type."%' and player_id =".$id;
+	$ystring;
+	
+	if($y == 'scored_runs')
+		$ystring = "sum(scored_runs)";
+	else if($y == 'average')
+		$ystring = "sum(scored_runs)/sum(NOT(not_out))";
+	else if($y == 'strike_rate')
+		$ystring = "sum(scored_runs)/sum(balls_faced)*100";
+	else 
+		$ystring = "count(*)";
+	
+	$sql = "select ".$x.", ".$ystring." as total from batting_stats where type like '%".$type."%' and player_id =".$id." and dismissed not like '%DNB%'";
+	
+	if($y == 'centuries')
+		$sql = $sql." and scored_runs >= 100 ";
+	
 	if (isset($_GET['filtertype'])) {
 		$filtertype = $_GET['filtertype'];
 		$filterval =  $_GET['filterval'];
@@ -20,18 +35,13 @@ function getPlayerBattingStat(){
 	}
 	$sql = $sql." group by ".$x;
 	
-	//echo $sql;
-	//$super_set = mysql_query("select year, count(*) as total from matches where team1 LIKE 'IND' or team2 LIKE 'IND' group by year") ;
-	//$super_set = mysql_query("select year, count(*) as total from matches where team1 LIKE '".$country."' or team2 LIKE '".$country."' group by year") ;
 	$result = mysql_query($sql) ;
-	//$result = mysql_query("select year, count(*) as wins from matches where winner_id LIKE 'India' group by year") ;
-	//echo $result;	
 	if($result){
 		$i = 0;
 		while($row = mysql_fetch_assoc($result)){
 			//echo intval($row[$x])." , ".intval($row['total']).'<BR>';
 			$json[] = array('x' => $row[$x], 'total' => intval($row['total']));
-			$i++;			
+			$i++;
 		}
 
 		echo "{\"data\": ".json_encode($json)." }";

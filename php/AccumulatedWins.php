@@ -3,7 +3,7 @@
 function getAccumulatedWins(){
 	include 'connect.php';
 	include 'send_json.php';	
-	mysql_selectdb('Cricket',$link) or die('Error connecting to DB');
+	//mysql_selectdb('Cricket',$link) or die('Error connecting to DB');
 	
 	$type = $_GET['type'];
 	

@@ -40,18 +40,26 @@
 				<option value='year' selected='true'>Year</option>;
 				<option value='vsTeam_id'>Opponent</option>;
 				<option value='venue_id'>Venue</option>;
-			</select>
+				<!-- <option value='id'>Innings</option>; -->
+ 			</select>
 		</div>
 		<div>
 			Y Axis : 
 				<select id='SelectY' onchange='getPlayerData()'>
 				<option value='scored_runs' selected='true'>Total Runs</option>;
-				<option value='scored_runs'>Strike Rate</option>;
-				<option value='scored_runs'>Venue</option>;
+				<option value='average'>Average</option>;
+				<option value='id'>Matches Played</option>;
+				<option value='strike_rate'>Strike Rate</option>;
+				<option value='centuries'>Number of Centuries</option>;
 				</select>
 		</div>
  		<div>
+ 			Filtered by
+ 			<!-- <script type="text/javascript" src="scripts/battingStat.js">
+ 				document.write(filtertype);
+ 			</script> -->
  			<p id="resetFilter" onclick='resetfilter()'>Reset Filter</p>
+ 			
 		</div>
 		
 	</body>
