@@ -2,23 +2,24 @@ var VIS = VIS || {};
 
 VIS.Menu = function(outsideContainer) {
     var MAX_MENU_HEIGHT = 350;
-    var loadedMenus = {};
+    //var loadedMenus = {};
+    var loadedMenus = [];
     var menuCache = {};
     var $mainContainer = $(outsideContainer);
 
-    var $menuPos1 = $("<div class='menu menuPos0'>").appendTo($mainContainer);
-    var $menuPos2 = $("<div class='menu menuPos1'>").appendTo($mainContainer);
-    var $menuPos3 = $("<div class='menu menuPos2'>").appendTo($mainContainer);
-    var $menuPos4 = $("<div class='menu menuPos3'>").appendTo($mainContainer);
+    //var $menuPos1 = $("<div class='menu menuPos0'>").appendTo($mainContainer);
+    //var $menuPos2 = $("<div class='menu menuPos1'>").appendTo($mainContainer);
+    //var $menuPos3 = $("<div class='menu menuPos2'>").appendTo($mainContainer);
+    //var $menuPos4 = $("<div class='menu menuPos3'>").appendTo($mainContainer);
 
-    var menuPositions = [
-        $menuPos1,
-        $menuPos2,
-        $menuPos3,
-        $menuPos4
-    ];
+    //var menuPositions = [
+        //$menuPos1,
+        //$menuPos2,
+        //$menuPos3,
+        //$menuPos4
+    //];
 
-    var menuHierarchy = [
+    /*var menuHierarchy = [
         VIS.vizMenuEnum.teamClick,
         VIS.vizMenuEnum.teamHover,
         VIS.vizMenuEnum.teamMulti,
@@ -28,9 +29,12 @@ VIS.Menu = function(outsideContainer) {
         VIS.vizMenuEnum.matchTypeClick,
         VIS.vizMenuEnum.yearVenueOpponent,
         VIS.vizMenuEnum.venueClick
-    ];
+    ];*/
 
-    this.setupMenus = function(requiredMenus) {
+    // TODO: Remove this clever, but misguided attempt to
+    // enforce a menu hierarchy for all visualizations.  Rely
+    // on that vis to order its menus correctly.
+    /*this.setupMenus = function(requiredMenus) {
         hideNonrequiredMenus(requiredMenus);
         var pos = 0;
         $.each(menuHierarchy, function(index, menuId) {
@@ -38,6 +42,17 @@ VIS.Menu = function(outsideContainer) {
                 setupMenu(menuId, pos);
                 pos++;
             }
+        });
+    }*/
+
+    this.setupMenus = function(requiredMenus) {
+        if (requiredMenus == null && VIS.currentViz != null) {
+            requiredMenus = VIS.currentViz.requiredMenus
+        }
+
+        hideNonrequiredMenus(requiredMenus);
+        $.each(requiredMenus, function(index, menuId) {
+            setupMenu(menuId, index);
         });
     }
 
@@ -63,12 +78,12 @@ VIS.Menu = function(outsideContainer) {
 
     function fillMenuPosition(pos, $content, label) {
         var $menuNode;
-        if (pos < menuPositions.length - 1) {
-            $menuNode = menuPositions[pos];
-        } else {
+        //if (pos < menuPositions.length - 1) {
+            //$menuNode = menuPositions[pos];
+        //} else {
             $menuNode = $("<div class='menu menuPos" + pos + "'>");
             $menuNode.appendTo($mainContainer);
-        }
+        //}
 
         var height;
 
@@ -90,12 +105,15 @@ VIS.Menu = function(outsideContainer) {
             'overflow': 'scroll'
         }).appendTo($menuNode);
         $content.show();
+        loadedMenus.push($menuNode);
     }
 
     function hideNonrequiredMenus(requiredMenus) {
-        $.each(menuPositions, function(key, val) {
+        //$.each(menuPositions, function(key, val) {
+        $.each(loadedMenus, function(key, val) {
             val.children().detach();
             val.css('height', 0);
+            delete val;
         });
     }
 
@@ -126,7 +144,7 @@ VIS.Menu = function(outsideContainer) {
             $.each(teamData, function(key, val) {
                 var $team = $('<li id="' + val.id + '" code="' + val.code + '">' + val.name + '</li>')
                     .appendTo($ul);
-                if (key == 'ENG')
+                if (val.code == 'ENG')
                     $team.addClass('selected');
                 $team.addClass('team');
                 $team.data('lat', val.latitude);
@@ -154,7 +172,7 @@ VIS.Menu = function(outsideContainer) {
             $.each(teamData, function(key, val) {
                 var $team = $('<li id="' + val.id + '" code="' + val.code + '">' + val.name + '</li>')
                     .appendTo($ul);
-                if (key == 'ENG')
+                if (val.code == 'ENG')
                     $team.addClass('selected');
                 $team.addClass('team');
                 $team.data('lat', val.latitude);
