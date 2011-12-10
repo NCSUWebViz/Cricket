@@ -3,11 +3,11 @@ var VIS = VIS || {};
 VIS.CartogramGlobe = function($container, teamClickCallback) {
 
     var globe;
-    var teamCache = {};
     var projector;
     var svgCanvas;
     var svgTexture;
-    var teamHighlightMeshes = new Array();
+    var clickableMeshes = [];
+    var teamHighlightMeshes = {};
     var $yearSlider = $("<div id='yearSlider'>");
     var cartogramSvgChart = document.getElementById('cartogramSvgChart');
     var svgCanvas = document.getElementById('svgCanvas');
@@ -95,10 +95,11 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
             var years = [];
             for(var key in data) {
                 if(data.hasOwnProperty(key)) {
-                    years.push(key);
+                    years.push(parseInt(key));
                 }
             }
-            years.sort();
+            //years.sort();
+            console.log("Accumulated wins", years);
 
             $yearSlider.slider({
                 min: years[0],
@@ -108,10 +109,13 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
                     year = ui.value;
                     updateYear();
                     //vis.render();
-                    vis.render();
                 }
             });
+            console.log("Year slider:", $yearSlider);
         });
+    }
+
+    function updateYear() {
     }
 
     function loadSvgCanvasGlobe() {
@@ -144,18 +148,14 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
             });
             $.each(data, function(key, val) {
                 addTeam(val.latitude, val.longitude, val.code);
-                teamCache[val.code] = {
-                    'lat': val.latitude,
-                    'lng': val.longitude,
-                    'name': val.name,
-                };
             });
         });
     }
 
-    function addTeam(lat, lng) {
-        var mesh = globe.addHighlight(lat, lng, null);
-        teamHighlightMeshes.push(mesh);
+    function addTeam(lat, lng, code) {
+        var flagMesh = globe.addFlag(lat, lng, 'images/flags/'+code+'.gif');
+        teamHighlightMeshes[code] = flagMesh;
+        clickableMeshes.push(flagMesh);
     }
 
     function globeClicked(event) {
@@ -165,7 +165,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         projector.unprojectVector( vector, globe.camera );
         var ray = new THREE.Ray( globe.camera.position,
                 vector.subSelf( globe.camera.position ).normalize() );
-        var hits = ray.intersectObjects(teamHighlightMeshes);
+        var hits = ray.intersectObjects(clickableMeshes);
         if (hits.length) {
             console.log("Team Location clicked!", hits);
             if (teamClickCallback) {
@@ -192,6 +192,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     this.teamSelected = teamSelected;
     this.matchTypeSelected = matchTypeSelected;
     this.requiredMenus = [
+        VIS.vizMenuEnum.teamClick,
         VIS.vizMenuEnum.matchTypeClick
     ];
 }
