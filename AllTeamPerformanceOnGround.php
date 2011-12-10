@@ -21,12 +21,12 @@
 		<!-- 2. Add the JavaScript to initialize the chart on document ready -->
 		<script type="text/javascript">
    			var options;	
-			function getData(code){
+			function getData(){
 						var e = document.getElementById("groundSelect");
 						var groundName = e.options[e.selectedIndex].text;
 						var args="";
-						if(code){
-							args = "?id="+code;
+						if(e.options[e.selectedIndex].value){
+							args = "?id="+e.options[e.selectedIndex].value;
 						}
 						else{
 							args="";
@@ -86,7 +86,7 @@
 						var series = {
 					  			data: []
 					  		};
-						
+						//alert(data.country);
 						series.name = "Matches Won";
 						options.title.text = groundName + "," + data.city + "," + data.country;
 						var i = 0;
