@@ -27,10 +27,11 @@ VIS.Menu = function(outsideContainer) {
         VIS.vizMenuEnum.playersMulti,
         VIS.vizMenuEnum.matchTypeClick,
         VIS.vizMenuEnum.yearVenueOpponent,
+        VIS.vizMenuEnum.venueClick
     ];
 
     this.setupMenus = function(requiredMenus) {
-        //hideNonrequiredMenus(requiredMenus);
+        hideNonrequiredMenus(requiredMenus);
         var pos = 0;
         $.each(menuHierarchy, function(index, menuId) {
             if ($.inArray(menuId, requiredMenus) != -1) {
@@ -55,7 +56,8 @@ VIS.Menu = function(outsideContainer) {
             case VIS.vizMenuEnum.matchTypeClick:
                 loadMatchTypeMenu(pos);
                 break;
-            case VIS.vizMenuEnum.vizTeamGroundPerf:
+            case VIS.vizMenuEnum.venueClick:
+                loadVenueClickMenu(pos);
                 break;
         }
     }
@@ -91,7 +93,10 @@ VIS.Menu = function(outsideContainer) {
     }
 
     function hideNonrequiredMenus(requiredMenus) {
-
+        console.log("Hiding menus", $mainContainer);
+        $.each(menuPositions, function(key, val) {
+            val.html('');
+        });
     }
 
     function highlightItem($listItem) {
@@ -218,6 +223,42 @@ VIS.Menu = function(outsideContainer) {
                 teamsLoaded(VIS.Data.teamHash);
             });
         }
+    }
+
+    function loadVenueClickMenu(pos) {
+        if (alreadyLoaded(pos, menuCache.venueClickMenu,
+                    "Selected Venue", VIS.currentViz.venueSelected))
+            return;
+
+        function venuesLoaded(venueData) {
+            var $ul = $('<ul/>', {
+                'class': 'teamList',
+            });
+            $.each(venueData, function(key, val) {
+                var $venue = $('<li id="' + val.id + '">' + val.ground_name + '</li>')
+                    .appendTo($ul);
+                if (key == 1) {
+                    $venue.addClass('selected');
+                    VIS.currentViz.venueSelected($venue);
+                }
+                $venue.addClass('team');
+                //console.log("Team list item:", $team, val);
+                $venue.click(function() {
+                    var $this = $(this);
+                    highlightItem($this);
+                    VIS.currentViz.venueSelected($this);
+                });
+            });
+            menuCache.venueClickMenu = $ul;
+            console.log("menu list:", $ul);
+            fillMenuPosition(pos, $ul, "Select Venue");
+            /*if (VIS.currentViz != null) {
+                VIS.currentViz.menuLoaded(VIS.vizMenuEnum.teamHover);
+            }*/
+        }
+        $.getJSON('php/getVenues.php', function(data) {
+            venuesLoaded(data);
+        });
     }
 
     // TODO: Consider adding caching to try to preserve current selected

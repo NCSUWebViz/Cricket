@@ -9,7 +9,8 @@ VIS.vizEnum = {
     vizCartGlobe: 2,
     vizTeamPerf: 3,
     vizBatStats: 4,
-    vizTeamGroundPerf: 5
+    vizTeamGroundPerf: 5,
+    vizAllTeamGroundPerf: 6
 }
 
 VIS.vizMenuEnum = {
@@ -20,7 +21,8 @@ VIS.vizMenuEnum = {
     groundsClick: 5,
     playersClick: 6,
     playersMulti: 7,
-    yearVenueOpponent: 8
+    yearVenueOpponent: 8,
+    venueClick:9
 }
 
 VIS.currentViz = null;
@@ -55,6 +57,9 @@ function setupVizMenu() {
             case VIS.vizEnum.vizBatStats:
                 break;
             case VIS.vizEnum.vizTeamGroundPerf:
+                break;
+            case VIS.vizEnum.vizAllTeamGroundPerf:
+                loadAllTeamPerfGround();
                 break;
         }
     });
@@ -93,3 +98,10 @@ function loadTeamPerfGraph() {
     VIS.currentVizId = VIS.vizEnum.vizTeamPerf;
 }
 
+function loadAllTeamPerfGround()
+{
+    VIS.currentViz = new VIS.AllTeamPerfGround();
+    VIS.currentViz.load();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
+    VIS.currentVizId = VIS.vizEnum.vizAllTeamGroundPerf;
+}

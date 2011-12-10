@@ -24,9 +24,11 @@
 			function getData(){
 						var e = document.getElementById("groundSelect");
 						var groundName = e.options[e.selectedIndex].text;
+						var f = document.getElementById("countrySelect");
+						var teamName = f.options[f.selectedIndex].text;
 						var args="";
-						if(e.options[e.selectedIndex].value){
-							args = "?id="+e.options[e.selectedIndex].value;
+						if(e.options[e.selectedIndex].value != null && f.options[f.selectedIndex].value){
+							args = "?venueId="+e.options[e.selectedIndex].value+"&teamId="+f.options[f.selectedIndex].value;
 						}
 						else{
 							args="";
@@ -82,45 +84,46 @@
 						    series: []
 						};	
 						//----------------------------------------------------
-						$.getJSON('php/getGroundperformanceAll.php'+args,function(data){
-						var series = {
+						$.getJSON('php/getTeamPerformanceOnGround.php'+args,function(data){
+						var series= new Array()
+						series[0] = {
 					  			data: []
 					  		};
-						//alert(data.country);
-						series.name = "Matches Won";
-						options.title.text = groundName + "," + data.city + "," + data.country;
+						
+						series[0].name = "Matches Won";
+						options.title.text = "Performance of "+ teamName + " On " + groundName + "," + data.groundCity + "," + data.groundCountry;
 						var i = 0;
 						while( i < data.data[0].length){
-							series.data.push(data.data[0][i].wins);
-							options.xAxis.categories.push(data.data[0][i].countryName);
+							series[0].data.push(data.data[0][i].wins);
+							options.xAxis.categories.push(data.data[0][i].year);
 							i++;
 						}
-						options.series.push(series);
+						
+						options.series.push(series[0]);
 
-						var series = {
+						series[1] = {
 					  			data: []
 					  		};
-						series.name = "Matches Drawn";
+						series[1].name = "Matches Drawn";
 						var i = 0;
 						while( i < data.data[0].length){
-							series.data.push(data.data[0][i].draws);
-							options.xAxis.categories.push(data.data[0][i].countryName);
+							series[1].data.push(data.data[0][i].draws);
+							options.xAxis.categories.push(data.data[0][i].year);
 							i++;
 						}
-						options.series.push(series);
+						options.series.push(series[1]);
 
-						series = {
+						series[2] = {
 					  			data: []
 					  		};
 					  	i=0;
-					  	series.name = "Matches Lost";	
+					  	series[2].name = "Matches Lost";	
 						while( i < data.data[0].length){
-							series.data.push(data.data[0][i].total-data.data[0][i].wins-data.data[0][i].draws);
-							options.xAxis.categories.push(data.data[0][i].countryName);
+							series[2].data.push(data.data[0][i].total-data.data[0][i].wins-data.data[0][i].draws);
+							options.xAxis.categories.push(data.data[0][i].year);
 							i++;	
 						}
-						options.series.push(series);
-
+						options.series.push(series[2]);
 						var chart = new Highcharts.Chart(options);	
 				});
 			}
@@ -138,6 +141,9 @@
 		<div id="container" style="width: 1600px; height: 400px; margin: 0 auto"></div>
 		<div><?php 
 			include 'php/getGroundList.php';
+			?></div>
+			<div>
+			<?php include 'php/getTeamList.php';
 			?></div>
 				
 	</body>
