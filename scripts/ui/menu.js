@@ -2,23 +2,24 @@ var VIS = VIS || {};
 
 VIS.Menu = function(outsideContainer) {
     var MAX_MENU_HEIGHT = 350;
-    var loadedMenus = {};
+    //var loadedMenus = {};
+    var loadedMenus = [];
     var menuCache = {};
     var $mainContainer = $(outsideContainer);
 
-    var $menuPos1 = $("<div class='menu menuPos0'>").appendTo($mainContainer);
-    var $menuPos2 = $("<div class='menu menuPos1'>").appendTo($mainContainer);
-    var $menuPos3 = $("<div class='menu menuPos2'>").appendTo($mainContainer);
-    var $menuPos4 = $("<div class='menu menuPos3'>").appendTo($mainContainer);
+    //var $menuPos1 = $("<div class='menu menuPos0'>").appendTo($mainContainer);
+    //var $menuPos2 = $("<div class='menu menuPos1'>").appendTo($mainContainer);
+    //var $menuPos3 = $("<div class='menu menuPos2'>").appendTo($mainContainer);
+    //var $menuPos4 = $("<div class='menu menuPos3'>").appendTo($mainContainer);
 
-    var menuPositions = [
-        $menuPos1,
-        $menuPos2,
-        $menuPos3,
-        $menuPos4
-    ];
+    //var menuPositions = [
+        //$menuPos1,
+        //$menuPos2,
+        //$menuPos3,
+        //$menuPos4
+    //];
 
-    var menuHierarchy = [
+    /*var menuHierarchy = [
         VIS.vizMenuEnum.teamClick,
         VIS.vizMenuEnum.teamHover,
         VIS.vizMenuEnum.teamMulti,
@@ -28,17 +29,30 @@ VIS.Menu = function(outsideContainer) {
         VIS.vizMenuEnum.matchTypeClick,
         VIS.vizMenuEnum.yearVenueOpponent,
         VIS.vizMenuEnum.venueClick
-    ];
+    ];*/
 
-    this.setupMenus = function(requiredMenus) {
+    // TODO: Remove this clever, but misguided attempt to
+    // enforce a menu hierarchy for all visualizations.  Rely
+    // on that vis to order its menus correctly.
+    /*this.setupMenus = function(requiredMenus) {
         hideNonrequiredMenus(requiredMenus);
         var pos = 0;
         $.each(menuHierarchy, function(index, menuId) {
             if ($.inArray(menuId, requiredMenus) != -1) {
-                console.log('Required menu:', menuId);
                 setupMenu(menuId, pos);
                 pos++;
             }
+        });
+    }*/
+
+    this.setupMenus = function(requiredMenus) {
+        if (requiredMenus == null && VIS.currentViz != null) {
+            requiredMenus = VIS.currentViz.requiredMenus
+        }
+
+        hideNonrequiredMenus(requiredMenus);
+        $.each(requiredMenus, function(index, menuId) {
+            setupMenu(menuId, index);
         });
     }
 
@@ -64,11 +78,12 @@ VIS.Menu = function(outsideContainer) {
 
     function fillMenuPosition(pos, $content, label) {
         var $menuNode;
-        if (pos < menuPositions.length - 1) {
-            $menuNode = menuPositions[pos];
-        } else {
+        //if (pos < menuPositions.length - 1) {
+            //$menuNode = menuPositions[pos];
+        //} else {
             $menuNode = $("<div class='menu menuPos" + pos + "'>");
-        }
+            $menuNode.appendTo($mainContainer);
+        //}
 
         var height;
 
@@ -77,8 +92,8 @@ VIS.Menu = function(outsideContainer) {
         } else {
             height = 5.5;
         }
-        console.log("Height calc", pos, MAX_MENU_HEIGHT, height,
-                $content.children().length);
+        //console.log("Height calc", pos, MAX_MENU_HEIGHT, height,
+                //$content.children().length);
 
         $menuNode.css('height', height.toString() + "px");
         $("<span class='menuLabel menuPosLabel" + pos + "'>")
@@ -89,13 +104,16 @@ VIS.Menu = function(outsideContainer) {
             'height': height-25,
             'overflow': 'scroll'
         }).appendTo($menuNode);
-        $menuNode.appendTo($mainContainer);
+        $content.show();
+        loadedMenus.push($menuNode);
     }
 
     function hideNonrequiredMenus(requiredMenus) {
-        console.log("Hiding menus", $mainContainer);
-        $.each(menuPositions, function(key, val) {
-            val.html('');
+        //$.each(menuPositions, function(key, val) {
+        $.each(loadedMenus, function(key, val) {
+            val.children().detach();
+            val.css('height', 0);
+            delete val;
         });
     }
 
@@ -111,46 +129,26 @@ VIS.Menu = function(outsideContainer) {
             if ($li.hasClass('selected'))
                 $selectedItems.push($li);
         });
-        console.log("Found selected:", $selectedItems);
         return $selectedItems;
     }
 
-    function cacheTeams(teamData) {
-        VIS.Data.teamHash = {};
-
-        $.each(teamData, function (key, val) {
-            // Note, could just assign val here instead of obj hash
-            VIS.Data.teamHash[val.code] = {
-                id: val.id,
-                lng: val.longitude,
-                lat: val.latitude,
-                name: val.name,
-                code: val.code
-            };
-        });
-    }
-
     function loadTeamHoverMenu(pos) {
-        if (menuCache.teamHoverMenu != null) {
-            fillMenuPosition(pos, menuCache.teamHoverMenu, "Select Team");
-            var $selectedItems = findSelected(menuCache.teamHoverMenu);
-            if ($selectedItems.length > 0) {
-                VIS.currentViz.teamSelected($selectedItems[0]);
-            }
+        if (alreadyLoaded(pos, menuCache.teamHoverMenu,
+                    "Selected Team", VIS.currentViz.teamSelected))
             return;
-        }
 
-        function teamsLoaded(teamData) {
-            cacheTeams(teamData);
+        $.getJSON('php/getTeams.php', function (teamData) {
             var $ul = $('<ul/>', {
                 'class': 'teamList',
             });
             $.each(teamData, function(key, val) {
                 var $team = $('<li id="' + val.id + '" code="' + val.code + '">' + val.name + '</li>')
                     .appendTo($ul);
+                if (val.code == 'ENG')
+                    $team.addClass('selected');
                 $team.addClass('team');
-                $team.data('lat', val.lat);
-                $team.data('lng', val.lng);
+                $team.data('lat', val.latitude);
+                $team.data('lng', val.longitude);
                 $team.hover(function() {
                     var $this = $(this);
                     highlightItem($this);
@@ -159,48 +157,26 @@ VIS.Menu = function(outsideContainer) {
             });
             menuCache.teamHoverMenu = $ul;
             fillMenuPosition(pos, $ul, "Select Team");
-            /*if (VIS.currentViz != null) {
-                VIS.currentViz.menuLoaded(VIS.vizMenuEnum.teamHover);
-            }*/
-        }
-
-        if (VIS.Data.teamHash != null) {
-            teamsLoaded(VIS.Data.teamHash);
-        } else {
-            $.getJSON('php/getTeams.php', function(data) {
-                cacheTeams(data);
-                teamsLoaded(VIS.Data.teamHash);
-            });
-        }
+        });
     }
 
     function loadTeamClickMenu(pos) {
-        /*if (menuCache.teamClickMenu != null) {
-            fillMenuPosition(pos, menuCache.teamClickMenu, "Select Team");
-            var $selectedItems = findSelected(menuCache.teamClickMenu);
-            if ($selectedItems.length > 0) {
-                VIS.currentViz.teamSelected($selectedItems[0]);
-            }
-            return;
-        }*/
         if (alreadyLoaded(pos, menuCache.teamClickMenu,
                     "Selected Team", VIS.currentViz.teamSelected))
             return;
 
-        function teamsLoaded(teamData) {
-            cacheTeams(teamData);
+        $.getJSON('php/getTeams.php', function (teamData) {
             var $ul = $('<ul/>', {
                 'class': 'teamList',
             });
             $.each(teamData, function(key, val) {
                 var $team = $('<li id="' + val.id + '" code="' + val.code + '">' + val.name + '</li>')
                     .appendTo($ul);
-                if (key == 'ENG')
+                if (val.code == 'ENG')
                     $team.addClass('selected');
                 $team.addClass('team');
-                $team.data('lat', val.lat);
-                $team.data('lng', val.lng);
-                //console.log("Team list item:", $team, val);
+                $team.data('lat', val.latitude);
+                $team.data('lng', val.longitude);
                 $team.click(function() {
                     var $this = $(this);
                     highlightItem($this);
@@ -208,21 +184,8 @@ VIS.Menu = function(outsideContainer) {
                 });
             });
             menuCache.teamClickMenu = $ul;
-            console.log("menu list:", $ul);
             fillMenuPosition(pos, $ul, "Select Team");
-            /*if (VIS.currentViz != null) {
-                VIS.currentViz.menuLoaded(VIS.vizMenuEnum.teamHover);
-            }*/
-        }
-
-        if (VIS.Data.teamHash != null) {
-            teamsLoaded(VIS.Data.teamHash);
-        } else {
-            $.getJSON('php/getTeams.php', function(data) {
-                cacheTeams(data);
-                teamsLoaded(VIS.Data.teamHash);
-            });
-        }
+        });
     }
 
     function loadVenueClickMenu(pos) {
@@ -242,7 +205,6 @@ VIS.Menu = function(outsideContainer) {
                     VIS.currentViz.venueSelected($venue);
                 }
                 $venue.addClass('team');
-                //console.log("Team list item:", $team, val);
                 $venue.click(function() {
                     var $this = $(this);
                     highlightItem($this);
@@ -250,7 +212,6 @@ VIS.Menu = function(outsideContainer) {
                 });
             });
             menuCache.venueClickMenu = $ul;
-            console.log("menu list:", $ul);
             fillMenuPosition(pos, $ul, "Select Venue");
             /*if (VIS.currentViz != null) {
                 VIS.currentViz.menuLoaded(VIS.vizMenuEnum.teamHover);
@@ -296,7 +257,6 @@ VIS.Menu = function(outsideContainer) {
             fillMenuPosition(pos, $menu, label);
             var $selectedItems = findSelected($menu);
             if ($selectedItems.length > 0 && updateMethod) {
-                console.log("Calling update method for", label);
                 updateMethod($selectedItems[0]);
             }
             return true;
