@@ -36,6 +36,10 @@ function getData(){
 function resetfilter()
 {
 	filterflag = 0;
+	var div = document.getElementById("filter");
+	div.innerHTML = '';
+	var temp = document.getElementById("resetFilter");
+	temp.style.visibility = "hidden";
 	getPlayerData();
 }
 
@@ -61,7 +65,7 @@ function getPlayerData()
 		yid = yobj.text;
 		/*var args="";
 		if(countryCode){
-			args = "?id="+countryCode;
+		args = "?id="+countryCode;
 			if(matchType != "All Match Types"){
 				args = args + "&type=" + matchType;
 			}*/
@@ -120,6 +124,7 @@ function getPlayerData()
 							click: function() {
 								filterflag = 1;
 								filtertype = xval;
+								filtername = xid;
 								//alert(xval);
 								filterval = this.category;
 								e = document.getElementById("SelectX");
@@ -128,8 +133,10 @@ function getPlayerData()
 								else
 									e.value = 'year';
 								getPlayerData();
-								alert('aata');
-								
+								var div = document.getElementById("filter");
+								div.innerHTML = 'Filtered by <b>'+filtername+'</b> with value <b>'+filterval+'</b>';
+								var temp = document.getElementById("resetFilter");
+								temp.style.visibility = "visible";
 							}
 						}	
 					}

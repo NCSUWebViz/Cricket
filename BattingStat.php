@@ -25,6 +25,8 @@
 	<body>
 		<!-- 3. Add the container -->
 		<div id="container" style="width: 1600px; height: 600px; margin: 0 auto"></div>
+		<div id='filter'></div>
+		<label id="resetFilter" onclick='resetfilter()' style='color:blue;visibility:hidden'>Reset Filter</label>
 		<div>Select Team : <?php 
 			include 'php/getTeamList.php';
 		?>
@@ -53,14 +55,8 @@
 				<option value='centuries'>Number of Centuries</option>;
 				</select>
 		</div>
- 		<div>
- 			Filtered by
- 			<!-- <script type="text/javascript" src="scripts/battingStat.js">
- 				document.write(filtertype);
- 			</script> -->
- 			<p id="resetFilter" onclick='resetfilter()'>Reset Filter</p>
- 			
-		</div>
+ 
+		
 		
 	</body>
 </html>
