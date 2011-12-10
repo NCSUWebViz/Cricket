@@ -61,7 +61,9 @@ function getPlayerData()
 		var playerName = e.options[e.selectedIndex].text;
 		var playerId = e.options[e.selectedIndex].value;
 		e = document.getElementById("SelectX");
-		xval = e.options[e.selectedIndex].value;
+		xobj = e.options[e.selectedIndex];
+		xval = xobj.value;
+		xid = xobj.text;
 		//alert('ikde');
 		/*var args="";
 		if(countryCode){
@@ -107,7 +109,7 @@ function getPlayerData()
 		    },
 		    tooltip: {
 				formatter: function() {
-					var tooltip = '<b>Year:</b>'+ this.x + '<br /><b>'; /*+ 
+					var tooltip = '<b>'+xid+':</b>'+ this.x + '<br /><b>'; /*+ 
 					this.series.name +':</b> '+ this.y +'<br/>';*/
 					return tooltip;
 				}
@@ -123,7 +125,13 @@ function getPlayerData()
 							click: function() {
 								filterflag = 1;
 								filtertype = xval;
+								//alert(xval);
 								filterval = this.category;
+								e = document.getElementById("SelectX");
+								if(xval == 'year')
+									e.value = 'vsTeam_id';
+								else
+									e.value = 'year';
 								//document.write("<BR>Filtered by " + filtertype + " and value " + filterval + "<BR>");
 								getPlayerData();
 							}
