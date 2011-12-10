@@ -32,8 +32,6 @@ $(document).ready(function() {
     setupVizMenu();
     setupOptionsMenu();
     loadBasicGlobe();
-    //setupOptionsMenu();
-    //loadTeams();
 });
 
 function setupVizMenu() {

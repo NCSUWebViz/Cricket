@@ -67,6 +67,7 @@ VIS.Menu = function(outsideContainer) {
             $menuNode = menuPositions[pos];
         } else {
             $menuNode = $("<div class='menu menuPos" + pos + "'>");
+            $menuNode.appendTo($mainContainer);
         }
 
         var height;
@@ -89,7 +90,6 @@ VIS.Menu = function(outsideContainer) {
             'overflow': 'scroll'
         }).appendTo($menuNode);
         $content.show();
-        //$menuNode.appendTo($mainContainer);
     }
 
     function hideNonrequiredMenus(requiredMenus) {
@@ -114,80 +114,12 @@ VIS.Menu = function(outsideContainer) {
         return $selectedItems;
     }
 
-    function cacheTeams(teamData) {
-        VIS.Data.teamHash = {};
-
-        $.each(teamData, function (key, val) {
-            // Note, could just assign val here instead of obj hash
-            VIS.Data.teamHash[val.code] = {
-                id: val.id,
-                lng: val.longitude,
-                lat: val.latitude,
-                name: val.name,
-                code: val.code
-            };
-        });
-    }
-
     function loadTeamHoverMenu(pos) {
-        if (menuCache.teamHoverMenu != null) {
-            fillMenuPosition(pos, menuCache.teamHoverMenu, "Select Team");
-            var $selectedItems = findSelected(menuCache.teamHoverMenu);
-            if ($selectedItems.length > 0) {
-                VIS.currentViz.teamSelected($selectedItems[0]);
-            }
-            return;
-        }
-
-        function teamsLoaded(teamData) {
-            cacheTeams(teamData);
-            var $ul = $('<ul/>', {
-                'class': 'teamList',
-            });
-            $.each(teamData, function(key, val) {
-                var $team = $('<li id="' + val.id + '" code="' + val.code + '">' + val.name + '</li>')
-                    .appendTo($ul);
-                $team.addClass('team');
-                $team.data('lat', val.lat);
-                $team.data('lng', val.lng);
-                $team.hover(function() {
-                    var $this = $(this);
-                    highlightItem($this);
-                    VIS.currentViz.teamSelected($this);
-                });
-            });
-            menuCache.teamHoverMenu = $ul;
-            fillMenuPosition(pos, $ul, "Select Team");
-            /*if (VIS.currentViz != null) {
-                VIS.currentViz.menuLoaded(VIS.vizMenuEnum.teamHover);
-            }*/
-        }
-
-        if (VIS.Data.teamHash != null) {
-            teamsLoaded(VIS.Data.teamHash);
-        } else {
-            $.getJSON('php/getTeams.php', function(data) {
-                cacheTeams(data);
-                teamsLoaded(VIS.Data.teamHash);
-            });
-        }
-    }
-
-    function loadTeamClickMenu(pos) {
-        /*if (menuCache.teamClickMenu != null) {
-            fillMenuPosition(pos, menuCache.teamClickMenu, "Select Team");
-            var $selectedItems = findSelected(menuCache.teamClickMenu);
-            if ($selectedItems.length > 0) {
-                VIS.currentViz.teamSelected($selectedItems[0]);
-            }
-            return;
-        }*/
-        if (alreadyLoaded(pos, menuCache.teamClickMenu,
+        if (alreadyLoaded(pos, menuCache.teamHoverMenu,
                     "Selected Team", VIS.currentViz.teamSelected))
             return;
 
-        function teamsLoaded(teamData) {
-            cacheTeams(teamData);
+        $.getJSON('php/getTeams.php', function (teamData) {
             var $ul = $('<ul/>', {
                 'class': 'teamList',
             });
@@ -197,8 +129,36 @@ VIS.Menu = function(outsideContainer) {
                 if (key == 'ENG')
                     $team.addClass('selected');
                 $team.addClass('team');
-                $team.data('lat', val.lat);
-                $team.data('lng', val.lng);
+                $team.data('lat', val.latitude);
+                $team.data('lng', val.longitude);
+                $team.hover(function() {
+                    var $this = $(this);
+                    highlightItem($this);
+                    VIS.currentViz.teamSelected($this);
+                });
+            });
+            menuCache.teamHoverMenu = $ul;
+            fillMenuPosition(pos, $ul, "Select Team");
+        });
+    }
+
+    function loadTeamClickMenu(pos) {
+        if (alreadyLoaded(pos, menuCache.teamClickMenu,
+                    "Selected Team", VIS.currentViz.teamSelected))
+            return;
+
+        $.getJSON('php/getTeams.php', function (teamData) {
+            var $ul = $('<ul/>', {
+                'class': 'teamList',
+            });
+            $.each(teamData, function(key, val) {
+                var $team = $('<li id="' + val.id + '" code="' + val.code + '">' + val.name + '</li>')
+                    .appendTo($ul);
+                if (key == 'ENG')
+                    $team.addClass('selected');
+                $team.addClass('team');
+                $team.data('lat', val.latitude);
+                $team.data('lng', val.longitude);
                 $team.click(function() {
                     var $this = $(this);
                     highlightItem($this);
@@ -207,19 +167,7 @@ VIS.Menu = function(outsideContainer) {
             });
             menuCache.teamClickMenu = $ul;
             fillMenuPosition(pos, $ul, "Select Team");
-            /*if (VIS.currentViz != null) {
-                VIS.currentViz.menuLoaded(VIS.vizMenuEnum.teamHover);
-            }*/
-        }
-
-        if (VIS.Data.teamHash != null) {
-            teamsLoaded(VIS.Data.teamHash);
-        } else {
-            $.getJSON('php/getTeams.php', function(data) {
-                cacheTeams(data);
-                teamsLoaded(VIS.Data.teamHash);
-            });
-        }
+        });
     }
 
     function loadVenueClickMenu(pos) {
