@@ -38,18 +38,18 @@
 			X Axis : 
 			<select id='SelectX' onchange='getPlayerData()'>
 				<option value='year' selected='true'>Year</option>;
-				<option value='vsTeam_id'>Opponents</option>;
+				<option value='vsTeam_id'>Opponent</option>;
 				<option value='venue_id'>Venue</option>;
 			</select>
 		</div>
-		<!-- <div>
+		<div>
 			Y Axis : 
-				<select id='SelectY'>
+				<select id='SelectY' onchange='getPlayerData()'>
 				<option value='scored_runs' selected='true'>Total Runs</option>;
 				<option value='scored_runs'>Strike Rate</option>;
 				<option value='scored_runs'>Venue</option>;
 				</select>
-		</div> -->
+		</div>
  		<div>
  			<p id="resetFilter" onclick='resetfilter()'>Reset Filter</p>
 		</div>

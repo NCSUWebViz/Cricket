@@ -29,21 +29,21 @@ function getAccumulatedWins(){
 			$inner_json = "";
 			while($row = mysql_fetch_assoc($result)){
 				//echo intval($row[$x])." , ".intval($row['total']).'<BR>';
-				$inner_json[] = array($row['team'] => intval($row['total']));
+				$inner_json_array[$row['team']] = intval($row['total']);
 				$i++;			
 			}
 			if($i!=0)
 			{
-				$json[] = array(intval($year) => $inner_json);
+				$json[intval($year)] = $inner_json_array;
 				$flag++;
 			}
 		}
 		$year++;
 	}
 	if($flag)
-		echo "{\"data\": ".json_encode($json)." }";
+		echo json_encode($json);
 	else
-		echo "{\"data\":[]}";
+		echo "[]";
 
 }
 getAccumulatedWins();
