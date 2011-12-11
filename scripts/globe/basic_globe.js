@@ -166,6 +166,7 @@ VIS.BasicGlobe = function($container) {
     }
 
     function globeClicked(event) {
+        clearContext();
         var x = ( event.clientX / window.innerWidth ) * 2 - 1;
         var y = - ( event.clientY / window.innerHeight ) * 2 + 1;
         var vector = new THREE.Vector3( x, y, 0.5 );
