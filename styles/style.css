@@ -255,8 +255,7 @@ circle {
 }
 
 #yearSlider {
-  position: absolute;
-  left: 100;
-  right: 90;
-  margin-top: 3;
+  width: 800px;
+  margin: auto;
+  top: 50px;
 }

@@ -297,4 +297,7 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
         VIS.vizMenuEnum.teamClick,
         //VIS.vizMenuEnum.matchTypeClick
     ];
+    //this.requiredMenus = {
+        //'teamClick': teamSelected,
+    //};
 };

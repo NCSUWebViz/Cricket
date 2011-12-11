@@ -1,11 +1,44 @@
 var VIS = VIS || {};
 
+/*
+ * Current acceptable menus:
+ * 'teamClick'
+ * 'teamHover'
+ * 'matchTypeClick'
+ * 'venueClick'
+ */
+
+
+VIS.vizMenuEnum = {
+    teamClick: 1,
+    teamHover: 2,
+    teamMulti: 3,
+    matchTypeClick: 4,
+    groundsClick: 5,
+    playersClick: 6,
+    playersMulti: 7,
+    yearVenueOpponent: 8,
+    venueClick:9
+}
+
 VIS.Menu = function(outsideContainer) {
     var MAX_MENU_HEIGHT = 350;
     //var loadedMenus = {};
     var loadedMenus = [];
     var menuCache = {};
     var $mainContainer = $(outsideContainer);
+
+    VIS.vizMenuEnum = {
+        teamClick: loadTeamClickMenu,
+        teamHover: loadTeamHoverMenu,
+        //teamMulti: 3,
+        matchTypeClick: loadMatchTypeMenu,
+        //groundsClick: 5,
+        //playersClick: 6,
+        //playersMulti: 7,
+        //yearVenueOpponent: 8,
+        venueClick: loadVenueClickMenu,
+    }
 
     //var $menuPos1 = $("<div class='menu menuPos0'>").appendTo($mainContainer);
     //var $menuPos2 = $("<div class='menu menuPos1'>").appendTo($mainContainer);
@@ -56,6 +89,20 @@ VIS.Menu = function(outsideContainer) {
         });
     }
 
+    // TODO: This version allows for specified callbacks,
+    /*this.setupMenus = function(requiredMenus) {
+        if (requiredMenus == null && VIS.currentViz != null) {
+            requiredMenus = VIS.currentViz.requiredMenus
+        }
+
+        hideNonrequiredMenus(requiredMenus);
+        var pos = 0;
+        $.each(requiredMenus, function(menuName, callback) {
+            VIS.vizMenuEnum[menuName](pos, callback);
+            pos++;
+        });
+    }*/
+
     function setupMenu(menuId, pos) {
         switch(menuId) {
             case VIS.vizMenuEnum.teamClick:
@@ -63,9 +110,6 @@ VIS.Menu = function(outsideContainer) {
                 break;
             case VIS.vizMenuEnum.teamHover:
                 loadTeamHoverMenu(pos);
-                break;
-            case VIS.vizMenuEnum.teamMulti:
-                loadTeamPerfGraph();
                 break;
             case VIS.vizMenuEnum.matchTypeClick:
                 loadMatchTypeMenu(pos);
