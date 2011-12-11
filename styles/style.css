@@ -230,13 +230,14 @@ circle {
 	text-align:center;
 }
 .radial_div_yearItem {
-	background-color:none;
+	//background-color:none;
 	height:30px;
 	//padding:10px;
 	color:#234;
 	//-moz-border-radius:40px;
 	//-webkit-border-radius:40px;
 	cursor:pointer;
+	//background:url(../images/cricket-ball.gif);
 }
 .radial_div_yearItem.active { 
 	background-color:#511; color:white;
@@ -246,12 +247,18 @@ circle {
 }
 .yearItemText { 
 	font-size:1.5em;
+	text-align:center;
+	margin:auto;
+	padding:0px;
 	color:#00F;
 	background-color:#def;
-	//-moz-border-radius:50px;
-	width:30px;
-	height:30px;
-	-webkit-border-radius:80px;
+	width:50px;
+	height:50px;
+	background:url(../images/180px-Cricketball.png);
+	background-repeat:no-repeat;
+	background-position: top center;
+	background-size:contain;
+	cursor:pointer;
 }
 
 #cartogramUi {

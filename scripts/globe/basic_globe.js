@@ -214,7 +214,7 @@ VIS.BasicGlobe = function($container) {
     }
 
     function connectElement($yearElement) {
-        topCanvasCtx.globalAlpha = 0.3;
+        topCanvasCtx.globalAlpha = 0.4;
         topCanvasCtx.fillStyle = '#ff0000';
 
         var x1 = $yearElement.offset().left;
