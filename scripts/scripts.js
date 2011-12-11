@@ -36,9 +36,25 @@ function setupVizMenu() {
         VIS.vizLoadFuncs[vizId]();
         VIS.currentVizId = vizId;
     });
+    $('#vizNav').hoverIntent(
+        function () {
+            $("#vizList").animate({"left":"2em"});
+        },
+        function () {
+            $("#vizList").animate({"left":"-13em"});
+        }
+    );
 }
 
 function setupOptionsMenu() {
+    $('#optionsMenu').hoverIntent(
+        function () {
+            $("#optionsMenu").children().animate({"bottom":"0em"});
+        },
+        function () {
+            $("#optionsMenu").children().animate({"bottom":"-21em"});
+        }
+    );
     VIS.optsMenu = new VIS.Menu('#optionsMenu');
 }
 
