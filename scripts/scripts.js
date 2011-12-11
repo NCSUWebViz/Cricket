@@ -23,8 +23,7 @@ $(document).ready(function() {
     $container.width($(window).width());
     setupVizMenu();
     setupOptionsMenu();
-    //loadBasicGlobe();
-    loadCartogramGlobe();
+    loadBasicGlobe();
 });
 
 function setupVizMenu() {

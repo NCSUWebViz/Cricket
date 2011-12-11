@@ -1,15 +1,18 @@
 
 var VIS = VIS || {};
 
-VIS.BasicGlobe = function($container, teamClickCallback) {
+VIS.BasicGlobe = function($container) {
 
+    var $topCanvas;
+    var topCanvasCtx;
     var globe;
     var projector;
-    //var teamHighlightMeshes = new Array();
     var clickableMeshes = new Array();
     var teamHighlightMeshes = {};
     var yearPointers = new Array();
     var teamCache = {};
+    var worldCupWinYearsPerTeam = {};
+    var $radialContainer;
 
     function animate() {
         requestAnimationFrame(animate);
@@ -27,7 +30,7 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
         $container.click(globeClicked);
         projector = new THREE.Projector();
         globe = new DAT.Globe($container[0], null, null, false);
-        //loadModels();
+        loadTopCanvas();
         loadTeams();
         animate();
     }
@@ -35,14 +38,28 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     function unload() {
         $container.unbind('click', globeClicked);
         $container.html('');
-        //$('.teamList').html('');
         delete projector;
         delete teamHighLightMeshes;
         delete globe;
     }
 
+    function loadTopCanvas() {
+        $topCanvas = $('<canvas>');
+        $topCanvas.appendTo($container);
+        $topCanvas.css({
+            position:'absolute',
+            'z-index': '1',
+            margin:'0px',
+            padding:'0px',
+            visiblity:true,
+        });
+        $topCanvas[0].width = $(window).width();
+        $topCanvas[0].height = $(window).height();
+        topCanvasCtx = $topCanvas[0].getContext('2d');
+        topCanvasCtx.scale(1.0,1.0);
+    }
+
     function loadModels() {
-        //globe = new DAT.Globe($container[0], null, null, false);
         $.getJSON('testdata/stats.json', function(data) {
             for (i=0;i<data.length;i++) {
                 globe.addData(data[i][1], {
@@ -77,26 +94,28 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
 
     function loadWorldCupData() {
         function dataLoaded(data) {
-            var $radialContainer = $("<div id='radial_container'>")
+            $radialContainer = $("<div id='radial_container'>")
                 .css('z-index','100')
                 .appendTo($container);
             var $ul = $('<ul/>', {
                 'class': 'yearList',
             }).appendTo($radialContainer);
 
-            var elements = [];
-            $.each(data, function(key, val) {
+            $.each(data, function(year, val) {
                 var $year = $('<li class="yearItem" id="' + val.code + '">')
                     .appendTo($ul)
                     .append('<div class="yearItemText" id="'+
-                        val.code + '">' + key + '</div>');
+                        val.code + '">' + year + '</div>');
                 $year.data('lat', val.latitude);
                 $year.data('lng', val.longitude);
+                $year.data('code', val.code);
                 $year.data('mesh', teamHighlightMeshes[val.code]);
-                elements.push($year);
+                if (worldCupWinYearsPerTeam[val.code] == undefined)
+                    worldCupWinYearsPerTeam[val.code] = [];
+                worldCupWinYearsPerTeam[val.code].push($year);
             });
-            console.log('Height, width', $container.css('height'),
-                $container.css('width'), $(window).height(), $(window).width());
+            //console.log('Height, width', $container.css('height'),
+                //$container.css('width'), $(window).height(), $(window).width());
 
             var radius = $(window).height()/2 - 50;
 
@@ -110,8 +129,6 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
                 animSpeed: 100,
                 centerX: width,
                 centerY: height,
-                //centerX: width - width/20,
-                //centerY: height - height/6,
                 selectEvent: "click",
                 onSelect: function($selected, event){
                     $selected.siblings().removeClass('active');
@@ -121,82 +138,25 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
                     $yearElement.data('lat', teamCache[code].lat);
                     $yearElement.data('lng', teamCache[code].lng);
                     $yearElement.data('code', code);
-                    //$yearElement.data('mesh', teamHighlightMeshes[code]);
-                    //teamSelected($teamElement);
                     yearSelected($yearElement, event);
                 },
                 angleOffset: 0
             });
             $radialContainer.radmenu("show");
-            //$container.attr('style', '');
-            /*var geometry = new THREE.CylinderGeometry( 0, 10, 100, 3 );
-            geometry.applyMatrix( new THREE.Matrix4()
-                .setRotationFromEuler(new THREE.Vector3(Math.PI/2,Math.PI,0)));
-            var material = new THREE.MeshNormalMaterial();
-            $.each(elements, function(idx, $el) {
-                var mesh = new THREE.Mesh( geometry, material );
-                mesh.position.x = Math.random() * 4000 - 2000;
-                mesh.position.y = Math.random() * 4000 - 2000;
-                mesh.position.z = Math.random() * 4000 - 2000;
-                mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 4 + 2;
-                console.log("Adding pointer for el", $el,
-                    $el.position().left, $el.position().top);
-                //mesh.position.x = $el.position().left;
-                //mesh.position.y = $el.position().top;
-                mesh.lookAt(teamHighlightMeshes[0].position);
-                yearPointers.push(mesh);
-                globe.scene.add( mesh );
-            });*/
         }
-        /*dataLoaded({
-            '1924': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1925': {'name': 'England', 'code': 'ENG',
-                'latitude': 51.5, 'longitude': -0.1},
-            '1926': {'name': 'Pakistan', 'code': 'PAK',
-                'latitude': 33.6, 'longitude': 73.1},
-            '1927': {'name': 'United States', 'code': 'USA',
-                'latitude': 38.8, 'longitude': -77.0},
-            '1928': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1929': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1930': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1931': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1932': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1933': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1934': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1935': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1936': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1937': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1938': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-            '1939': {'name': 'India', 'code': 'IND',
-                'latitude': 28.6, 'longitude': 77.2},
-        });*/
         $.getJSON('php/getWorldCupGlobeData.php', function(data) {
             dataLoaded(data);
         });
     }
 
     function addTeam(lat, lng, code) {
-        //var mesh = globe.addHighlight(lat, lng, null);
         var flagMesh = globe.addFlag(lat, lng, 'images/flags/'+code+'.gif');
-        //mesh.code = code;
-        //mesh.lat = lat;
-        //mesh.lng = lng;
-        //teamHighlightMeshes.push(mesh);
-        //teamHighlightMeshes[code] = mesh;
         teamHighlightMeshes[code] = flagMesh;
         clickableMeshes.push(flagMesh);
+    }
+
+    function clearContext() {
+        topCanvasCtx.clearRect(0,0,$topCanvas.width(),$topCanvas.height());
     }
 
     function globeClicked(event) {
@@ -206,72 +166,73 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
         projector.unprojectVector( vector, globe.camera );
         var ray = new THREE.Ray( globe.camera.position,
                 vector.subSelf( globe.camera.position ).normalize() );
-        //console.log("Hit test", teamHighlightMeshes);
-        //var hits = ray.intersectObjects(teamHighlightMeshes);
         var hits = ray.intersectObjects(clickableMeshes);
+
         if (hits.length) {
             console.log("Team Location clicked!", hits);
             var hit = hits[0];
             //globe.curLat = hit.lat;
             //globe.curLong = hit.lng;
-            if (teamClickCallback) {
-                teamClickCallback(null);
-            }
         } else {
             console.log("Click detected, but no target was hit.", hits);
         }
     }
 
-    function yearSelected($yearElement, event) {
+    // NOTE: This method is relatively broken, that's why it's not
+    // being used.
+    function yearSelected3d($yearElement, event) {
         teamSelected($yearElement);
-        console.log("Year selected", $yearElement);
         var geometry = new THREE.CylinderGeometry( 0, 10, 100, 3 );
-        for (var i = 0; i < geometry.vertices.length; i++) {
-            var vertex = geometry.vertices[i];
-            vertex.position.z += 0.5;
-        }
         geometry.applyMatrix( new THREE.Matrix4()
             .setRotationFromEuler(new THREE.Vector3(Math.PI/2,Math.PI,0)));
         var material = new THREE.MeshNormalMaterial();
-        //$.each(elements, function(idx, $el) {
         var mesh = new THREE.Mesh( geometry, material );
 
         var code = $yearElement.data('code');
         var teamMesh = teamHighlightMeshes[code];
-        var x = ( event.pageX / window.innerWidth ) * 2 - 1;
-        var y = - ( event.pageY / window.innerHeight ) * 2 + 1;
-        var vector = new THREE.Vector3( x, y, 0.5 );
-        vector.subSelf( globe.camera.position ).normalize();
-        projector.unprojectVector( vector, globe.camera );
 
-        console.log("Adding pointer for el", $yearElement.parent(),
-            $yearElement.parent().position().left,
-            $yearElement.parent().position().top,
-            $yearElement.parent().offset().left,
-            $yearElement.parent().offset().top,
-            x,y, vector, DAT.mesh.position,
-            teamMesh);
-        //mesh.position.x = $yearElement.parent().position().left;
-        //mesh.position.y = $yearElement.parent().position().top;
-        //mesh.lookAt(teamMesh.position);
-        mesh.position.x = teamMesh.position.x;
-        mesh.position.y = teamMesh.position.y;
-        mesh.position.z = teamMesh.position.z;
+        var x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        var y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        var vector = new THREE.Vector3( x, y, 0.5 );
+        projector.unprojectVector( vector, globe.camera );
+        var ray = new THREE.Ray( globe.camera.position,
+                vector.subSelf( globe.camera.position ).normalize() );
+
+        mesh.position.x = vector.x;
+        mesh.position.y = vector.y;
+        mesh.position.z = vector.z;
         mesh.lookAt(teamMesh.position);
-        //mesh.position.x = 200;
-        //mesh.position.y = 0;
-        //mesh.position.z = 0;
-        //mesh.lookAt(teamMesh.position);
         yearPointers.push(mesh);
         globe.scene.add( mesh );
-        console.log("pointer added...");
-        //});
-        /*var canvas = $container.find('canvas')[0];
-        var ctx = canvas.getContext('experimental-webgl');
-        console.log('Canvas', canvas, ctx);*/
     }
 
-    function teamSelected($teamElement) {
+    function yearSelected($yearElement, event, skipTeamSelection) {
+        if (!skipTeamSelection)
+            teamSelected($yearElement, true);
+        clearContext();
+        connectElement($yearElement);
+    }
+
+    function connectElement($yearElement) {
+        topCanvasCtx.globalAlpha = 0.3;
+        topCanvasCtx.fillStyle = '#ff0000';
+
+        var x1 = $yearElement.offset().left;
+        var y1 = $yearElement.offset().top;
+        var x2 = $topCanvas.width()/2;
+        var y2 = $topCanvas.height()/2;
+        var h = $yearElement.height();
+        var w = $yearElement.width();
+        console.log("(X1,Y1) - (X2,Y2), h", x1,y1,x2,y2, h);
+
+        topCanvasCtx.beginPath();
+        topCanvasCtx.moveTo(x1 + w/2, y1 + h/2);
+        topCanvasCtx.lineTo(x1 - w/2, y1 - h/2);
+        topCanvasCtx.lineTo(x2,y2);
+        topCanvasCtx.fill();
+    }
+
+    function teamSelected($teamElement, skipYearConnection) {
         var lat, lng;
         if (!$teamElement.data('lat') || !$teamElement.data('lng')) {
             var code = $teamElement.attr('id');
@@ -285,9 +246,26 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
             lat = $teamElement.data('lat');
             lng = $teamElement.data('lng');
         }
-        console.log("Changing selected team", $teamElement, lat, lng);
         globe.curLat = lat;
         globe.curLong = lng;
+
+        clearContext();
+        if (!skipYearConnection)
+            connectYearsForTeam($teamElement);
+    }
+
+    function connectYearsForTeam($teamElement) {
+        var code = $teamElement.attr('code');
+        // TODO: Indicate that a team hasn't won.
+        var years = worldCupWinYearsPerTeam[code];
+        if (years == undefined)
+            return;
+
+        $radialContainer.find('.radial_div #'+code).each(
+            function(idx, yearOuter) {
+                connectElement($(yearOuter));
+            }
+        );
     }
 
     this.load = load;
@@ -295,7 +273,6 @@ VIS.BasicGlobe = function($container, teamClickCallback) {
     this.teamSelected = teamSelected;
     this.requiredMenus = [
         VIS.vizMenuEnum.teamClick,
-        //VIS.vizMenuEnum.matchTypeClick
     ];
     //this.requiredMenus = {
         //'teamClick': teamSelected,

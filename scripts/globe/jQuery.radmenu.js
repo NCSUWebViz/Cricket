@@ -13,7 +13,8 @@
  *
  *   NOTE: This version is slightly changed from its original version: the
  *   onSelect function now sends the event as the second argument to
- *   the callback, not just the selected item.
+ *   the callback, not just the selected item.  Plus, I've stopped
+ *   the cancelEvent() function, so the even propogates.
  * 
  */
 
@@ -224,6 +225,7 @@
 	 * 	evt - the event object
 	 */
 	function cancelBubble(evt){
+        return;
 		
 		if(!$.support.opacity) 
 			window.event.cancelBubble = true;
