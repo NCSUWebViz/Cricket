@@ -20,6 +20,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     var nodes;
     var renderNow = true;
     var curYear = 0;
+    var unloaded = false;
 
     var svg;
 
@@ -58,6 +59,8 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     };
 
     function animate() {
+        if (unloaded)
+            return;
         requestAnimationFrame(animate);
         render();
     }
@@ -110,6 +113,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     }
 
     function unload() {
+        unloaded = true;
         $container.unbind('click', globeClicked);
         $container.html('');
         delete teamHighLightMeshes;

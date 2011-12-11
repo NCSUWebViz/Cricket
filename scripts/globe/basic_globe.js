@@ -13,8 +13,13 @@ VIS.BasicGlobe = function($container) {
     var teamCache = {};
     var worldCupWinYearsPerTeam = {};
     var $radialContainer;
+    var unloaded = false;
 
     function animate() {
+        // NOTE: Probably should not have to make this check, but it
+        // seems to help.
+        if (unloaded)
+            return;
         requestAnimationFrame(animate);
         render();
     }
@@ -36,6 +41,7 @@ VIS.BasicGlobe = function($container) {
     }
 
     function unload() {
+        unloaded = true;
         $container.unbind('click', globeClicked);
         $container.html('');
         delete projector;
