@@ -286,3 +286,15 @@ circle {
 	width:10%;
 	margin:auto;
 }
+
+#curYearText {
+	position:absolute;
+	text-align:center;
+	font-size:24px;
+	z-index:10;
+	top:70px;
+	//left:50%;
+	width:100%;
+	margin:auto;
+	//padding:0px;
+}

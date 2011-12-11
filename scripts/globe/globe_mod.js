@@ -463,6 +463,9 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
   }
 
   function flagHitTest() {
+    if (centeredFlagCallback == null)
+        return;
+
     var w = container.offsetWidth;
     var h = container.offsetHeight;
     var x = ( w/2 / window.innerWidth ) * 2 - 1;

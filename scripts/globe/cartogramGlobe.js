@@ -10,7 +10,8 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     var clickableMeshes = [];
     var teamHighlightMeshes = {};
     var $yearSlider;
-    var $playButton
+    var $playButton;
+    var $year
     var cartogramSvgChart = document.getElementById('cartogramSvgChart');
     var svgCanvas = document.getElementById('svgCanvas');
     var ctx = svgCanvas.getContext('2d');
@@ -92,10 +93,8 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
 
         renderNow = false;
         var svgString = cartogramSvgChart.innerHTML;
-        //console.log("SVG:", svg);
         canvg(svgCanvas, svgString, {
             renderCallback: function() {
-                //console.log("Update svg canvas called");
                 svgTexture.needsUpdate = true;
                 renderNow = true;
             }
@@ -125,13 +124,13 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     }
 
     function loadUI() {
-        //$yearSlider.appendTo($container);
         var $uiElements = $("<div id='cartogramUi'>");
         $uiElements.appendTo($container);
         $yearSlider = $("<div id='yearSlider'>");
         $yearSlider.appendTo($uiElements);
         $playButton = $("<div id='playButton'>");
         $playButton.appendTo($uiElements);
+        $year = $("<div id='curYearText'>").appendTo($container);
 
         $playButton.button();
         $playButton.text('Play');
@@ -141,6 +140,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
                 stop();
             } else {
                 curYear = $yearSlider.slider('option', 'value');
+                $year.text(curYear);
                 if (curYear == dataYears[dataYears.length - 1] || curYear == 0)
                     curYear = dataYears[0];
                 $yearSlider.slider('value', curYear);
@@ -151,7 +151,6 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
                         stop();
 
                     $yearSlider.slider('value', curYear);
-                    updateYear(curYear);
                 }, 400);
                 $playButton.text("Stop");
             }
@@ -166,8 +165,6 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
 
 
     function getData() {
-        console.log("getData()", matchType);
-
         var args="";
         if(matchType != "All Match Types" && matchType != "All Types"){
                 args = args + "&type=" + matchType;
@@ -194,13 +191,26 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
                 .domain([0, max])
                 .range(["green", "red"]);
 
+            $year.text(dataYears[0]);
+
             $yearSlider.slider({
                 //animate:true,
                 min: dataYears[0],
                 max: dataYears[dataYears.length -1],
                 value: dataYears[0],
+                create: function(e, ui) {
+                    curYear = ui.value;
+                },
                 slide: function(e, ui) {
                     var year = ui.value;
+                    curYear = year;
+                    $year.text(year)
+                    updateYear(year);
+                },
+                change: function(e, ui) {
+                    var year = ui.value;
+                    curYear = year;
+                    $year.text(year)
                     updateYear(year);
                 }
             });
@@ -212,7 +222,6 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         svg.selectAll("circle")
             .style("fill", function(d) {
                 var c = color(d.value || 0);
-                console.log("color:", d.code, d.value, c);
                 return color(d.value || 0);
             })
             .attr("cx", function(d) { return countryCoords[d.code][0]; })
