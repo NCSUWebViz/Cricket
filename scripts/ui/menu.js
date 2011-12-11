@@ -130,12 +130,12 @@ VIS.Menu = function(outsideContainer) {
         //}
 
         var height;
-
-        if (pos < 4) {
-            height = MAX_MENU_HEIGHT - pos * 25;
-        } else {
-            height = 5.5;
-        }
+        //if (pos < 4) {
+            //height = MAX_MENU_HEIGHT - pos * 25;
+        //} else {
+            //height = 5.5;
+        //}
+        height = MAX_MENU_HEIGHT;
         //console.log("Height calc", pos, MAX_MENU_HEIGHT, height,
                 //$content.children().length);
 

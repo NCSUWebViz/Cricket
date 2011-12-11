@@ -234,32 +234,25 @@ circle {
 	margin: 0px;
 	height: 100%;
 	width: 100%;
-	//left:425px; 
-	//top: 75px; 
-	//width:100px; 
-	//height:100px; 
 	text-align:center;
 }
-.radial_div_yearItem {
-	//background-color:none;
-	height:30px;
-	//padding:10px;
+.radial_div_item {
 	color:#234;
-	//-moz-border-radius:40px;
-	//-webkit-border-radius:40px;
 	cursor:pointer;
-	//background:url(../images/cricket-ball.gif);
+	text-align:center;
 }
-.radial_div_yearItem.active { 
-	background-color:#511; color:white;
+.radial_div_item.active { 
+	background-color:#511;
+	color:white;
 	padding: 10px; 
-	//-moz-border-radius:40px;
+	-moz-border-radius:40px;
+	-webkit-border-radius:40px;
 	z-index:100;
 }
 .yearItemText { 
 	font-size:1.5em;
 	text-align:center;
-	margin:auto;
+	margin:0px;
 	padding:0px;
 	color:#00F;
 	background-color:#def;

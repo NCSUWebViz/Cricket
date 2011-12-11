@@ -9,9 +9,11 @@ VIS.BasicGlobe = function($container) {
     var projector;
     var clickableMeshes = new Array();
     var teamHighlightMeshes = {};
+    var yearIndexes = [];
     var yearPointers = new Array();
     var teamCache = {};
     var worldCupWinYearsPerTeam = {};
+    var numYears;
     var $radialContainer;
     var unloaded = false;
 
@@ -108,7 +110,9 @@ VIS.BasicGlobe = function($container) {
                 'class': 'yearList',
             }).appendTo($radialContainer);
 
+            numYears = 0;
             $.each(data, function(year, val) {
+                yearIndexes.push(year);
                 var $year = $('<li class="yearItem" id="' + val.code + '">')
                     .appendTo($ul)
                     .append('<div class="yearItemText" id="'+
@@ -120,6 +124,7 @@ VIS.BasicGlobe = function($container) {
                 if (worldCupWinYearsPerTeam[val.code] == undefined)
                     worldCupWinYearsPerTeam[val.code] = [];
                 worldCupWinYearsPerTeam[val.code].push($year);
+                numYears++;
             });
             //console.log('Height, width', $container.css('height'),
                 //$container.css('width'), $(window).height(), $(window).width());
@@ -217,6 +222,11 @@ VIS.BasicGlobe = function($container) {
         globe.scene.add( mesh );
     }
 
+    function getAngleOfYear(year) {
+        var idx = yearIndexes.indexOf(year);
+        return 2 * Math.PI * parseFloat(idx/numYears);
+    }
+
     function yearSelected($yearElement, event, skipTeamSelection) {
         if (!skipTeamSelection)
             teamSelected($yearElement, true);
@@ -239,20 +249,26 @@ VIS.BasicGlobe = function($container) {
     }
 
     function connectElement($yearElement) {
+        var angle = getAngleOfYear($yearElement.text());
         topCanvasCtx.globalAlpha = 0.4;
         topCanvasCtx.fillStyle = '#ff0000';
 
-        var x1 = $yearElement.offset().left;
-        var y1 = $yearElement.offset().top;
         var x2 = $topCanvas.width()/2;
         var y2 = $topCanvas.height()/2;
         var h = $yearElement.height();
         var w = $yearElement.width();
-        //console.log("(X1,Y1) - (X2,Y2), h", x1,y1,x2,y2, h);
+        var x1 = $yearElement.offset().left;
+        var y1 = $yearElement.offset().top;
+
+        var offX = (w * Math.sin(angle))/2;
+        var offY = (h * Math.cos(angle))/2;
+        //console.log("(X1,Y1) - (X2,Y2), h", x1,y1,x2,y2, offX, offY);
 
         topCanvasCtx.beginPath();
-        topCanvasCtx.moveTo(x1 + w/2, y1 + h/2);
-        topCanvasCtx.lineTo(x1 - w/2, y1 - h/2);
+        //topCanvasCtx.moveTo(x1 + w/2, y1 + h/2);
+        //topCanvasCtx.lineTo(x1 - w/2, y1 - h/2);
+        topCanvasCtx.moveTo(x1 - offX, y1 + offY);
+        topCanvasCtx.lineTo(x1 + offX, y1 - offY);
         topCanvasCtx.lineTo(x2,y2);
         topCanvasCtx.fill();
     }

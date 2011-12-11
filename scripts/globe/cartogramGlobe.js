@@ -59,6 +59,8 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     };
 
     function animate() {
+        // NOTE: Probably should not have to make this check, but it
+        // seems to help.
         if (unloaded)
             return;
         requestAnimationFrame(animate);
