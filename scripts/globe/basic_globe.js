@@ -34,7 +34,8 @@ VIS.BasicGlobe = function($container) {
         $container.width($(window).width());
         $container.click(globeClicked);
         projector = new THREE.Projector();
-        globe = new DAT.Globe($container[0], null, null, false);
+        globe = new DAT.Globe($container[0], null, null, false,
+                null, centeredFlag);
         loadTopCanvas();
         loadTeams();
         animate();
@@ -156,8 +157,11 @@ VIS.BasicGlobe = function($container) {
     }
 
     function addTeam(lat, lng, code) {
-        var flagMesh = globe.addFlag(lat, lng, 'images/flags/'+code+'.gif');
+        var flagMesh = globe.addFlag(lat, lng,
+                'images/flags/'+code+'.gif', code);
         teamHighlightMeshes[code] = flagMesh;
+        flagMesh.lat = lat;
+        flagMesh.lng = lng;
         clickableMeshes.push(flagMesh);
     }
 
@@ -177,9 +181,9 @@ VIS.BasicGlobe = function($container) {
 
         if (hits.length) {
             console.log("Team Location clicked!", hits);
-            var hit = hits[0];
-            //globe.curLat = hit.lat;
-            //globe.curLong = hit.lng;
+            var hit = hits[0].object;
+            globe.curLat = hit.lat;
+            globe.curLong = hit.lng;
         } else {
             console.log("Click detected, but no target was hit.", hits);
         }
@@ -220,6 +224,20 @@ VIS.BasicGlobe = function($container) {
         connectElement($yearElement);
     }
 
+    function centeredFlag(code) {
+        clearContext();
+        if (code)
+            highlightFromCode(code);
+    }
+
+    function highlightFromCode(code) {
+        $radialContainer.find('.radial_div #'+code).each(
+            function(idx, yearOuter) {
+                connectElement($(yearOuter));
+            }
+        );
+    }
+
     function connectElement($yearElement) {
         topCanvasCtx.globalAlpha = 0.4;
         topCanvasCtx.fillStyle = '#ff0000';
@@ -230,7 +248,7 @@ VIS.BasicGlobe = function($container) {
         var y2 = $topCanvas.height()/2;
         var h = $yearElement.height();
         var w = $yearElement.width();
-        console.log("(X1,Y1) - (X2,Y2), h", x1,y1,x2,y2, h);
+        //console.log("(X1,Y1) - (X2,Y2), h", x1,y1,x2,y2, h);
 
         topCanvasCtx.beginPath();
         topCanvasCtx.moveTo(x1 + w/2, y1 + h/2);
@@ -267,12 +285,7 @@ VIS.BasicGlobe = function($container) {
         var years = worldCupWinYearsPerTeam[code];
         if (years == undefined)
             return;
-
-        $radialContainer.find('.radial_div #'+code).each(
-            function(idx, yearOuter) {
-                connectElement($(yearOuter));
-            }
-        );
+        highlightFromCode(code);
     }
 
     this.load = load;

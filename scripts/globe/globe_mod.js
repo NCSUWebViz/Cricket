@@ -25,7 +25,7 @@
 
 var DAT = DAT || {};
 
-DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynamicTexture) {
+DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynamicTexture, centeredFlagCallback) {
 
   colorFn = colorFn || function(x) {
     var c = new THREE.Color();
@@ -83,6 +83,8 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
   var camera, scene, sceneAtmosphere, renderer, w, h;
   var vector, mesh, atmosphere, point;
   var models;
+  var clickableMeshes = [];
+  var projector = new THREE.Projector();
 
   var overRenderer;
 
@@ -310,7 +312,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     return point;
   }
 
-  function addFlag(lat, lng, imagePath) {
+  function addFlag(lat, lng, imagePath, code) {
     var imageTexture = new THREE.ImageUtils.loadTexture(imagePath);
     var imageMaterial = new THREE.MeshBasicMaterial({
         map: imageTexture,
@@ -327,34 +329,21 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
     }
 
-
     var flagMesh = new THREE.Mesh( geometry, imageMaterial);
     flagMesh.doubleSided = true;
 
     var phi = (90 - lat) * Math.PI / 180;
     var theta = (180 - lng) * Math.PI / 180 + THREE_VERSION_OFFSET;
-    //flagMesh.updateMatrix();
-    //flagMesh.rotation.y = 180;
-    //flagMesh.rotation.x = 90;
-    //flagMesh.rotation.z = 270;
     flagMesh.position.x = 200 * Math.sin(phi) * Math.cos(theta);
     flagMesh.position.y = 200 * Math.cos(phi);
     flagMesh.position.z = 200 * Math.sin(phi) * Math.sin(theta);
 
     //flagMesh.lookAt(flagMesh.position);
     flagMesh.lookAt(mesh.position);
-    //flagMesh.updateMatrix();
-    //var matrix = new THREE.Matrix4();
-    //matrix.getInverse(flagMesh.matrix);
-    //flagMesh.matrix = matrix;
-    //flagMesh.rotation.y = 180;
-    //flagMesh.matrix.setRotationY(360);
-    //THREE.Matrix4.makeInvert3x3(flagMesh.matrix, flagMesh.matrix);
-    //flagMesh.scale.z = 1;
-    //flagMesh.scale.x = 8;
-    //flagMesh.scale.y = 8;
     flagMesh.updateMatrix();
+    flagMesh.code = code;
     scene.add(flagMesh);
+    clickableMeshes.push(flagMesh);
     return flagMesh;
   }
 
@@ -470,6 +459,24 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
     target.y = target.y > PI_HALF ? PI_HALF : target.y;
     target.y = target.y < - PI_HALF ? - PI_HALF : target.y;
+    flagHitTest();
+  }
+
+  function flagHitTest() {
+    var w = container.offsetWidth;
+    var h = container.offsetHeight;
+    var x = ( w/2 / window.innerWidth ) * 2 - 1;
+    var y = - ( h/2 / window.innerHeight ) * 2 + 1;
+    var vector = new THREE.Vector3( x, y, 0.5 );
+    projector.unprojectVector( vector, camera );
+    var ray = new THREE.Ray( camera.position,
+            vector.subSelf( camera.position ).normalize() );
+    var hits = ray.intersectObjects(clickableMeshes);
+    if (hits.length) {
+        centeredFlagCallback(hits[0].object.code);
+    } else {
+        centeredFlagCallback(null);
+    }
   }
 
   function onMouseUp(event) {
