@@ -254,8 +254,24 @@ circle {
 	-webkit-border-radius:80px;
 }
 
+#cartogramUi {
+  	z-index:100;
+  	width: 800px;
+  	margin: auto;
+  	top: 50px;
+}
+
 #yearSlider {
-  width: 800px;
-  margin: auto;
-  top: 50px;
+	z-index:100;
+	top: 50px;
+	width:100%;
+	margin:auto
+}
+
+#playButton {
+	z-index:100;
+	position:relative;
+	top:55px;
+	width:10%;
+	margin:auto;
 }

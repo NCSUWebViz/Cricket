@@ -9,13 +9,17 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     var matchType = null;
     var clickableMeshes = [];
     var teamHighlightMeshes = {};
-    var $yearSlider = $("<div id='yearSlider'>").css('z-index', 100);
+    var $yearSlider;
+    var $playButton
     var cartogramSvgChart = document.getElementById('cartogramSvgChart');
     var svgCanvas = document.getElementById('svgCanvas');
     var ctx = svgCanvas.getContext('2d');
+    var timer = undefined;
+    var dataYears = [];
     var winsData;
     var nodes;
     var renderNow = true;
+    var curYear = 0;
 
     var svg;
 
@@ -26,9 +30,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
   .189, .134, .163, .133, .151, .145, .13, .139, .169, .164, .175, .135, .152,
   .169, , .132, .167, .139, .184, .159, .14, .146, .157, , .139, .183, .16, .143
     ];
-    var color = d3.scale.linear()
-        .domain([d3.min(data), d3.max(data)])
-        .range(["#aad", "#556"]);
+    var color = function() {};
 
     var countryCoords = {
         'AFG': [1320, 290],
@@ -117,14 +119,48 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     }
 
     function loadUI() {
-        //$container.append($yearSlider);
-        $yearSlider.appendTo($container);
+        //$yearSlider.appendTo($container);
+        var $uiElements = $("<div id='cartogramUi'>");
+        $uiElements.appendTo($container);
+        $yearSlider = $("<div id='yearSlider'>");
+        $yearSlider.appendTo($uiElements);
+        $playButton = $("<div id='playButton'>");
+        $playButton.appendTo($uiElements);
+
+        $playButton.button();
+        $playButton.text('Play');
+        $playButton.click(function(e) {
+            console.log("Play button clicked");
+            if (timer) {
+                stop();
+            } else {
+                curYear = $yearSlider.slider('option', 'value');
+                if (curYear == dataYears[dataYears.length - 1] || curYear == 0)
+                    curYear = dataYears[0];
+                $yearSlider.slider('value', curYear);
+                updateYear(curYear);
+                timer = setInterval(function() {
+                    curYear++;
+                    if (curYear >= dataYears[dataYears.length - 1])
+                        stop();
+
+                    $yearSlider.slider('value', curYear);
+                    updateYear(curYear);
+                }, 400);
+                $playButton.text("Stop");
+            }
+        });
     }
+
+    function stop() {
+        clearInterval(timer);
+        timer = undefined;
+        $playButton.text("Play");
+    }
+
 
     function getData() {
         console.log("getData()", matchType);
-        //if (matchType == null)
-            //return;
 
         var args="";
         if(matchType != "All Match Types" && matchType != "All Types"){
@@ -132,32 +168,50 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         }
 
         $.getJSON('php/AccumulatedWins.php'+args, function(data) {
-            console.log("AccumulateWins returned", data);
-            var years = [];
+            dataYears = [];
             for(var key in data) {
                 if(data.hasOwnProperty(key)) {
-                    years.push(parseInt(key));
+                    dataYears.push(parseInt(key));
                 }
             }
             //years.sort();
-            console.log("Accumulated wins", years);
-            console.log("Accumulated wins", years[0], years[years.length - 1]);
+
+            var max = 0;
+            $.each(data, function(key, teamWins) {
+                $.each(teamWins, function(team, wins) {
+                    if (wins > max)
+                        max = wins;
+                });
+            });
+
+            color = d3.scale.linear()
+                .domain([0, max])
+                .range(["green", "red"]);
 
             $yearSlider.slider({
-                animate:true,
-                min: years[0],
-                max: years[years.length -1],
-                value: years[0],
-                //values: years,
+                //animate:true,
+                min: dataYears[0],
+                max: dataYears[dataYears.length -1],
+                value: dataYears[0],
                 slide: function(e, ui) {
                     var year = ui.value;
                     updateYear(year);
-                    //vis.render();
                 }
             });
-            console.log("Year slider:", $yearSlider);
             winsData = data;
         });
+    }
+
+    function resetCartogram() {
+        svg.selectAll("circle")
+            .style("fill", function(d) {
+                var c = color(d.value || 0);
+                console.log("color:", d.code, d.value, c);
+                return color(d.value || 0);
+            })
+            .attr("cx", function(d) { return countryCoords[d.code][0]; })
+            .attr("cy", function(d) { return countryCoords[d.code][1]; })
+            .attr("r", function(d, i) { return 0; });
     }
 
     function updateYear(year) {
@@ -165,21 +219,20 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
             return;
 
         var wins = winsData[year];
-        console.log("Wins totals:", wins);
         nodes.forEach(function(n) {
-            if (wins[n.code] == undefined)
-                return;
-
-            console.log("Node", n);
-            console.log("Node ID, code", n.id, n.code);
-            console.log("Node Radius", n.r);
-            n.r = wins[n.code];
+            n.value = wins[n.code] || 0;
+            n.r = wins[n.code] || 0;
         });
         svg.selectAll("circle")
-            .style("fill", function(d) { return color(d.value); })
-            .attr("cx", function(d) { return d.x; })
-            .attr("cy", function(d) { return d.y; })
-            .attr("r", function(d, i) { return d.r || 0; });
+            .style("fill", function(d) {
+                //var c = color(d.value || 0);
+                return color(d.value || 0);
+            })
+            //.attr("cx", function(d) { return d.x; })
+            //.attr("cy", function(d) { return d.y; })
+            .attr("cx", function(d) { return countryCoords[d.code][0]; })
+            .attr("cy", function(d) { return countryCoords[d.code][1]; })
+            .attr("r", function(d, i) { return d.r/2 || 0; });
     }
 
     function loadSvgCanvasGlobe() {
@@ -251,7 +304,8 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
                 },
                 //r: Math.sqrt(data[+d.id] * 5000),
                 r: 0,
-                value: data[+d.id]
+                //value: data[+d.id]
+                value: 0
             };
         });
 
