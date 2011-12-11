@@ -9,9 +9,12 @@ VIS.vizLoadFuncs = {
     vizBasicGlobe: loadBasicGlobe,
     vizCartGlobe: loadCartogramGlobe,
     vizTeamPerf: loadTeamPerfGraph,
-    vizBatStats: function(){},
-    vizTeamGroundPerf: function(){},
+    vizBatStats: loadBatStats,
     vizAllTeamGroundPerf: loadAllTeamPerfGround,
+    vizCompareTeams: loadCompareTeams,
+    vizHeadToHead: loadHeadToHead,
+    vizSeriesPerf: loadSeriesPerf,
+    vizTeamPerfOnGround: loadTeamPerfOnGround,
 }
 
 VIS.currentViz = null;
@@ -77,6 +80,13 @@ function loadCartogramGlobe() {
     VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
 }
 
+function loadBatStats() {
+    VIS.currentViz = new VIS.BatStats();
+    VIS.currentViz.load();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
+}
+
+
 function loadTeamPerfGraph() {
     VIS.currentViz = new VIS.TeamPerfGraph();
     VIS.currentViz.load();
@@ -88,3 +98,28 @@ function loadAllTeamPerfGround() {
     VIS.currentViz.load();
     VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
 }
+
+function loadCompareTeams() {
+    VIS.currentViz = new VIS.CompareTeams();
+    VIS.currentViz.load();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
+}
+
+function loadHeadToHead() {
+    VIS.currentViz = new VIS.HeadToHead();
+    VIS.currentViz.load();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
+}
+
+function loadSeriesPerf() {
+    VIS.currentViz = new VIS.SeriesPerf();
+    VIS.currentViz.load();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
+}
+
+function loadTeamPerfOnGround() {
+    VIS.currentViz = new VIS.TeamPerfOnGround();
+    VIS.currentViz.load();
+    VIS.optsMenu.setupMenus(VIS.currentViz.requiredMenus);
+}
+
