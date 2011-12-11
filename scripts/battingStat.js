@@ -74,7 +74,7 @@ function getPlayerData()
 		        type: 'column'
 		    },
 		    title: {
-		        text: 'Batting Stats of ' + playerName 
+		        text: 'ODI Batting Stats of ' + playerName 
 		    },
 		    xAxis: {
 		        categories: [],
@@ -146,7 +146,7 @@ function getPlayerData()
 		{
 			//alert(data.data.length);
 			var total_runs = {data: []};
-			total_runs.name = "Runs scored"; 	
+			total_runs.name = yid + " by each " + xid ; 	
 			var i = 0;
 			//alert(data.data[0][0].__count__);
 			//alert(data.data.length);
@@ -160,6 +160,7 @@ function getPlayerData()
 					options.xAxis.categories.push(data.data[i].x);
 					i++;
 				}
+				options.yAxis.title.text = yid;
 				options.series.push(total_runs);
 				var chart = new Highcharts.Chart(options);	
 			}
