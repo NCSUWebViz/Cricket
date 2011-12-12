@@ -255,6 +255,8 @@ VIS.BasicGlobe = function($container) {
     }
 
     function clearActiveYears() {
+        //if (!$radialContainer)
+            //return;
         $radialContainer.find('.radial_div_item.active').removeClass('active');
     }
 

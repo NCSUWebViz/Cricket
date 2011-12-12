@@ -34,6 +34,10 @@ body {
 	height:14em;
 }
 
+#vizList li.selected {
+	background: rgba(25, 25, 150, 0.5);
+}
+
 #vizListLabel {
 	z-index:10001;
     position: absolute;

@@ -28,10 +28,13 @@ $(document).ready(function() {
     setupOptionsMenu();
     loadBasicGlobe();
     VIS.currentVizId = 'vizBasicGlobe';
+    $('#vizBasicGlobe').addClass('selected');
 });
 
 function setupVizMenu() {
     $('#vizList li').on('click', function(event) {
+        $(this).siblings().removeClass('selected');
+        $(this).addClass('selected');
         var vizId = $(this).attr('id');
         if (vizId == VIS.currentVizId)
             return;
