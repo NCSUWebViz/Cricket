@@ -24,7 +24,9 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     var renderNow = true;
     var curYear = 0;
     var unloaded = false;
-
+    var svgWidth = 1890;
+    var svgHeight = 945;
+    var groundPlaneMesh;
     var svg;
 
     // Ratio of Obese (BMI >= 30) in U.S. Adults, CDC 2008
@@ -71,22 +73,9 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     }
 
     function render() {
-        // Serialize the SVG DOM as XML
-        //var svg_xml = (new XMLSerializer())
-            //.serializeToString(svg);
-
-        //var img = new Image();
-        // Base64-encode the XML as data URL
-        //img.src = "data:image/svg+xml;base64," + btoa(svg);
-        // Draw the SVG-in-img into Canvas
-        //img.onload = function() {
-            //ctx.drawImage(img,0,0);
-        //}
-
-        //ctx.drawSvg(svg); // NOTE: this also works pretty well.
-        //svgTexture.needsUpdate = true;
-        //updateSvgCanvas();
         globe.render();
+        //if (groundPlaneMesh)
+            //groundPlaneMesh.lookAt(globe.camera.position);
     }
 
     function updateSvgCanvas() {
@@ -111,7 +100,6 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         loadUI();
         //loadCartogram();
         loadSvgCanvasGlobe();
-
         // NOTE: Either use this, or call updateSvgCanvas from render()
         setInterval(updateSvgCanvas, 100);
     }
@@ -138,7 +126,6 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         $playButton.button();
         $playButton.text('Play');
         $playButton.click(function(e) {
-            console.log("Play button clicked");
             if (timer) {
                 stop();
             } else {
@@ -164,12 +151,17 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         $toggleSvgHidden.button();
         $toggleSvgHidden.text('Flat Cartogram');
         $toggleSvgHidden.click(function(e) {
-            console.log("Toggleing SVG...");
-            $(cartogramSvgChart).toggle();
-            if ($(cartogramSvgChart).is(':visible')) {
+            var svgVis = $(cartogramSvgChart).is(':visible');
+            var gpVis =  groundPlaneMesh.visible;
+            if (!svgVis && !gpVis) {
+                $(this).text('Back plane');
+                $(cartogramSvgChart).toggle();
+            } else if (svgVis  && !gpVis) {
+                $(cartogramSvgChart).toggle();
+                groundPlaneMesh.visible = groundPlaneMesh.visible == true ? false : true;
                 $(this).text('Globe Cartogram');
-            }
-            else {
+            } else if (!svgVis && gpVis) {
+                groundPlaneMesh.visible = groundPlaneMesh.visible == true ? false : true;
                 $(this).text('Flat Cartogram');
             }
         });
@@ -275,7 +267,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         svgTexture.needsUpdate = true;
 
         globe = new DAT.Globe(container, null, null, false,
-                    svgTexture);
+                    svgTexture, null, 1600);
         renderer = globe.renderer;
         animate();
         loadTeams();
@@ -301,8 +293,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     }
 
     function loadCartogram(teams) {
-        var svgWidth = 1890;
-        var svgHeight = 945;
+
 
         var force = d3.layout.force()
             .charge(0)
@@ -399,8 +390,21 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
             .attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; })
             .attr("r", function(d, i) { return d.r || 0; });
+        loadFlyAround();
     }
 
+    function loadFlyAround() {
+        var svgMaterial = new THREE.MeshBasicMaterial({
+            map: svgTexture,
+            depthTest: true,
+        });
+        var geometry = new THREE.PlaneGeometry(svgWidth, svgHeight);
+        groundPlaneMesh = new THREE.Mesh( geometry, svgMaterial);
+        groundPlaneMesh.doubleSided = true;
+        groundPlaneMesh.lookAt(globe.camera.position);
+        globe.scene.add(groundPlaneMesh);
+        groundPlaneMesh.visible = false;
+    }
 
     function globeClicked(event) {
         var x = ( event.clientX / window.innerWidth ) * 2 - 1;
@@ -427,7 +431,6 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
 
     function matchTypeSelected($mtElement) {
         matchType = $mtElement.attr('id');
-        console.log("Changing selected match type");
         getData();
     }
 

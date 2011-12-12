@@ -25,7 +25,8 @@
 
 var DAT = DAT || {};
 
-DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynamicTexture, centeredFlagCallback) {
+DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynamicTexture, centeredFlagCallback, maxZoomOut) {
+  maxZoomOut = maxZoomOut || 1000;
 
   colorFn = colorFn || function(x) {
     var c = new THREE.Color();
@@ -524,7 +525,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
 
   function zoom(delta) {
     distanceTarget -= delta;
-    distanceTarget = distanceTarget > 1000 ? 1000 : distanceTarget;
+    distanceTarget = distanceTarget > maxZoomOut ? maxZoomOut : distanceTarget;
     distanceTarget = distanceTarget < 350 ? 350 : distanceTarget;
   }
 
