@@ -157,6 +157,7 @@ VIS.BasicGlobe = function($container) {
                 angleOffset: 0
             });
             $radialContainer.radmenu("show");
+            //$radialContainer.('.radial_div_item.active').animate
         }
         $.getJSON('php/getWorldCupGlobeData.php', function(data) {
             dataLoaded(data);
@@ -231,7 +232,7 @@ VIS.BasicGlobe = function($container) {
 
     function yearSelected($yearElement, event, skipTeamSelection) {
         if (!skipTeamSelection)
-            teamSelected($yearElement, true);
+            rotateToTeam($yearElement);
         clearContext();
         connectElement($yearElement);
     }
@@ -240,11 +241,14 @@ VIS.BasicGlobe = function($container) {
         clearContext();
         if (code)
             highlightFromCode(code);
+        else
+            $radialContainer.find('.radial_div_item.active').removeClass('active');
     }
 
     function highlightFromCode(code) {
         $radialContainer.find('.radial_div #'+code).each(
             function(idx, yearOuter) {
+                $(yearOuter).parent().addClass('active');
                 connectElement($(yearOuter));
             }
         );
@@ -278,6 +282,14 @@ VIS.BasicGlobe = function($container) {
 
 
     function teamSelected($teamElement, skipYearConnection) {
+        clearContext();
+        $radialContainer.find('.radial_div_item.active').removeClass('active');
+        if (!skipYearConnection)
+            connectYearsForTeam($teamElement);
+        rotateToTeam($teamElement);
+    }
+
+    function rotateToTeam($teamElement) {
         var lat, lng;
         if (!$teamElement.data('lat') || !$teamElement.data('lng')) {
             var code = $teamElement.attr('id');
@@ -293,10 +305,6 @@ VIS.BasicGlobe = function($container) {
         }
         globe.curLat = lat;
         globe.curLong = lng;
-
-        clearContext();
-        if (!skipYearConnection)
-            connectYearsForTeam($teamElement);
     }
 
     function connectYearsForTeam($teamElement) {
