@@ -11,8 +11,10 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     var teamHighlightMeshes = {};
     var $yearSlider;
     var $playButton;
+    var $toggleSvgHidden;
     var $year
     var cartogramSvgChart = document.getElementById('cartogramSvgChart');
+    $(cartogramSvgChart).hide();
     var svgCanvas = document.getElementById('svgCanvas');
     var ctx = svgCanvas.getContext('2d');
     var timer = undefined;
@@ -104,6 +106,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     function load() {
         $container = $container || $('#container');
         $container.click(globeClicked);
+        $(cartogramSvgChart).appendTo($container);
         projector = new THREE.Projector();
         loadUI();
         //loadCartogram();
@@ -153,6 +156,21 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
                     $yearSlider.slider('value', curYear);
                 }, 400);
                 $playButton.text("Stop");
+            }
+        });
+
+        $toggleSvgHidden = $("<div id='svgButton'>");
+        $toggleSvgHidden.appendTo($container);
+        $toggleSvgHidden.button();
+        $toggleSvgHidden.text('Flat Cartogram');
+        $toggleSvgHidden.click(function(e) {
+            console.log("Toggleing SVG...");
+            $(cartogramSvgChart).toggle();
+            if ($(cartogramSvgChart).is(':visible')) {
+                $(this).text('Globe Cartogram');
+            }
+            else {
+                $(this).text('Flat Cartogram');
             }
         });
     }
