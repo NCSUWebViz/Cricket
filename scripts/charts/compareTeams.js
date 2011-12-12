@@ -3,93 +3,22 @@ var teamsSelectSlots = new Array();
 
 
 VIS.CompareTeams = function($container) {
+    var MAX_TEAMS = 5;
     var matchType;
-    var teamsList = [];
-    /*function loadTeams(){
-        var num = getNumberOfTeams();
-        var j = 0;
-        teamsSelectSlots = new Array();
-        //-------------------------
-        var l = 0;
-        for(l=0; l<num; l++){
-                teamsSelectSlots[l] = 0;
-        }
-        //-------------------------
-        e = document.getElementById("submit");
-        deleteElements(e);
-        e = document.getElementById("teams");
-        deleteElements(e);
-
-        id=0;
-        while(j < num) {
-            $.getJSON('php/getTeamList2.php',function populateList(data){
-                var o;
-                var to_field=document.createElement('select');
-                var label = document.createElement('h7');
-                label.innerHTML = "Team "+(id+1)+": ";
-                e.appendChild(label);
-                to_field.setAttribute('id',id.toString());
-                to_field.onchange = function(){
-                    teamValidate(this.id,this.value);
-                };
-                o = document.createElement("option");
-                o.text = "";
-                o.value = 0;
-                to_field.add(o, null);
-                var i = 0;
-                while( i < data.data.length){
-                    o = document.createElement("option");
-                    o.text = data.data[i].name;
-                    o.value = data.data[i].id;
-                    i++;
-                    to_field.add(o, null);
-                }
-                e.appendChild(to_field);
-                var br_field=document.createElement('br');
-                e.appendChild(br_field);
-                id++;
-            });
-            j++;
-        }
-        addSubmitButton();
-    }*/
+    var teamsList = {};
 
     function getData(){
         var teamId = new Array();
         var teamNames = new Array();
         var args = "";
-        if(document.getElementById('numOfTeams') != null){
-            var num = getNumberOfTeams();
-            //alert("Selected: "+num);
-            var i = 0;
-            if( document.getElementById(i.toString()) == null ){
-                alert("null");
-            }
-            //alert("Selected: "+num);
-            while(i < num){
-                var select = document.getElementById(i.toString());
-                teamId[i] = select.options[select.selectedIndex].value;
-                teamNames[i] = select.options[select.selectedIndex].text;
-                //alert("Team Name: "+teamName);
-                i++;
-            }
-        }
-
-        i=0;
         args += '?teams=';
-        /*while(i < num){
-            args += teamId[i];
-            if(i != (num-1)){
-                args += ',';
-            }
-            i++;
-        }*/
         $.each(teamsList, function(idx, team) {
-            args += team.id;
-            if (idx != teamsList.length - 1)
+            if (idx != 1)
                 args += ',';
+            args += team.id;
             teamNames.push(team.name);
         });
+
 
         if(matchType != 'All Types' ) {
             args += '&type=';
@@ -208,13 +137,12 @@ VIS.CompareTeams = function($container) {
         }
     }
 
-    function getNumberOfTeams(){
-        return teamsList.length;
-        if(document.getElementById('numOfTeams') != null){
-                var e = document.getElementById('numOfTeams');
-                    var num = e.options[e.selectedIndex].value;
-                    return num;
-            }
+    function getNumberOfTeams() {
+        var i = 0;
+        $.each(teamsList, function(key, val){
+            i++;
+        });
+        return i;
     }
 
     function addSubmitButton(){
@@ -236,22 +164,25 @@ VIS.CompareTeams = function($container) {
         }
     }
 
-    function teamSelected($teamElement) {
-        var newTeam = {
-            id: $teamElement.attr('id'),
-            code: $teamElement.attr('code'),
-            name: $teamElement.text()
-        };
-        if (teamsList.length >= 5)
-            teamsList.shift();
+    function teamSelected(idx) {
+        return function($teamElement) {
+            var newTeam = {
+                id: $teamElement.attr('id'),
+                code: $teamElement.attr('code'),
+                name: $teamElement.text()
+            };
+            //if (teamsList.length >= 5)
+                //teamsList.shift();
 
-        teamsList.push(newTeam);
-        if (enoughData())
-            getData();
+            //teamsList.push(newTeam);
+            teamsList[idx] = newTeam;
+            if (enoughData())
+                getData();
 
-        //console.log("Setting new menu...");
-        //this.requiredMenus.teamClick_2 = teamSelected;
-        //VIS.optsMenu.setupMenus();
+            //console.log("Setting new menu...");
+            //this.requiredMenus.teamClick_2 = teamSelected;
+            //VIS.optsMenu.setupMenus();
+        }
     }
 
     function matchTypeSelected($mtElement) {
@@ -268,11 +199,11 @@ VIS.CompareTeams = function($container) {
     this.load = function() {};
     this.unload = function() {};
     this.requiredMenus = {
-        'teamClick': teamSelected,
-        'teamClick_2': teamSelected,
-        'teamClick_3': teamSelected,
-        'teamClick_4': teamSelected,
-        'teamClick_5': teamSelected,
+        'teamClick': teamSelected(1),
+        'teamClick_2': teamSelected(2),
+        'teamClick_3': teamSelected(3),
+        'teamClick_4': teamSelected(4),
+        'teamClick_5': teamSelected(5),
         'matchTypeClick': matchTypeSelected,
     };
 }

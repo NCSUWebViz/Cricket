@@ -27,6 +27,7 @@ $(document).ready(function() {
     setupVizMenu();
     setupOptionsMenu();
     loadBasicGlobe();
+    VIS.currentVizId = 'vizBasicGlobe';
 });
 
 function setupVizMenu() {

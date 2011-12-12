@@ -171,7 +171,7 @@ circle {
 .radial_div_item.active { 
 	background-color:#511;
 	color:white;
-	padding: 10px; 
+	padding: 3px; 
 	-moz-border-radius:40px;
 	-webkit-border-radius:40px;
 	z-index:100;

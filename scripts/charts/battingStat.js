@@ -165,6 +165,8 @@ VIS.BatStats = function($container) {
             var total_runs = {data: []};
             total_runs.name = yid + " by each " + xid ;
             var i = 0;
+            //alert(data.data[0][0].__count__);
+            //alert(data.data.length);
             if(data.data.length == 0){
                 options.title.text = "No Data Found";
                 var chart = new Highcharts.Chart(options);
