@@ -348,8 +348,9 @@ VIS.Menu = function(outsideContainer) {
         });
         fillMenuPosition(pos, $ul, "Match Type", cacheTag);
         menuCache[cacheTag] = $ul;
-        if (VIS.currentViz)
-            VIS.currentViz.matchTypeSelected($selectedItem);
+        if (VIS.currentViz) {
+            callback($selectedItem);
+        }
     }
 
     function loadXAxisMenu(pos, cacheTag, callback) {
