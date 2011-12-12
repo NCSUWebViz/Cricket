@@ -84,7 +84,12 @@ VIS.BatStats = function($container) {
                 plotBackgroundColor: 'rgba(0,0,0,0.8)'
             },
             title: {
-                text: 'ODI Batting Stats of ' + playerName
+                text: 'ODI Batting Stats of ' + playerName,
+                style:
+                    {
+	                    color: 'white',
+	                    fontSize: '16px'
+                    }
             },
             xAxis: {
                 categories: [],
@@ -93,13 +98,20 @@ VIS.BatStats = function($container) {
                         align: 'right',
                         step: 1,
                         style: {
-                            font: 'normal 12px Verdana, sans-serif'
+                            font: 'normal 12px Verdana, sans-serif',
+	                        color: 'white',
+	                        fontSize: '16px'
                         }
                      }
             },
             yAxis: {
                 title: {
-                    text: 'Number of Runs'
+                    text: 'Number of Runs',
+                    style:
+                    {
+	                    color: 'white',
+	                    fontSize: '16px'
+                    }
                 }
             },
             point: {
@@ -127,16 +139,12 @@ VIS.BatStats = function($container) {
                                 filtername = xid;
                                 //alert(xval);
                                 filterval = this.category;
-                                e = document.getElementById("SelectX");
+                                e = xid;
                                 if(xval == 'year')
-                                    e.value = 'vsTeam_id';
+                                    xval = 'vsTeam_id';
                                 else
-                                    e.value = 'year';
+                                    xval = 'year';
                                 getPlayerData();
-                                var div = document.getElementById("filter");
-                                div.innerHTML = 'Filtered by <b>'+filtername+'</b> with value <b>'+filterval+'</b>';
-                                var temp = document.getElementById("resetFilter");
-                                temp.style.visibility = "visible";
                             }
                         }
                     }
@@ -151,15 +159,12 @@ VIS.BatStats = function($container) {
             args = args + '&filtertype=' + filtertype + '&filterval=' + filterval;
         }
 
-        //alert(args);
         $.getJSON('php/getPlayerBattingStat.php?'+args,function(data)
         {
             //alert(data.data.length);
             var total_runs = {data: []};
             total_runs.name = yid + " by each " + xid ;
             var i = 0;
-            //alert(data.data[0][0].__count__);
-            //alert(data.data.length);
             if(data.data.length == 0){
                 options.title.text = "No Data Found";
                 var chart = new Highcharts.Chart(options);
@@ -192,23 +197,31 @@ VIS.BatStats = function($container) {
         playerId = $playerElement.attr('id');
         playerName = $playerElement.text();
         if (enoughValues())
+        {
+            resetfilter();
             getPlayerData();
+        }
     }
 
     function xAxisSelected($xAxisEl){
         console.log("X-Axis changed:", $xAxisEl);
-        xid = $xAxisEl.attr('id');
-        xval = $xAxisEl.text();
+        xval = $xAxisEl.attr('id');
+        xid = $xAxisEl.text();
         if (enoughValues())
             getPlayerData();
     }
 
     function yAxisSelected($yAxisEl){
         console.log("Y-Axis changed:", $yAxisEl);
-        yid = $yAxisEl.attr('id');
-        yval = $yAxisEl.text();
+        yval = $yAxisEl.attr('id');
+        yid = $yAxisEl.text();
         if (enoughValues())
             getPlayerData();
+    }
+
+    function resetfilter()
+    {
+	    filterflag = 0;
     }
 
     function enoughValues() {
