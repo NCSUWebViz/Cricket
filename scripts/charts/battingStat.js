@@ -4,10 +4,14 @@ VIS.BatStats = function($container) {
     var options;
     var countryName;
     var countryCode;
+    var playerName;
+    var playerId;
     var xval;
     var filterflag;
     var filterval;
     var filtertype;
+    var yval;
+    var xval;
 
 
     // Load function for integration purposes
@@ -56,17 +60,17 @@ VIS.BatStats = function($container) {
 
     function getPlayerData() {
         var args = '';
-        var e = document.getElementById("PlayerSelect");
-        var playerName = e.options[e.selectedIndex].text;
-        var playerId = e.options[e.selectedIndex].value;
-        e = document.getElementById("SelectX");
-        xobj = e.options[e.selectedIndex];
-        xval = xobj.value;
-        xid = xobj.text;
-        e = document.getElementById("SelectY");
-        yobj = e.options[e.selectedIndex];
-        yval = yobj.value;
-        yid = yobj.text;
+        //var e = document.getElementById("PlayerSelect");
+        //var playerName = e.options[e.selectedIndex].text;
+        //var playerId = e.options[e.selectedIndex].value;
+        //e = document.getElementById("SelectX");
+        //xobj = e.options[e.selectedIndex];
+        //xval = xobj.value;
+        //xid = xobj.text;
+        //e = document.getElementById("SelectY");
+        //yobj = e.options[e.selectedIndex];
+        //yval = yobj.value;
+        //yid = yobj.text;
 
 
         //--------------------Declare options-----------------
@@ -75,7 +79,9 @@ VIS.BatStats = function($container) {
                 renderTo: 'container',
                 defaultSeriesType: 'spline',
                 zoomType: 'x',
-                type: 'column'
+                type: 'column',
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                plotBackgroundColor: 'rgba(0,0,0,0.8)'
             },
             title: {
                 text: 'ODI Batting Stats of ' + playerName
@@ -177,10 +183,37 @@ VIS.BatStats = function($container) {
         //VIS.Menu.update('playerClick', {'countryName': countryName});
         VIS.optsMenu.updatePlayerClick(1, 'playerClick', playerSelected,
                 {'countryName': countryName});
+        if (enoughValues())
+            getPlayerData();
     }
 
     function playerSelected($playerElement) {
         console.log("Player selected!", $playerElement);
+        playerId = $playerElement.attr('id');
+        playerName = $playerElement.text();
+        if (enoughValues())
+            getPlayerData();
+    }
+
+    function xAxisSelected($xAxisEl){
+        console.log("X-Axis changed:", $xAxisEl);
+        xid = $xAxisEl.attr('id');
+        xval = $xAxisEl.text();
+        if (enoughValues())
+            getPlayerData();
+    }
+
+    function yAxisSelected($yAxisEl){
+        console.log("Y-Axis changed:", $yAxisEl);
+        yid = $yAxisEl.attr('id');
+        yval = $yAxisEl.text();
+        if (enoughValues())
+            getPlayerData();
+    }
+
+    function enoughValues() {
+        return countryName && playerId && playerName && xid
+            && xval && yid && yval;
     }
 
     this.load = load;
@@ -188,6 +221,8 @@ VIS.BatStats = function($container) {
     this.requiredMenus = {
         'teamClick': teamSelected,
         'playerClick': playerSelected,
+        'xAxis': xAxisSelected,
+        'yAxis': yAxisSelected,
     }
 }
 

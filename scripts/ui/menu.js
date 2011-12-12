@@ -33,6 +33,8 @@ VIS.Menu = function(outsideContainer) {
         //teamMulti: 3,
         matchTypeClick: loadMatchTypeMenu,
         playerClick: loadPlayerClickMenu,
+        xAxis: loadXAxisMenu,
+        yAxis: loadYAxisMenu,
         //groundsClick: 5,
         //playersClick: 6,
         //playersMulti: 7,
@@ -93,8 +95,12 @@ VIS.Menu = function(outsideContainer) {
         $menuNode.appendTo($mainContainer);
 
         var height = MAX_MENU_HEIGHT;
+        var left = 10 * pos;
 
-        $menuNode.css('height', height.toString() + "px");
+        $menuNode.css({
+            'height': height.toString() + "px",
+            'left': left + "em"
+        });
         $("<span class='menuLabel menuPosLabel" + pos + "'>")
             .text(label)
             .appendTo($menuNode);
@@ -304,7 +310,7 @@ VIS.Menu = function(outsideContainer) {
                 $player.click(clicked);
             });
             menuCache[cacheTag] = $ul;
-            fillMenuPosition(pos, $ul, "Select Venue", cacheTag);
+            fillMenuPosition(pos, $ul, "Select Player", cacheTag);
         });
     }
 
@@ -344,6 +350,80 @@ VIS.Menu = function(outsideContainer) {
         menuCache[cacheTag] = $ul;
         if (VIS.currentViz)
             VIS.currentViz.matchTypeSelected($selectedItem);
+    }
+
+    function loadXAxisMenu(pos, cacheTag, callback) {
+        var cacheTag = cacheTag || 'xAxis';
+        var callback = callback || VIS.currentViz.matchTypeSelected;
+
+        function clicked() {
+            var $this = $(this);
+            highlightItem($this);
+            callback($this);
+        }
+
+        if (alreadyLoaded(pos, cacheTag, "X - Axis", callback)) {
+            menuCache[cacheTag].children().click(clicked);
+            return;
+        }
+
+        var $selectedItem = null;
+        var $ul = $('<ul/>', {
+            'class': 'teamList',
+        });
+        $.each([["Year", "year"],
+                ["Opponent", "vsTeam_id"],
+                ["Venue", "venue_id"]], function(index, val) {
+            var $matchType = $('<li id="' + val[1] + '">' + val[0] + '</li>')
+                .appendTo($ul);
+            if (index == 0) {
+                $matchType.addClass('selected');
+                $selectedItem = $matchType;
+            }
+            $matchType.click(clicked);
+        });
+        fillMenuPosition(pos, $ul, "X - Axis", cacheTag);
+        menuCache[cacheTag] = $ul;
+        if (VIS.currentViz)
+            callback($selectedItem);
+    }
+
+    function loadYAxisMenu(pos, cacheTag, callback) {
+        var cacheTag = cacheTag || 'yAxis';
+        var callback = callback || VIS.currentViz.matchTypeSelected;
+
+        function clicked() {
+            var $this = $(this);
+            highlightItem($this);
+            callback($this);
+        }
+
+        if (alreadyLoaded(pos, cacheTag, "Y - Axis", callback)) {
+            menuCache[cacheTag].children().click(clicked);
+            return;
+        }
+
+        var $selectedItem = null;
+        var $ul = $('<ul/>', {
+            'class': 'teamList',
+        });
+        $.each([["Total Runs", "scored_runs"],
+                ["Average", "average"],
+                ["Matches Played", "id"],
+                ["Strike Rate", "strike_rate"],
+                ["Number of Centuries", "centuries"]], function(index, val) {
+            var $matchType = $('<li id="' + val[1] + '">' + val[0] + '</li>')
+                .appendTo($ul);
+            if (index == 0) {
+                $matchType.addClass('selected');
+                $selectedItem = $matchType;
+            }
+            $matchType.click(clicked);
+        });
+        fillMenuPosition(pos, $ul, "Y - Axis", cacheTag);
+        menuCache[cacheTag] = $ul;
+        if (VIS.currentViz)
+            callback($selectedItem);
     }
 
     function alreadyLoaded(pos, cacheTag, label, updateMethod) {
