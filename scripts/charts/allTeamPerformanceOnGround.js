@@ -69,18 +69,21 @@ VIS.AllTeamPerfGround = function ($container, teamClickCallback)
                 formatter: function ()
                 {
                     var groundSplit = options.title.text.split(",");
+                    var percentQuantity = Math.round(parseInt(this.y)/parseInt(this.point.stackTotal)*100);
                     if (groundSplit[2] == this.x)
                     {
                         return '<b>Country:</b>' + this.x + '<br /><b>' +
             								this.series.name + ':</b> ' + this.y + '<br/>' +
             								"<b>Total Matches Played: </b>" + this.point.stackTotal + '<br />' +
+                                            "<b>Percentage: </b>" + percentQuantity.toString() + '%<br />' +
 											"<b>This is the Home Ground for " + this.x + "</b>";
                     }
                     else
                     {
                         return '<b>Country:</b>' + this.x + '<br /><b>' +
             								this.series.name + ':</b> ' + this.y + '<br/>' +
-            								"<b>Total Matches Played: </b>" + this.point.stackTotal + '<br />';
+            								"<b>Total Matches Played: </b>" + this.point.stackTotal + '<br />'+
+                                            "<b>Percentage: </b>" + percentQuantity.toString() + '%<br />';
                     }
                 }
             },
