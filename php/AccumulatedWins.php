@@ -5,9 +5,15 @@ function getAccumulatedWins(){
 	include 'send_json.php';	
 	//mysql_selectdb('Cricket',$link) or die('Error connecting to DB');
 	
-	$type = $_GET['type'];
+	$sql = "select min(year) as min_year, max(year) as max_year from matches";
+	$typeflag = 0;
 	
-	$sql = "select min(year) as min_year, max(year) as max_year from matches where type like '%". $type ."%'";
+	if (isset($_GET['type'])) {
+		$type = $_GET['type'];
+		$sql = $sql." where type like '%".$type."%'";
+		$typeflag = 1;
+	}
+	//echo $sql;
 	$result = mysql_query($sql);
 	$row = mysql_fetch_assoc($result);
 	$min_year = intval($row['min_year']);
@@ -18,7 +24,11 @@ function getAccumulatedWins(){
 	while($year <= $max_year)
 	{
 		$sql = "select count(*) as total, m.year as year, t.code as team from matches m, teams t";
-		$sql = $sql." where t.id = m.winner_id and m.type like '%". $type ."%' and m.winner_id <> -1 and m.year <=".$year;
+		$sql = $sql." where t.id = m.winner_id";
+		if($typeflag == 1) {
+			$sql = $sql." and m.type like '%". $type ."%'";	
+		}
+		$sql = $sql." and m.winner_id <> -1 and m.year <=".$year;
 		$sql = $sql." group by m.winner_id"; 
 		//$sql = "select ".$x.", sum(".$y.") as total from batting_stats where type like '%".$type."%' and player_id =".$id;
 		//echo $sql;
