@@ -15,6 +15,7 @@ VIS.BasicGlobe = function($container) {
     var worldCupWinYearsPerTeam = {};
     var numYears;
     var $radialContainer;
+    var flagCentered = false;
     var unloaded = false;
 
     function animate() {
@@ -152,12 +153,10 @@ VIS.BasicGlobe = function($container) {
                     $yearElement.data('lng', teamCache[code].lng);
                     $yearElement.data('code', code);
                     yearSelected($yearElement, event);
-                    console.log("Whole menu:", $radialContainer);
                 },
                 angleOffset: 0
             });
             $radialContainer.radmenu("show");
-            //$radialContainer.('.radial_div_item.active').animate
         }
         $.getJSON('php/getWorldCupGlobeData.php', function(data) {
             dataLoaded(data);
@@ -178,7 +177,10 @@ VIS.BasicGlobe = function($container) {
     }
 
     function globeClicked(event) {
-        clearContext();
+        if (!flagCentered) {
+            clearActiveYears();
+            clearContext();
+        }
         var x = ( event.clientX / window.innerWidth ) * 2 - 1;
         var y = - ( event.clientY / window.innerHeight ) * 2 + 1;
         var vector = new THREE.Vector3( x, y, 0.5 );
@@ -192,6 +194,9 @@ VIS.BasicGlobe = function($container) {
             var hit = hits[0].object;
             globe.curLat = hit.lat;
             globe.curLong = hit.lng;
+            clearContext();
+            clearActiveYears();
+            highlightFromCode(hit.code);
         } else {
             console.log("Click detected, but no target was hit.", hits);
         }
@@ -239,10 +244,18 @@ VIS.BasicGlobe = function($container) {
 
     function centeredFlag(code) {
         clearContext();
-        if (code)
+        if (code) {
+            flagCentered = true;
             highlightFromCode(code);
-        else
-            $radialContainer.find('.radial_div_item.active').removeClass('active');
+        }
+        else {
+            flagCentered = false;
+            clearActiveYears();
+        }
+    }
+
+    function clearActiveYears() {
+        $radialContainer.find('.radial_div_item.active').removeClass('active');
     }
 
     function highlightFromCode(code) {
@@ -283,7 +296,7 @@ VIS.BasicGlobe = function($container) {
 
     function teamSelected($teamElement, skipYearConnection) {
         clearContext();
-        $radialContainer.find('.radial_div_item.active').removeClass('active');
+        clearActiveYears();
         if (!skipYearConnection)
             connectYearsForTeam($teamElement);
         rotateToTeam($teamElement);
