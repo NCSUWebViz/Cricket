@@ -27,9 +27,11 @@ body {
     top: 63px;
     color: #CCC;
     background-color: rgba(0,0,0,0.2);
+	border-bottom: 1px solid rgba(50, 50, 200, 0.6);
     padding: 10px;
 	list-style:none;
 	cursor:pointer;
+	height:14em;
 }
 
 #vizListLabel {
@@ -38,9 +40,9 @@ body {
 	padding-left:15em;
     top:78px;
     color: #CCC;
+	height:16em;
     background-color: rgba(0,0,0,0.8);
-    border-left: 1px solid rgba(50, 50, 200, 0.6);
-	border-right: 1px solid rgba(50, 50, 200, 0.6);
+	border: 1px solid rgba(50, 50, 200, 0.6);
     padding: 10px;
 	list-style:none;
 	cursor:pointer;
