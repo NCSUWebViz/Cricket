@@ -134,7 +134,7 @@ VIS.BasicGlobe = function($container) {
             $radialContainer.radius = radius;
 
             var width = $(window).width()/2 - 20;
-            var height = $(window).height()/2 - 10;
+            var height = $(window).height()/2 - 25;
 
             $radialContainer.radmenu({
                 listClass: 'yearList',
