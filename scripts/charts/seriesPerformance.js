@@ -37,7 +37,12 @@ VIS.SeriesPerf = function ($container, teamClickCallback)
                     zoomType: 'x'
                 },
                 title: {
-                    text: countryName + "-" + matchType
+                    text: countryName + "-" + matchType + " series",
+	                style:
+	                    {
+		                    color: 'white',
+		                    fontSize: '16px'
+	                    }
                 },
                 xAxis: {
                     categories: [],

@@ -42,7 +42,12 @@ VIS.HeadToHead = function($container, teamClickCallback) {
                                 plotBackgroundColor: 'rgba(0,0,0,0.8)'
 					        },
 					        title: {
-					            text: 'Head to Head Performance Comparison of '
+					            text: 'Head to Head Performance Comparison of ',
+				                style:
+				                    {
+					                    color: 'white',
+					                    fontSize: '16px'
+				                    }
 					        },
 					        xAxis: {
 					            categories: [],
@@ -113,7 +118,8 @@ VIS.HeadToHead = function($container, teamClickCallback) {
 									    size: 150,
 									    showInLegend: false,
 									    dataLabels: {
-											    enabled: true
+											    enabled: true,
+											    color: 'white'
 									    },
 									    data:[]
 							    }		

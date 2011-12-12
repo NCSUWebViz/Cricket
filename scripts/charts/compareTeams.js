@@ -35,7 +35,12 @@ VIS.CompareTeams = function($container) {
                 plotBackgroundColor: 'rgba(0,0,0,0.8)'
             },
             title: {
-                text: 'Performance Comparison of '
+                text: 'Performance Comparison of ',
+                style:
+                    {
+	                    color: 'white',
+	                    fontSize: '16px'
+                    }
             },
             xAxis: {
                 categories: [],
@@ -60,7 +65,7 @@ VIS.CompareTeams = function($container) {
                     return tooltip;
                     },
                     style: {
-                    color: 'white',
+                    color: 'black',
                     fontSize: '11pt',
                     padding: '5px'
                 }

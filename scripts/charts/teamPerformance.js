@@ -55,7 +55,12 @@ VIS.TeamPerfGraph = function($container, teamClickCallback) {
                 //plotBackgroundImage: '../images/cricketball.jpg'
             },
             title: {
-                text: countryName + "-" + matchType
+                text: countryName + "-" + matchType,
+                style:
+                    {
+	                    color: 'white',
+	                    fontSize: '16px'
+                    }
             },
             xAxis: {
                 categories: [],

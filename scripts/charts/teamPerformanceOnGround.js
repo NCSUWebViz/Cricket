@@ -31,7 +31,12 @@ VIS.TeamPerfOnGround = function ($container, teamClickCallback)
 						        zoomType: 'y'
 						    },
 						    title: {
-						        text: null
+						        text: null,
+				                style:
+				                    {
+					                    color: 'white',
+					                    fontSize: '16px'
+				                    }
 						    },
 						    xAxis: {
 						        categories: [],
