@@ -554,6 +554,7 @@ DAT.Globe = function(container, colorFn, renderTargetTexture, swapUpDown, dynami
     //renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
     renderer.render(scene, camera, renderTargetTexture, true);
     //renderer.render(sceneAtmosphere, camera, renderTargetTexture, true);
+    //flagHitTest();
   }
 
   init();

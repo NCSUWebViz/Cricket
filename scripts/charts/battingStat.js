@@ -186,7 +186,6 @@ VIS.BatStats = function($container) {
 
     function teamSelected($teamElement) {
         countryName = $teamElement.text();
-        console.log("Batting stats ts:", $teamElement, countryName);
         //VIS.Menu.update('playerClick', {'countryName': countryName});
         VIS.optsMenu.updatePlayerClick(1, 'playerClick', playerSelected,
                 {'countryName': countryName});
@@ -195,7 +194,6 @@ VIS.BatStats = function($container) {
     }
 
     function playerSelected($playerElement) {
-        console.log("Player selected!", $playerElement);
         playerId = $playerElement.attr('id');
         playerName = $playerElement.text();
         if (enoughValues())
@@ -206,7 +204,6 @@ VIS.BatStats = function($container) {
     }
 
     function xAxisSelected($xAxisEl){
-        console.log("X-Axis changed:", $xAxisEl);
         xval = $xAxisEl.attr('id');
         xid = $xAxisEl.text();
         if (enoughValues())
@@ -214,7 +211,6 @@ VIS.BatStats = function($container) {
     }
 
     function yAxisSelected($yAxisEl){
-        console.log("Y-Axis changed:", $yAxisEl);
         yval = $yAxisEl.attr('id');
         yid = $yAxisEl.text();
         if (enoughValues())

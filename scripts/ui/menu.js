@@ -8,19 +8,6 @@ var VIS = VIS || {};
  * 'venueClick'
  */
 
-
-VIS.vizMenuEnum = {
-    teamClick: 1,
-    teamHover: 2,
-    teamMulti: 3,
-    matchTypeClick: 4,
-    groundsClick: 5,
-    playersClick: 6,
-    playersMulti: 7,
-    yearVenueOpponent: 8,
-    venueClick:9
-}
-
 VIS.Menu = function(outsideContainer) {
     var MAX_MENU_HEIGHT = 300;
     var loadedMenus = {};
@@ -30,47 +17,13 @@ VIS.Menu = function(outsideContainer) {
     VIS.vizMenuEnum = {
         teamClick: loadTeamClickMenu,
         teamHover: loadTeamHoverMenu,
-        //teamMulti: 3,
         matchTypeClick: loadMatchTypeMenu,
         playerClick: loadPlayerClickMenu,
         xAxis: loadXAxisMenu,
         yAxis: loadYAxisMenu,
-        //groundsClick: 5,
-        //playersClick: 6,
-        //playersMulti: 7,
-        //yearVenueOpponent: 8,
         venueClick: loadVenueClickMenu,
     }
 
-    /*this.setupMenus = function(requiredMenus) {
-        if (requiredMenus == null && VIS.currentViz != null) {
-            requiredMenus = VIS.currentViz.requiredMenus
-        }
-
-        hideNonrequiredMenus(requiredMenus);
-        $.each(requiredMenus, function(index, menuId) {
-            setupMenu(menuId, index);
-        });
-    }
-
-    function setupMenu(menuId, pos) {
-        switch(menuId) {
-            case VIS.vizMenuEnum.teamClick:
-                loadTeamClickMenu(pos);
-                break;
-            case VIS.vizMenuEnum.teamHover:
-                loadTeamHoverMenu(pos);
-                break;
-            case VIS.vizMenuEnum.matchTypeClick:
-                loadMatchTypeMenu(pos);
-                break;
-            case VIS.vizMenuEnum.venueClick:
-                loadVenueClickMenu(pos);
-                break;
-        }
-    }*/
-
-    // TODO: This version allows for specified callbacks,
     this.setupMenus = function(requiredMenus) {
         if (requiredMenus == null && VIS.currentViz != null) {
             requiredMenus = VIS.currentViz.requiredMenus
@@ -259,25 +212,6 @@ VIS.Menu = function(outsideContainer) {
         }
 
         return;
-
-        /*$.getJSON('php/getVenues.php', function (venueData) {
-            var $ul = $('<ul/>', {
-                'class': 'teamList',
-            });
-            $.each(venueData, function(key, val) {
-                var $venue = $('<li id="' + val.id + '">' + val.ground_name + '</li>')
-                    .appendTo($ul);
-                if (key == 1) {
-                    $venue.addClass('selected');
-                    //VIS.currentViz.venueSelected($venue);
-                    callback($venu);
-                }
-                $venue.addClass('team');
-                $venue.click(clicked);
-            });
-            menuCache[cacheTag] = $ul;
-            fillMenuPosition(pos, $ul, "Select Venue", cacheTag);
-        });*/
     }
 
     function updatePlayerClick(pos, cacheTag, callback, data) {
@@ -288,24 +222,17 @@ VIS.Menu = function(outsideContainer) {
             highlightItem($this);
             callback($this);
         }
-        function clearMenu(menu) {
-            console.log("Clearing player menu");
-            menu.detach();
-            menu.children().unbind();
-            menu.parent().remove();
-            menu.parent().css('height', 0);
-            console.log("Clearing player menu done 2...");
-            delete menu;
-        }
+
         var $menu = menuCache[cacheTag];
         if ($menu != undefined) {
-            //$menu.children().unbind();
-            //$menu.html('');
-            clearMenu($menu);
+            $menu.children().remove();
+            $menu.parent().remove();
+            $menu.parent().css('height', 0);
+            delete $menu.parent();
         }
 
         $.getJSON('php/getPlayerList.php?team='+countryName, function (data) {
-           var $ul = $('<ul/>', {
+           var $ul = $menu || $('<ul/>', {
                 'class': 'teamList',
             });
             $.each(data.data, function(key, val) {
@@ -324,7 +251,8 @@ VIS.Menu = function(outsideContainer) {
     }
 
     // TODO: This needs to be rolled into a generic menu update system,
-    // but just make it public for now.  This whole setup needs redoing.
+    // but just make it public for now.  This whole menu system needs
+    // redoing anyway (with an MVC framework).
     this.updatePlayerClick = updatePlayerClick;
 
     function loadMatchTypeMenu(pos, cacheTag, callback) {

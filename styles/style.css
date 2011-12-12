@@ -11,17 +11,6 @@ body {
 	//opacity:.8;
 }
 
-/*#background {
-	z-index:1;
-	background:url(../images/cricketball.jpg);
-	background-repeat:no-repeat;
-	background-position:top center;
-	background-size:contain;
-	height:100%;
-	width:100%;
-	opacity:0.80;
-}*/
-
 #container {
 	background-color:transparent;
 	width:100%;
@@ -31,6 +20,7 @@ body {
 }
 
 #vizList {
+	font-size:18px;
 	z-index:10000;
     position: absolute;
     left: 2em;
@@ -56,28 +46,6 @@ body {
 	cursor:pointer;
 	text-align:center;
 }
-
-/*.menuPos1 ul {
-    position: absolute;
-    left: 20px;
-    top: 63px;
-    color: #CCC;
-    background-color: rgba(0,0,0,0.2);
-    //border-top: 1px solid rgba(255,255,255,0.4);
-    padding: 10px;
-	list-style:none;
-}*/
-
-/*#optionsMenu{
-	position: absolute;
-	bottom: 0%;
-	left: 0%;
-	z-index:100;
-	width: 100%;	
-	height: 20em;
-  	background: rgba(0, 0, 0, 0.70);  	
-	box-shadow: 0px 0px 0.125em rgba(0, 0, 0, 0.95);	
-}*/
  
 .menu {
 	position: absolute;
@@ -143,7 +111,6 @@ body {
   width: 960px;
   height: 500px;
   visibility:hidden;
-  //background:url(../images/globeTexture.jpg);
 }
 
 circle {
@@ -163,32 +130,38 @@ circle {
 	width: 100%;
 	text-align:center;
 }
+
 .radial_div_item {
-	color:#234;
+	position:relative;
+	height:50px;
+	padding:0px;
+	margin:0px;
 	cursor:pointer;
 	text-align:center;
+	background:url(../images/Cricket_World_Cup_trophy_2.png);
+	background-repeat:no-repeat;
+	background-position: top center;
+	background-size:contain;
 }
 .radial_div_item.active { 
 	background-color:#511;
 	color:white;
-	padding: 3px; 
 	-moz-border-radius:40px;
 	-webkit-border-radius:40px;
 	z-index:100;
-}
-.yearItemText { 
-	font-size:1.5em;
-	text-align:center;
-	margin:0px;
-	padding:0px;
-	color:#FFF;
-	width:50px;
-	height:50px;
-	background:url(../images/180px-Cricketball.png);
+	background:url(../images/Cricket_World_Cup_trophy_2.png), url(../images/180px-Cricketball.png);
 	background-repeat:no-repeat;
 	background-position: top center;
 	background-size:contain;
-	cursor:pointer;
+}
+.yearItemText {
+	font-size:1.5em;
+	text-align:center;
+	margin:0px;
+	padding-top:50px;
+	color:#FFF;
+	width:50px;
+	height:50px;
 }
 
 #cartogramUi {

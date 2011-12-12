@@ -130,6 +130,7 @@ VIS.BasicGlobe = function($container) {
                 //$container.css('width'), $(window).height(), $(window).width());
 
             var radius = $(window).height()/2 - 50;
+            $radialContainer.radius = radius;
 
             var width = $(window).width()/2 - 20;
             var height = $(window).height()/2 - 10;
@@ -151,6 +152,7 @@ VIS.BasicGlobe = function($container) {
                     $yearElement.data('lng', teamCache[code].lng);
                     $yearElement.data('code', code);
                     yearSelected($yearElement, event);
+                    console.log("Whole menu:", $radialContainer);
                 },
                 angleOffset: 0
             });
@@ -257,21 +259,23 @@ VIS.BasicGlobe = function($container) {
         var y2 = $topCanvas.height()/2;
         var h = $yearElement.height();
         var w = $yearElement.width();
-        var x1 = $yearElement.offset().left;
-        var y1 = $yearElement.offset().top;
+        var x0 = $yearElement.offset().left;
+        var y0 = $yearElement.offset().top;
+        var x1 = x0 + (Math.cos(angle));
+        var y1 = y0 + (Math.sin(angle));
 
         var offX = (w * Math.sin(angle))/2;
         var offY = (h * Math.cos(angle))/2;
-        //console.log("(X1,Y1) - (X2,Y2), h", x1,y1,x2,y2, offX, offY);
+        var xM = (x1 + x1 + w)/2;
+        var yM = (y1 + y1 + h)/2 - 12;
 
         topCanvasCtx.beginPath();
-        //topCanvasCtx.moveTo(x1 + w/2, y1 + h/2);
-        //topCanvasCtx.lineTo(x1 - w/2, y1 - h/2);
-        topCanvasCtx.moveTo(x1 - offX, y1 + offY);
-        topCanvasCtx.lineTo(x1 + offX, y1 - offY);
+        topCanvasCtx.moveTo(xM - offX, yM + offY);
+        topCanvasCtx.lineTo(xM + offX, yM - offY);
         topCanvasCtx.lineTo(x2,y2);
         topCanvasCtx.fill();
     }
+
 
     function teamSelected($teamElement, skipYearConnection) {
         var lat, lng;
