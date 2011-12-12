@@ -95,7 +95,7 @@ VIS.AllTeamPerfGround = function ($container, teamClickCallback)
             series: []
         };
         //----------------------------------------------------
-        $.getJSON('php/getGroundperformanceAll.php' + args, function (data)
+        $.getJSON('php/getGroundPerformanceAll.php' + args, function (data)
         {
             var series = {
                 data: []
