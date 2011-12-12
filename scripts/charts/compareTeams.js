@@ -3,6 +3,8 @@ var teamsSelectSlots = new Array();
 
 
 VIS.CompareTeams = function($container) {
+    var matchType;
+    var teamsList = [];
     /*function loadTeams(){
         var num = getNumberOfTeams();
         var j = 0;
@@ -75,19 +77,23 @@ VIS.CompareTeams = function($container) {
 
         i=0;
         args += '?teams=';
-        while(i < num){
+        /*while(i < num){
             args += teamId[i];
             if(i != (num-1)){
                 args += ',';
             }
             i++;
-        }
+        }*/
+        $.each(teamsList, function(idx, team) {
+            args += team.id;
+            if (idx != teamsList.length - 1)
+                args += ',';
+            teamNames.push(team.name);
+        });
 
-        var type = document.getElementById('matchTypeSelect');
-        var typeText = type.options[type.selectedIndex].value;
-        if(typeText != 'All Match Types' ){
+        if(matchType != 'All Types' ) {
             args += '&type=';
-            args += typeText;
+            args += matchType;
         }
         //alert(args);
         //--------------------Declare options-----------------
@@ -95,7 +101,9 @@ VIS.CompareTeams = function($container) {
             chart: {
                 renderTo: 'container',
                 defaultSeriesType: 'spline',
-                zoomType: 'x'
+                zoomType: 'x',
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                plotBackgroundColor: 'rgba(0,0,0,0.8)'
             },
             title: {
                 text: 'Performance Comparison of '
@@ -137,7 +145,9 @@ VIS.CompareTeams = function($container) {
         };
 
         //----------------------------------------------------
+        console.log("Calling getCompareTeams:", args);
         $.getJSON('php/getCompareTeams.php'+args,function(data){
+            console.log("getCompareTeams rtn:", data);
             var series = new Array();
             var num = getNumberOfTeams();
             var j = 0;
@@ -170,7 +180,7 @@ VIS.CompareTeams = function($container) {
                 j++;
             }
 
-            options.title.text = options.title.text + " - " + typeText;
+            options.title.text = options.title.text + " - " + matchType;
             var chart = new Highcharts.Chart(options);
         });
     }
@@ -199,6 +209,7 @@ VIS.CompareTeams = function($container) {
     }
 
     function getNumberOfTeams(){
+        return teamsList.length;
         if(document.getElementById('numOfTeams') != null){
                 var e = document.getElementById('numOfTeams');
                     var num = e.options[e.selectedIndex].value;
@@ -224,4 +235,44 @@ VIS.CompareTeams = function($container) {
             }
         }
     }
+
+    function teamSelected($teamElement) {
+        var newTeam = {
+            id: $teamElement.attr('id'),
+            code: $teamElement.attr('code'),
+            name: $teamElement.text()
+        };
+        if (teamsList.length >= 5)
+            teamsList.shift();
+
+        teamsList.push(newTeam);
+        if (enoughData())
+            getData();
+
+        //console.log("Setting new menu...");
+        //this.requiredMenus.teamClick_2 = teamSelected;
+        //VIS.optsMenu.setupMenus();
+    }
+
+    function matchTypeSelected($mtElement) {
+        matchType = $mtElement.attr('id');
+        console.log("Changing selected match type");
+        if (enoughData())
+            getData();
+    }
+
+    function enoughData() {
+        return teamsList && matchType;
+    }
+
+    this.load = function() {};
+    this.unload = function() {};
+    this.requiredMenus = {
+        'teamClick': teamSelected,
+        'teamClick_2': teamSelected,
+        'teamClick_3': teamSelected,
+        'teamClick_4': teamSelected,
+        'teamClick_5': teamSelected,
+        'matchTypeClick': matchTypeSelected,
+    };
 }
