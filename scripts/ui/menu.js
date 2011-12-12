@@ -288,11 +288,20 @@ VIS.Menu = function(outsideContainer) {
             highlightItem($this);
             callback($this);
         }
-
+        function clearMenu(menu) {
+            console.log("Clearing player menu");
+            menu.detach();
+            menu.children().unbind();
+            menu.parent().remove();
+            menu.parent().css('height', 0);
+            console.log("Clearing player menu done 2...");
+            delete menu;
+        }
         var $menu = menuCache[cacheTag];
         if ($menu != undefined) {
-            $menu.children().unbind();
-            $menu.html('');
+            //$menu.children().unbind();
+            //$menu.html('');
+            clearMenu($menu);
         }
 
         $.getJSON('php/getPlayerList.php?team='+countryName, function (data) {

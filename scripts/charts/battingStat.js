@@ -20,30 +20,6 @@ VIS.BatStats = function($container) {
     // Unload function for integration purposes
     function unload() {}
 
-    function getData(){
-        var e = document.getElementById("countrySelect");
-        countryCode = e.options[e.selectedIndex].value;
-        countryName = e.options[e.selectedIndex].text;
-        e = document.getElementById("PlayerSelect");
-        e.options.length = 0;
-        $.getJSON('php/getPlayerList.php?team='+countryName,
-            function populateList(data){
-                var e = document.getElementById("PlayerSelect");
-                var o;
-                var i =0;
-
-                while( i < data.data.length){
-                    o = document.createElement("option");
-                    o.text = data.data[i].name;
-                    o.value = data.data[i].id;
-                    i++;
-                    e.add(o, null);
-                }
-        });
-        filterflag = 0;
-        //getPlayerData();
-    }
-
     function resetfilter() {
         filterflag = 0;
         var div = document.getElementById("filter");
@@ -152,8 +128,7 @@ VIS.BatStats = function($container) {
         }
 
         //alert(args);
-        $.getJSON('php/getPlayerBattingStat.php?'+args,function(data)
-        {
+        $.getJSON('php/getPlayerBattingStat.php?'+args,function(data) {
             //alert(data.data.length);
             var total_runs = {data: []};
             total_runs.name = yid + " by each " + xid ;
