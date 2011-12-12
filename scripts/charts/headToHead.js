@@ -31,9 +31,6 @@ VIS.HeadToHead = function($container, teamClickCallback) {
             if(matchType != "All Types"){
                 args = args + "&type=" + matchType;
             }
-            else{
-                document.getElementById('container').innerHTML = "Select A Country!";
-            }
 
            //--------------------Declare options-----------------
 					    options =  {
@@ -42,7 +39,7 @@ VIS.HeadToHead = function($container, teamClickCallback) {
 					            defaultSeriesType: 'column',
 					            zoomType: 'x',
                                 backgroundColor: 'rgba(0,0,0,0.8)',
-                                plotBackgroundColor: 'rgba(0,0,0,0.8)',
+                                plotBackgroundColor: 'rgba(0,0,0,0.8)'
 					        },
 					        title: {
 					            text: 'Head to Head Performance Comparison of '
