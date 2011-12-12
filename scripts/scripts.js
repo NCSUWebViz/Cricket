@@ -55,7 +55,7 @@ function setupOptionsMenu() {
             $("#optionsMenu").children().animate({"bottom":"0em"});
         },
         function () {
-            $("#optionsMenu").children().animate({"bottom":"-21em"});
+            $("#optionsMenu").children().animate({"bottom":"-18em"});
         }
     );
     VIS.optsMenu = new VIS.Menu('#optionsMenu');

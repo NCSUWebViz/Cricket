@@ -22,7 +22,7 @@ VIS.vizMenuEnum = {
 }
 
 VIS.Menu = function(outsideContainer) {
-    var MAX_MENU_HEIGHT = 350;
+    var MAX_MENU_HEIGHT = 300;
     var loadedMenus = {};
     var menuCache = {};
     var $mainContainer = $(outsideContainer);
