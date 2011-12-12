@@ -28,6 +28,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     var svgHeight = 945;
     var groundPlaneMesh;
     var svg;
+    var stats;
 
     // Ratio of Obese (BMI >= 30) in U.S. Adults, CDC 2008
     var data = [
@@ -74,6 +75,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
 
     function render() {
         globe.render();
+        stats.update();
         //if (groundPlaneMesh)
             //groundPlaneMesh.lookAt(globe.camera.position);
     }
@@ -111,6 +113,7 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
         delete teamHighLightMeshes;
         delete globe;
         delete projector;
+        delete stats;
         $(svgCanvas).html('');
     }
 
@@ -156,15 +159,25 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
             if (!svgVis && !gpVis) {
                 $(this).text('Back plane');
                 $(cartogramSvgChart).toggle();
+                $(stats.domElement).hide();
             } else if (svgVis  && !gpVis) {
                 $(cartogramSvgChart).toggle();
                 groundPlaneMesh.visible = groundPlaneMesh.visible == true ? false : true;
+                $(stats.domElement).show();
                 $(this).text('Globe Cartogram');
             } else if (!svgVis && gpVis) {
                 groundPlaneMesh.visible = groundPlaneMesh.visible == true ? false : true;
                 $(this).text('Flat Cartogram');
+                $(stats.domElement).hide();
             }
         });
+
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+        stats.domElement.style.zIndex = 100;
+        $container.append(stats.domElement);
+        $(stats.domElement).hide();
     }
 
     function stop() {
