@@ -45,11 +45,10 @@ body {
 #vizListLabel {
 	z-index:10001;
     position: absolute;
-    //left: 15em;
 	padding-left:15em;
     top:78px;
     color: #CCC;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.8);
     border-left: 1px solid rgba(50, 50, 200, 0.6);
 	border-right: 1px solid rgba(50, 50, 200, 0.6);
     padding: 10px;
@@ -82,8 +81,7 @@ body {
  
 .menu {
 	position: absolute;
-	//bottom: 0%;
-	bottom: 10px;
+	bottom:0em;
 	left: 0%;
 	z-index:100;
 	width:10em;

@@ -23,8 +23,7 @@ VIS.vizMenuEnum = {
 
 VIS.Menu = function(outsideContainer) {
     var MAX_MENU_HEIGHT = 350;
-    //var loadedMenus = {};
-    var loadedMenus = [];
+    var loadedMenus = {};
     var menuCache = {};
     var $mainContainer = $(outsideContainer);
 
@@ -33,6 +32,7 @@ VIS.Menu = function(outsideContainer) {
         teamHover: loadTeamHoverMenu,
         //teamMulti: 3,
         matchTypeClick: loadMatchTypeMenu,
+        playerClick: loadPlayerClickMenu,
         //groundsClick: 5,
         //playersClick: 6,
         //playersMulti: 7,
@@ -40,45 +40,7 @@ VIS.Menu = function(outsideContainer) {
         venueClick: loadVenueClickMenu,
     }
 
-    //var $menuPos1 = $("<div class='menu menuPos0'>").appendTo($mainContainer);
-    //var $menuPos2 = $("<div class='menu menuPos1'>").appendTo($mainContainer);
-    //var $menuPos3 = $("<div class='menu menuPos2'>").appendTo($mainContainer);
-    //var $menuPos4 = $("<div class='menu menuPos3'>").appendTo($mainContainer);
-
-    //var menuPositions = [
-        //$menuPos1,
-        //$menuPos2,
-        //$menuPos3,
-        //$menuPos4
-    //];
-
-    /*var menuHierarchy = [
-        VIS.vizMenuEnum.teamClick,
-        VIS.vizMenuEnum.teamHover,
-        VIS.vizMenuEnum.teamMulti,
-        VIS.vizMenuEnum.groundsClick,
-        VIS.vizMenuEnum.playersClick,
-        VIS.vizMenuEnum.playersMulti,
-        VIS.vizMenuEnum.matchTypeClick,
-        VIS.vizMenuEnum.yearVenueOpponent,
-        VIS.vizMenuEnum.venueClick
-    ];*/
-
-    // TODO: Remove this clever, but misguided attempt to
-    // enforce a menu hierarchy for all visualizations.  Rely
-    // on that vis to order its menus correctly.
     /*this.setupMenus = function(requiredMenus) {
-        hideNonrequiredMenus(requiredMenus);
-        var pos = 0;
-        $.each(menuHierarchy, function(index, menuId) {
-            if ($.inArray(menuId, requiredMenus) != -1) {
-                setupMenu(menuId, pos);
-                pos++;
-            }
-        });
-    }*/
-
-    this.setupMenus = function(requiredMenus) {
         if (requiredMenus == null && VIS.currentViz != null) {
             requiredMenus = VIS.currentViz.requiredMenus
         }
@@ -88,20 +50,6 @@ VIS.Menu = function(outsideContainer) {
             setupMenu(menuId, index);
         });
     }
-
-    // TODO: This version allows for specified callbacks,
-    /*this.setupMenus = function(requiredMenus) {
-        if (requiredMenus == null && VIS.currentViz != null) {
-            requiredMenus = VIS.currentViz.requiredMenus
-        }
-
-        hideNonrequiredMenus(requiredMenus);
-        var pos = 0;
-        $.each(requiredMenus, function(menuName, callback) {
-            VIS.vizMenuEnum[menuName](pos, callback);
-            pos++;
-        });
-    }*/
 
     function setupMenu(menuId, pos) {
         switch(menuId) {
@@ -118,26 +66,33 @@ VIS.Menu = function(outsideContainer) {
                 loadVenueClickMenu(pos);
                 break;
         }
+    }*/
+
+    // TODO: This version allows for specified callbacks,
+    this.setupMenus = function(requiredMenus) {
+        if (requiredMenus == null && VIS.currentViz != null) {
+            requiredMenus = VIS.currentViz.requiredMenus
+        }
+
+        hideNonrequiredMenus(requiredMenus);
+        var pos = 0;
+        $.each(requiredMenus, function(menuName, callback) {
+            var menuType = menuName.split('_')[0];
+            if (VIS.vizMenuEnum[menuType] == undefined){
+                console.log("Cannot build menu yet:", menuType, menuName, pos);
+                return;
+            }
+            VIS.vizMenuEnum[menuType](pos, menuName, callback);
+            pos++;
+        });
     }
 
-    function fillMenuPosition(pos, $content, label) {
+    function fillMenuPosition(pos, $content, label, cacheTag) {
         var $menuNode;
-        //if (pos < menuPositions.length - 1) {
-            //$menuNode = menuPositions[pos];
-        //} else {
-            $menuNode = $("<div class='menu menuPos" + pos + "'>");
-            $menuNode.appendTo($mainContainer);
-        //}
+        $menuNode = $("<div class='menu menuPos" + pos + "'>");
+        $menuNode.appendTo($mainContainer);
 
-        var height;
-        //if (pos < 4) {
-            //height = MAX_MENU_HEIGHT - pos * 25;
-        //} else {
-            //height = 5.5;
-        //}
-        height = MAX_MENU_HEIGHT;
-        //console.log("Height calc", pos, MAX_MENU_HEIGHT, height,
-                //$content.children().length);
+        var height = MAX_MENU_HEIGHT;
 
         $menuNode.css('height', height.toString() + "px");
         $("<span class='menuLabel menuPosLabel" + pos + "'>")
@@ -149,12 +104,12 @@ VIS.Menu = function(outsideContainer) {
             'overflow': 'scroll'
         }).appendTo($menuNode);
         $content.show();
-        loadedMenus.push($menuNode);
+        loadedMenus[cacheTag] = $menuNode;
     }
 
     function hideNonrequiredMenus(requiredMenus) {
-        //$.each(menuPositions, function(key, val) {
         $.each(loadedMenus, function(key, val) {
+            val.children().children().unbind();
             val.children().detach();
             val.css('height', 0);
             delete val;
@@ -176,10 +131,20 @@ VIS.Menu = function(outsideContainer) {
         return $selectedItems;
     }
 
-    function loadTeamHoverMenu(pos) {
-        if (alreadyLoaded(pos, menuCache.teamHoverMenu,
-                    "Selected Team", VIS.currentViz.teamSelected))
+    function loadTeamHoverMenu(pos, cacheTag, callback) {
+        var cacheTag = cacheTag || 'teamHover';
+        var callback = callback || VIS.currentViz.teamSelected;
+
+        function hover() {
+            var $this = $(this);
+            highlightItem($this);
+            callback($this);
+        }
+
+        if (alreadyLoaded(pos, cacheTag, "Selected Team", callback)) {
+            menuCache[cacheTag].children().hover(hover);
             return;
+        }
 
         $.getJSON('php/getTeams.php', function (teamData) {
             var $ul = $('<ul/>', {
@@ -193,21 +158,27 @@ VIS.Menu = function(outsideContainer) {
                 $team.addClass('team');
                 $team.data('lat', val.latitude);
                 $team.data('lng', val.longitude);
-                $team.hover(function() {
-                    var $this = $(this);
-                    highlightItem($this);
-                    VIS.currentViz.teamSelected($this);
-                });
+                $team.hover(hover);
             });
-            menuCache.teamHoverMenu = $ul;
-            fillMenuPosition(pos, $ul, "Select Team");
+            menuCache[cacheTag] = $ul;
+            fillMenuPosition(pos, $ul, "Select Team", cacheTag);
         });
     }
 
-    function loadTeamClickMenu(pos) {
-        if (alreadyLoaded(pos, menuCache.teamClickMenu,
-                    "Selected Team", VIS.currentViz.teamSelected))
-            return;
+    function loadTeamClickMenu(pos, cacheTag, callback) {
+        var cacheTag = cacheTag || 'teamClick';
+        var callback = callback || VIS.currentViz.teamSelected;
+
+        function clicked() {
+            var $this = $(this);
+            highlightItem($this);
+            callback($this);
+        }
+
+        if (alreadyLoaded(pos, cacheTag, "Selected Team", callback)) {
+                menuCache[cacheTag].children().click(clicked);
+                return;
+        }
 
         $.getJSON('php/getTeams.php', function (teamData) {
             var $ul = $('<ul/>', {
@@ -221,23 +192,29 @@ VIS.Menu = function(outsideContainer) {
                 $team.addClass('team');
                 $team.data('lat', val.latitude);
                 $team.data('lng', val.longitude);
-                $team.click(function() {
-                    var $this = $(this);
-                    highlightItem($this);
-                    VIS.currentViz.teamSelected($this);
-                });
+                $team.click(clicked);
             });
-            menuCache.teamClickMenu = $ul;
-            fillMenuPosition(pos, $ul, "Select Team");
+            menuCache[cacheTag] = $ul;
+            fillMenuPosition(pos, $ul, "Select Team", cacheTag);
         });
     }
 
-    function loadVenueClickMenu(pos) {
-        if (alreadyLoaded(pos, menuCache.venueClickMenu,
-                    "Selected Venue", VIS.currentViz.venueSelected))
-            return;
+    function loadVenueClickMenu(pos, cacheTag, callback) {
+        var cacheTag = cacheTag || 'venueClick';
+        var callback = callback || VIS.currentViz.venueSelected;
 
-        function venuesLoaded(venueData) {
+        function clicked() {
+            var $this = $(this);
+            highlightItem($this);
+            callback($this);
+        }
+
+        if (alreadyLoaded(pos, cacheTag, "Selected Venue", callback)) {
+            menuCache[cacheTag].children().click(clicked);
+            return;
+        }
+
+        $.getJSON('php/getVenues.php', function (venueData) {
             var $ul = $('<ul/>', {
                 'class': 'teamList',
             });
@@ -255,23 +232,100 @@ VIS.Menu = function(outsideContainer) {
                     VIS.currentViz.venueSelected($this);
                 });
             });
-            menuCache.venueClickMenu = $ul;
-            fillMenuPosition(pos, $ul, "Select Venue");
-            /*if (VIS.currentViz != null) {
-                VIS.currentViz.menuLoaded(VIS.vizMenuEnum.teamHover);
-            }*/
-        }
-        $.getJSON('php/getVenues.php', function(data) {
-            venuesLoaded(data);
+            menuCache[cacheTag] = $ul;
+            fillMenuPosition(pos, $ul, "Select Venue", cacheTag);
         });
     }
 
-    // TODO: Consider adding caching to try to preserve current selected
-    // match type to propogate to different vis that needs this menu.
-    function loadMatchTypeMenu(pos) {
-        if (alreadyLoaded(pos, menuCache.matchTypeMenu,
-                    "Match Type", VIS.currentViz.matchTypeSelected))
+    function loadPlayerClickMenu(pos, cacheTag, callback) {
+        var cacheTag = cacheTag || 'playerClick';
+        var callback = callback || VIS.currentViz.playerSelected;
+
+        function clicked() {
+            var $this = $(this);
+            highlightItem($this);
+            callback($this);
+        }
+
+        if (alreadyLoaded(pos, cacheTag, "Selected Player", callback)) {
+            menuCache[cacheTag].children().click(clicked);
             return;
+        }
+
+        return;
+
+        /*$.getJSON('php/getVenues.php', function (venueData) {
+            var $ul = $('<ul/>', {
+                'class': 'teamList',
+            });
+            $.each(venueData, function(key, val) {
+                var $venue = $('<li id="' + val.id + '">' + val.ground_name + '</li>')
+                    .appendTo($ul);
+                if (key == 1) {
+                    $venue.addClass('selected');
+                    //VIS.currentViz.venueSelected($venue);
+                    callback($venu);
+                }
+                $venue.addClass('team');
+                $venue.click(clicked);
+            });
+            menuCache[cacheTag] = $ul;
+            fillMenuPosition(pos, $ul, "Select Venue", cacheTag);
+        });*/
+    }
+
+    function updatePlayerClick(pos, cacheTag, callback, data) {
+        var countryName = data['countryName'];
+
+        function clicked() {
+            var $this = $(this);
+            highlightItem($this);
+            callback($this);
+        }
+
+        var $menu = menuCache[cacheTag];
+        if ($menu != undefined) {
+            $menu.children().unbind();
+            $menu.html('');
+        }
+
+        $.getJSON('php/getPlayerList.php?team='+countryName, function (data) {
+           var $ul = $('<ul/>', {
+                'class': 'teamList',
+            });
+            $.each(data.data, function(key, val) {
+                var $player = $('<li id="' + val.id + '">' + val.name + '</li>')
+                    .appendTo($ul);
+                if (key == 1) {
+                    $player.addClass('selected');
+                    callback($player);
+                }
+                $player.addClass('team');
+                $player.click(clicked);
+            });
+            menuCache[cacheTag] = $ul;
+            fillMenuPosition(pos, $ul, "Select Venue", cacheTag);
+        });
+    }
+
+    // TODO: This needs to be rolled into a generic menu update system,
+    // but just make it public for now.  This whole setup needs redoing.
+    this.updatePlayerClick = updatePlayerClick;
+
+    function loadMatchTypeMenu(pos, cacheTag, callback) {
+        var cacheTag = cacheTag || 'matchType';
+        var callback = callback || VIS.currentViz.matchTypeSelected;
+
+        function clicked() {
+            var $this = $(this);
+            highlightItem($this);
+            callback($this);
+        }
+
+        if (alreadyLoaded(pos, cacheTag, "Match Type", callback)) {
+            menuCache[cacheTag].children().click(clicked);
+            return;
+        }
 
         var $selectedItem = null;
         var $ul = $('<ul/>', {
@@ -284,21 +338,18 @@ VIS.Menu = function(outsideContainer) {
                 $matchType.addClass('selected');
                 $selectedItem = $matchType;
             }
-            $matchType.click(function() {
-                var $this = $(this);
-                highlightItem($this);
-                VIS.currentViz.matchTypeSelected($this);
-            });
+            $matchType.click(clicked);
         });
-        fillMenuPosition(pos, $ul, "Match Type");
-        menuCache.matchTypeMenu = $ul;
+        fillMenuPosition(pos, $ul, "Match Type", cacheTag);
+        menuCache[cacheTag] = $ul;
         if (VIS.currentViz)
             VIS.currentViz.matchTypeSelected($selectedItem);
     }
 
-    function alreadyLoaded(pos, $menu, label, updateMethod) {
+    function alreadyLoaded(pos, cacheTag, label, updateMethod) {
+        var $menu = menuCache[cacheTag]
         if ($menu != null) {
-            fillMenuPosition(pos, $menu, label);
+            fillMenuPosition(pos, $menu, label, cacheTag);
             var $selectedItems = findSelected($menu);
             if ($selectedItems.length > 0 && updateMethod) {
                 updateMethod($selectedItems[0]);

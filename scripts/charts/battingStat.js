@@ -1,13 +1,20 @@
 var VIS = VIS || {};
 
-VIS.BasicGlobe = function($container) {
+VIS.BatStats = function($container) {
     var options;
-    var CountryName;
-    var CountryCode;
+    var countryName;
+    var countryCode;
     var xval;
     var filterflag;
     var filterval;
     var filtertype;
+
+
+    // Load function for integration purposes
+    function load() {}
+
+    // Unload function for integration purposes
+    function unload() {}
 
     function getData(){
         var e = document.getElementById("countrySelect");
@@ -15,25 +22,22 @@ VIS.BasicGlobe = function($container) {
         countryName = e.options[e.selectedIndex].text;
         e = document.getElementById("PlayerSelect");
         e.options.length = 0;
-        $.getJSON('php/getPlayerList.php?team='+countryName,function populateList(data){
-            var e = document.getElementById("PlayerSelect");
-            var o;
-            var i =0;
+        $.getJSON('php/getPlayerList.php?team='+countryName,
+            function populateList(data){
+                var e = document.getElementById("PlayerSelect");
+                var o;
+                var i =0;
 
-
-            while( i < data.data.length){
-                o = document.createElement("option");
-                o.text = data.data[i].name;
-                o.value = data.data[i].id;
-                i++;
-                e.add(o, null);
-            }
-
-
+                while( i < data.data.length){
+                    o = document.createElement("option");
+                    o.text = data.data[i].name;
+                    o.value = data.data[i].id;
+                    i++;
+                    e.add(o, null);
+                }
         });
         filterflag = 0;
-        //alert(xval);
- //       getPlayerData();
+        //getPlayerData();
     }
 
     function resetfilter() {
@@ -164,9 +168,26 @@ VIS.BasicGlobe = function($container) {
                 options.series.push(total_runs);
                 var chart = new Highcharts.Chart(options);
             }
-    });
-    //document.write("<BR>Filtered by " + filtertype + " and value " + filterval + "<BR>");
+        });
     }
 
+    function teamSelected($teamElement) {
+        countryName = $teamElement.text();
+        console.log("Batting stats ts:", $teamElement, countryName);
+        //VIS.Menu.update('playerClick', {'countryName': countryName});
+        VIS.optsMenu.updatePlayerClick(1, 'playerClick', playerSelected,
+                {'countryName': countryName});
+    }
+
+    function playerSelected($playerElement) {
+        console.log("Player selected!", $playerElement);
+    }
+
+    this.load = load;
+    this.unload = unload;
+    this.requiredMenus = {
+        'teamClick': teamSelected,
+        'playerClick': playerSelected,
+    }
 }
 

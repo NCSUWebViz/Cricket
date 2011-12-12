@@ -417,8 +417,8 @@ VIS.CartogramGlobe = function($container, teamClickCallback) {
     this.unload = unload;
     this.teamSelected = teamSelected;
     this.matchTypeSelected = matchTypeSelected;
-    this.requiredMenus = [
-        VIS.vizMenuEnum.teamClick,
-        VIS.vizMenuEnum.matchTypeClick
-    ];
+    this.requiredMenus = {
+        'teamClick': teamSelected,
+        'matchTypeClick': matchTypeSelected,
+    };
 }

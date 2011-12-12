@@ -142,7 +142,7 @@ VIS.AllTeamPerfGround = function ($container, teamClickCallback)
     this.load = load;
     this.unload = unload;
     this.venueSelected = venueSelected;
-    this.requiredMenus = [
-        VIS.vizMenuEnum.venueClick
-    ];
+    this.requiredMenus = {
+        'venueClick': venueSelected,
+    };
 };

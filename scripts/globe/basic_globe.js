@@ -307,10 +307,7 @@ VIS.BasicGlobe = function($container) {
     this.load = load;
     this.unload = unload;
     this.teamSelected = teamSelected;
-    this.requiredMenus = [
-        VIS.vizMenuEnum.teamClick,
-    ];
-    //this.requiredMenus = {
-        //'teamClick': teamSelected,
-    //};
+    this.requiredMenus = {
+        'teamClick': teamSelected,
+    };
 };
