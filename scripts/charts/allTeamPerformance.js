@@ -4,6 +4,7 @@ var VIS = VIS || {};
 VIS.AllTeamPerfGround = function ($container, teamClickCallback)
 {
     var venueId = null;
+    var groundName = null;
 
     function load() {
     }
@@ -93,7 +94,7 @@ VIS.AllTeamPerfGround = function ($container, teamClickCallback)
             };
             //alert(data.country);
             series.name = "Matches Won";
-            options.title.text =  data.city + "," + data.country;
+            options.title.text =  groundName + "," + data.city + "," + data.country;
             var i = 0;
             while (i < data.data[0].length)
             {
@@ -135,6 +136,7 @@ VIS.AllTeamPerfGround = function ($container, teamClickCallback)
 
     function venueSelected($vtElement) {
         venueId = $vtElement.attr('id');
+        groundName = $vtElement.text();
         console.log("Changing selected venue", $vtElement, venueId);
         getData();
     }
